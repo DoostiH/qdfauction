@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^CRAN-SUBMISSION$
+^LICENSE$
+^Meta$
+^README\.md$
+^\.Rproj\.user$
+^\.gitattributes$
+^\.github$
+^cran-comments\.md$
+^data-raw$
+^doc$
+^vignettes/.*\.html$

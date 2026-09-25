@@ -1,0 +1,195 @@
+---
+title: "Structural analysis of first-price auctions with qdfauction: the USFS timber data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Structural analysis of first-price auctions with qdfauction: the USFS timber data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, collapse = TRUE, comment = "#>")
+set.seed(20260925)
+```
+
+This vignette walks through the full pipeline of `qdfauction` on real data:
+the sealed-bid subsample of the U.S. Forest Service timber auctions assembled
+by Lu and Perrigne (2008). We recover bidders' private values from their bids,
+estimate the private-value density, and estimate the seller's expected revenue
+as a function of the reserve price.
+
+```{r}
+library(qdfauction)
+data(timber)
+str(timber)
+```
+
+The data contain 107 auctions with two bidders and 108 with three. We analyse
+the two groups separately so that the number of bidders is known and fixed
+within each group.
+
+## 1. The quantile density of bids
+
+In a symmetric first-price auction with independent private values the
+inverse bid function is (Guerre, Perrigne and Vuong 2000)
+
+$$v = b + \frac{1}{n-1}\frac{G(b)}{g(b)} = b + \frac{u\,q(u)}{n-1},\qquad u = G(b),$$
+
+where $q = 1/g(Q(u))$ is the quantile density of bids. The second form
+(Zhang 2022; Doosti, Dewan and Talebian 2025) avoids dividing by a density
+estimate that is small and unstable near the boundaries. `qdf()` estimates
+$q$ with ten estimators; the indirect Poisson estimator with biased
+cross-validation performed best in the 2025 simulations.
+
+```{r}
+b3  <- as.numeric(timber$n3)
+q_ip <- qdf(b3, method = "indirect_poisson", bandwidth = "bcv")
+q_b  <- qdf(b3, method = "bernstein",        bandwidth = "bcv")
+q_w  <- qdf(b3, method = "wavelet_block",    bandwidth = 0.15)
+q_ip
+plot(q_ip, ylim = c(0, 400), main = "Quantile density of bids, N = 3")
+lines(q_b$u, q_b$q, col = 2); lines(q_w$u, q_w$q, col = 4)
+legend("topleft", c("indirect Poisson", "Bernstein", "block wavelet"),
+       col = c(1, 2, 4), lty = 1, bty = "n")
+```
+
+The quantile density rises steeply toward $u = 1$: the bid density is close
+to zero at the top of the support, which is exactly where the conventional
+ratio $G/g$ is unstable.
+
+## 2. Recovering private values
+
+`fpa_values()` applies the inversion. We compare the indirect Poisson
+inversion with the conventional GPV estimator and with the boundary-corrected
+kernel of Hickman and Hubbard (2015), and impose monotonicity of the inverse
+bid function with the natural-spline fix of the 2025 paper.
+
+```{r}
+fv_ip  <- fpa_values(timber$n3, method = "indirect_poisson", bandwidth = q_ip$h,
+                     monotone = "spline")           # reuse the BCV bandwidth from above
+fv_gpv <- fpa_values(timber$n3, method = "gpv")
+fv_ip
+plot(fv_ip, main = "Inverse bid function, N = 3")
+points(fv_gpv$bids, fv_gpv$values, col = 2, pch = 3, cex = 0.6)
+legend("topleft", c("indirect Poisson (raw)", "monotone fit", "GPV"),
+       col = c("grey50", 4, 2), pch = c(20, NA, 3), lty = c(NA, 1, NA), bty = "n")
+```
+
+The implied markups $\hat v - b$ fall with competition, as theory predicts:
+
+```{r}
+fv2 <- fpa_values(timber$n2, method = "indirect_poisson", bandwidth = "bcv", monotone = "spline")
+rbind(`N = 2` = quantile(fv2$values - fv2$bids, c(.25, .5, .75)),
+      `N = 3` = quantile(fv_ip$values - fv_ip$bids, c(.25, .5, .75)))
+```
+
+Lu and Perrigne (2008) find evidence of risk aversion in these auctions.
+Under CRRA utility $U(t) = t^{1-\eta}$ the inversion becomes
+$v = b + (1-\eta)\,u q(u)/(n-1)$, so risk-neutral pseudo-values are upper
+bounds on the true ones. The `eta` argument handles this:
+
+```{r}
+fv_ra <- fpa_values(timber$n3, method = "indirect_poisson", bandwidth = q_ip$h,
+                    eta = 0.3, monotone = "spline")
+median(fv_ra$values - fv_ra$bids) / median(fv_ip$values - fv_ip$bids)   # = 1 - eta
+```
+
+## 3. The private-value density
+
+`fpa_density()` estimates the density of private values in two steps. The
+first step recovers pseudo-values (Hickman–Hubbard boundary-corrected GPV
+by default, or any `fpa_values()` fit); the second step estimates their
+density with the wavelet estimators of Doosti, Dewan and Sbaï (2026) or one
+of the kernel competitors. Because the bids are in dollars, they are mapped
+to $[0,1]$ by a log map and the density is returned in dollars through the
+Jacobian.
+
+```{r}
+fd_w  <- fpa_density(timber$n3, method = "wavelet_ll", j0 = 4, h = 0.15)
+fd_hh <- fpa_density(timber$n3, method = "kde_hh")
+fd_ms <- fpa_density(timber$n3, method = "marmer_shneyerov")
+fd_q  <- fpa_density(timber$n3, method = "wavelet_ll", first_stage = fv_ip, j0 = 4, h = 0.15)
+fd_w
+plot(fd_w, xlim = c(0, 400), ylim = c(0, 0.02), main = "Private-value density, N = 3")
+lines(fd_hh$x, fd_hh$f, col = 2, lty = 2)
+lines(fd_ms$x, fd_ms$f, col = 3, lty = 3)
+lines(fd_q$x,  fd_q$f,  col = 4, lty = 4)
+legend("topright", c("wavelet LL (GPV-HH first stage)", "GPV-HH kernel",
+                     "Marmer-Shneyerov", "wavelet LL (QDF first stage)"),
+       col = 1:4, lty = 1:4, bty = "n")
+```
+
+The tuning parameters of the wavelet estimator can be chosen by
+cross-validated held-out log-likelihood (`j0 = "cv"`), and the estimators
+can be compared on the same footing with `fpa_density_cv()`:
+
+```{r, eval = FALSE}
+fd_cv <- fpa_density(timber$n3, method = "wavelet_ll", j0 = "cv")
+fpa_density_cv(timber$n3, methods = c("wavelet_ll", "kde_hh", "marmer_shneyerov"),
+               folds = 5, j0 = fd_cv$j0, h = fd_cv$h)
+```
+
+## 4. Expected revenue and the optimal reserve price
+
+Given recovered values, `fpa_revenue()` estimates the seller's expected
+revenue as a function of the reserve price (Zincenko 2024; Doosti 2026b), and
+`fpa_optimal_reserve()` maximises it. Here we take the seller's own valuation
+to be `v_s = 20` dollars per unit.
+
+```{r}
+r  <- seq(20, 120, by = 5)
+R3 <- fpa_revenue(fv_ip, r, v_s = 20)
+opt <- fpa_optimal_reserve(fv_ip, v_s = 20)
+plot(r, R3, type = "l", lwd = 2, xlab = "reserve price ($/unit)",
+     ylab = "expected revenue", main = "Expected revenue, N = 3")
+abline(v = opt$r_star, lty = 2)
+opt[c("r_star", "revenue")]
+```
+
+Bootstrap standard errors, pointwise intervals and a uniform band follow
+from `fpa_revenue_boot()`; the Bernstein estimator is used here because it is
+fast enough for many bootstrap replications.
+
+```{r}
+rb <- fpa_revenue_boot(timber$n3, r = seq(30, 100, by = 10), B = 100, v_s = 20,
+                       method = "bernstein", bandwidth = "wbcv", m_range = c(10, 200))
+rb
+plot(rb, main = "Expected revenue with 95% pointwise CI and uniform band")
+```
+
+## 5. Checking the method by simulation
+
+`fpa_simulate()` draws values from any marginal (and, optionally, an
+Archimedean copula for affiliated values or a CRRA risk-aversion parameter)
+and computes exact equilibrium bids, and `fpa_montecarlo()` scores a list of
+estimators over replications. The following reproduces one row of Table 2 of
+Doosti, Dewan and Talebian (2025) in a few seconds:
+
+```{r}
+pdf <- function(x) dgamma(x, 10, 2); cdf <- function(x) pgamma(x, 10, 2)
+mc <- fpa_montecarlo(R = 5, L = 20, n = 5, Q = function(u) qgamma(u, 10, 2), seed = 1,
+  estimators = list(
+    B_B  = function(b, v) fpa_values(b, method = "bernstein",        bandwidth = "bcv"),
+    B_IP = function(b, v) fpa_values(b, method = "indirect_poisson", bandwidth = "bcv"),
+    Conv = function(b, v) fpa_values(b, method = "gpv")),
+  score = function(fit, b, v) fpa_evaluate_values(fit, pdf, cdf, v))
+aggregate(cbind(mise, loglik, ks) ~ estimator, mc, mean)
+```
+
+## References
+
+Doosti, H. (2026a). A copula-quantile density approach to affiliated private value auctions. *Economics Letters*, 261, 112837.
+
+Doosti, H. (2026b). Estimating seller's expected revenue in first-price sealed-bid auctions via quantile density functions. Working paper.
+
+Doosti, H., Dewan, I. and Sbaï, E. (2026). Adaptive wavelet estimation of private-value densities in first-price auctions. Working paper.
+
+Doosti, H., Dewan, I. and Talebian, M. (2025). Nonparametric estimation of private value distributions in first-price auctions: Evaluating quantile density function approaches. *Economics Letters*, 257, 112670.
+
+Guerre, E., Perrigne, I. and Vuong, Q. (2000). Optimal nonparametric estimation of first-price auctions. *Econometrica*, 68, 525–574.
+
+Hickman, B. R. and Hubbard, T. P. (2015). Replacing sample trimming with boundary correction in nonparametric estimation of first-price auctions. *Journal of Applied Econometrics*, 30, 739–762.
+
+Lu, J. and Perrigne, I. (2008). Estimating risk aversion from ascending and sealed-bid auctions: the case of timber auction data. *Journal of Applied Econometrics*, 23, 871–896.
+
+Zincenko, F. (2024). Estimation and inference of seller's expected revenue in first-price auctions. *Journal of Econometrics*, 241, 105734.

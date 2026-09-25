@@ -1,0 +1,36 @@
+Package: qdfauction
+Type: Package
+Title: Nonparametric Quantile Density Estimation and Structural Analysis of First-Price Auctions
+Version: 1.0.0
+Authors@R: c(
+    person("Hassan", "Doosti", role = c("aut", "cre"),
+           email = "Hassan.doosti@mq.edu.au",
+           comment = c(ORCID = "0000-0002-0290-8122",
+                       affiliation = "School of Mathematical and Physical Sciences, Macquarie University")))
+Description: Nonparametric estimators of the quantile density function
+    (the derivative of the quantile function, also called the sparsity
+    function): direct kernel and boundary-corrected kernel smoothers of the
+    empirical quantile function, Poisson-weight and Bernstein-polynomial
+    smoothers, and indirect estimators via the density (Jones 1992; Soni,
+    Dewan and Jain 2012) and via a Poisson-smoothed distribution function
+    (Chaubey, Dewan and Li 2024), and linear, hard-thresholded and
+    block-thresholded wavelet estimators (Chesneau, Dewan and Doosti 2016;
+    Shirazi and Doosti 2022). Smoothing parameters are chosen by biased
+    cross-validation, robust likelihood cross-validation (Wu 2019) or a
+    weighted biased cross-validation. Later releases apply these estimators
+    to the recovery of private values, private-value densities and expected
+    revenue in first-price sealed-bid auctions (Doosti, Dewan and Talebian
+    2025 <doi:10.1016/j.econlet.2025.112670>; Doosti 2026
+    <doi:10.1016/j.econlet.2026.112837>).
+License: GPL (>= 3)
+URL: https://github.com/DoostiH/qdfauction
+BugReports: https://github.com/DoostiH/qdfauction/issues
+Encoding: UTF-8
+Depends: R (>= 4.1)
+Imports: stats, splines, utils, graphics, grDevices
+Suggests: testthat (>= 3.0.0), knitr, rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+LazyData: true
