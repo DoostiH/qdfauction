@@ -43,7 +43,9 @@ cross-validation performed best in the 2025 simulations.
 
 ```{r}
 b3  <- as.numeric(timber$n3)
-q_ip <- qdf(b3, method = "indirect_poisson", bandwidth = "bcv")
+# bandwidth = "bcv" selects h by biased cross-validation (about 20 s here);
+# we fix h at the value it selects to keep the vignette fast
+q_ip <- qdf(b3, method = "indirect_poisson", bandwidth = 0.0996)
 q_b  <- qdf(b3, method = "bernstein",        bandwidth = "bcv")
 q_w  <- qdf(b3, method = "wavelet_block",    bandwidth = 0.15)
 q_ip
@@ -78,7 +80,8 @@ legend("topleft", c("indirect Poisson (raw)", "monotone fit", "GPV"),
 The implied markups $\hat v - b$ fall with competition, as theory predicts:
 
 ```{r}
-fv2 <- fpa_values(timber$n2, method = "indirect_poisson", bandwidth = "bcv", monotone = "spline")
+fv2 <- fpa_values(timber$n2, method = "indirect_poisson", bandwidth = 0.0975,   # BCV choice
+                  monotone = "spline")
 rbind(`N = 2` = quantile(fv2$values - fv2$bids, c(.25, .5, .75)),
       `N = 3` = quantile(fv_ip$values - fv_ip$bids, c(.25, .5, .75)))
 ```
@@ -151,7 +154,7 @@ from `fpa_revenue_boot()`; the Bernstein estimator is used here because it is
 fast enough for many bootstrap replications.
 
 ```{r}
-rb <- fpa_revenue_boot(timber$n3, r = seq(30, 100, by = 10), B = 100, v_s = 20,
+rb <- fpa_revenue_boot(timber$n3, r = seq(30, 100, by = 10), B = 30, v_s = 20,
                        method = "bernstein", bandwidth = "wbcv", m_range = c(10, 200))
 rb
 plot(rb, main = "Expected revenue with 95% pointwise CI and uniform band")
@@ -167,7 +170,7 @@ Doosti, Dewan and Talebian (2025) in a few seconds:
 
 ```{r}
 pdf <- function(x) dgamma(x, 10, 2); cdf <- function(x) pgamma(x, 10, 2)
-mc <- fpa_montecarlo(R = 5, L = 20, n = 5, Q = function(u) qgamma(u, 10, 2), seed = 1,
+mc <- fpa_montecarlo(R = 3, L = 20, n = 5, Q = function(u) qgamma(u, 10, 2), seed = 1,
   estimators = list(
     B_B  = function(b, v) fpa_values(b, method = "bernstein",        bandwidth = "bcv"),
     B_IP = function(b, v) fpa_values(b, method = "indirect_poisson", bandwidth = "bcv"),
