@@ -2,7 +2,10 @@ qdfauction: copyright notes
 ============================
 
 The package is Copyright (C) 2026 Hassan Doosti and is distributed under the
-GNU General Public License, version 3 or later, with the following exception.
+GNU General Public License, version 3 or later. The parts listed below are
+derived from code by other authors, who hold copyright in the original code
+and are listed as contributors and copyright holders in DESCRIPTION; they
+have been informed of their inclusion in this package.
 
 The quantile density estimators in R/estimators.R (qdf_kernel,
 qdf_kernel_corrected, qdf_poisson, qdf_bernstein, qdf_jones, qdf_soni,
@@ -53,8 +56,11 @@ MATLAB implementation (qbest4.m) of the quantile-based estimator of
 
   Marmer, V. and Shneyerov, A. (2012). Quantile-based nonparametric inference
   for first-price auctions. Journal of Econometrics, 167(2), 345-357.
+  <doi:10.1016/j.jeconom.2011.09.020>
 
-The original code is (C) Vadim Marmer and Artyom Shneyerov.
+The original code is (C) Vadim Marmer and Artyom Shneyerov and is publicly
+available from the first author's website,
+<https://vadimmarmer.com/files/auc-pdf_codes_and_paper.zip>.
 
 The internal function values_zincenko() in R/fpa_revenue.R, used by
 fpa_values(method = "zincenko"), is adapted from code provided by
@@ -66,12 +72,9 @@ Federico Zincenko implementing the estimator of
 
 The original code is (C) Federico Zincenko.
 
-All other code is original to this package. Algorithms from the literature
-(Daubechies-Lagarias evaluation of scaling functions, the periodic discrete
-wavelet transform, local linear smoothing, the estimators of Jones (1992),
-Soni, Dewan and Jain (2012), Chaubey, Dewan and Li (2021, 2024) and the others
-cited in the documentation) are implemented from their published descriptions
-or from the author's own earlier code; wavelet filter coefficients are
+All other code is original to this package: it was written by the package
+author, either from the published descriptions of the methods cited in the
+documentation or from his own earlier code. Wavelet filter coefficients are
 standard published constants.
 
 The data set 'timber' is derived from the replication data of Lu and

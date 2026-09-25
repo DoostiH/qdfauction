@@ -30,9 +30,10 @@ with a triweight kernel, the preliminary value quantile
 evaluated at \eqn{q(\hat F(v))}. Bandwidths follow the authors'
 normal-reference rules (\eqn{1.06\,\hat\sigma\,n^{-1/5}} for \eqn{g},
 \eqn{1.06\,\hat\sigma\,n^{-1/7}} for \eqn{g'}). This function is an R
-translation of the authors' MATLAB implementation.
+translation of the authors' MATLAB implementation, which is available from
+the first author's website (see \code{inst/COPYRIGHTS} for the exact location).
 }
 \references{
 Marmer, V. and Shneyerov, A. (2012). Quantile-based nonparametric inference
-for first-price auctions. \emph{Journal of Econometrics}, 167(2), 345--357.
+for first-price auctions. \emph{Journal of Econometrics}, 167(2), 345--357. \doi{10.1016/j.jeconom.2011.09.020}
 }

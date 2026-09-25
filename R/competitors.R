@@ -106,7 +106,8 @@ kde_hh <- function(x, data, kernel = "triweight", side = c("lower", "both"),
 #' evaluated at \eqn{q(\hat F(v))}. Bandwidths follow the authors'
 #' normal-reference rules (\eqn{1.06\,\hat\sigma\,n^{-1/5}} for \eqn{g},
 #' \eqn{1.06\,\hat\sigma\,n^{-1/7}} for \eqn{g'}). This function is an R
-#' translation of the authors' MATLAB implementation.
+#' translation of the authors' MATLAB implementation, which is available from
+#' the first author's website (see `inst/COPYRIGHTS` for the exact location).
 #'
 #' @param x evaluation points on the value scale.
 #' @param bids pooled bids.
@@ -116,7 +117,7 @@ kde_hh <- function(x, data, kernel = "triweight", side = c("lower", "both"),
 #' @return numeric vector of density estimates at `x`.
 #' @references
 #' Marmer, V. and Shneyerov, A. (2012). Quantile-based nonparametric inference
-#' for first-price auctions. *Journal of Econometrics*, 167(2), 345--357.
+#' for first-price auctions. *Journal of Econometrics*, 167(2), 345--357. \doi{10.1016/j.jeconom.2011.09.020}
 #' @export
 density_marmer_shneyerov <- function(x, bids, n, tau0 = 0.5, cap = 1000) {
   b <- sort(as.numeric(bids)); N <- length(b)
