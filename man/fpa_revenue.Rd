@@ -43,7 +43,8 @@ cbind(r, estimate = fpa_revenue(fv, r, v_s = 2),
 }
 \references{
 Zincenko, F. (2024). Estimation and inference of seller's expected revenue
-in first-price auctions. \emph{Journal of Econometrics}, 241, 105734.
+in first-price auctions. \emph{Journal of Econometrics}, 241(1), 105734.
+\doi{10.1016/j.jeconom.2024.105734}
 
 Doosti, H. (2026b). Estimating seller's expected revenue in first-price
 sealed-bid auctions via quantile density functions. Working paper, SSRN

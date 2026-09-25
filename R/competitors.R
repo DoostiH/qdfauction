@@ -1,5 +1,7 @@
 # Competitor density estimators for first-price auctions ----------------------
 
+# R translation of kspdf_bc.m / evalkspdf*.m, (C) Brent R. Hickman and
+# Timothy P. Hubbard; see inst/COPYRIGHTS and cite Hickman and Hubbard (2015).
 # kernels of Hickman & Hubbard's implementation
 hh_kernel <- function(u, kernel) {
   switch(kernel,
@@ -29,7 +31,8 @@ hh_b0 <- function(kernel) {
 #' Kernel density estimator with the transformation-based boundary correction
 #' of Karunamuni and Zhang (2008) at the lower endpoint of the support, as
 #' implemented by Hickman and Hubbard (2015) for first-price auctions (their
-#' `kspdf_bc`). The bandwidth is Silverman's rule scaled by Haerdle's (1991)
+#' `kspdf_bc`; this function is an R translation of that code, whose
+#' authors ask that Hickman and Hubbard (2015) be cited). The bandwidth is Silverman's rule scaled by Haerdle's (1991)
 #' canonical-kernel constant. The estimate is set to zero outside the range
 #' of the data. With `side = "both"` the same correction is applied at the
 #' upper endpoint through the reflected sample.
@@ -45,7 +48,7 @@ hh_b0 <- function(kernel) {
 #' @references
 #' Hickman, B. R. and Hubbard, T. P. (2015). Replacing sample trimming with
 #' boundary correction in nonparametric estimation of first-price auctions.
-#' *Journal of Applied Econometrics*, 30, 739--762.
+#' *Journal of Applied Econometrics*, 30, 739--762. \doi{10.1002/jae.2385}
 #'
 #' Karunamuni, R. J. and Zhang, S. (2008). Some improvements on a boundary
 #' corrected kernel density estimator. *Statistics & Probability Letters*, 78,
@@ -89,6 +92,9 @@ kde_hh <- function(x, data, kernel = "triweight", side = c("lower", "both"),
   fhat
 }
 
+# density_marmer_shneyerov(): R translation of qbest4.m, (C) Vadim Marmer and
+# Artyom Shneyerov; see inst/COPYRIGHTS.
+
 #' Quantile-based density estimator of Marmer and Shneyerov (2012)
 #'
 #' Estimates the private-value density in a symmetric IPV first-price auction
@@ -99,7 +105,8 @@ kde_hh <- function(x, data, kernel = "triweight", side = c("lower", "both"),
 #' \deqn{\hat f(v) = \Big[\tfrac{n}{n-1}\hat g^{-1} - \tfrac{1}{n-1}\hat F(v)\,\hat g'/\hat g^3\Big]^{-1}}
 #' evaluated at \eqn{q(\hat F(v))}. Bandwidths follow the authors'
 #' normal-reference rules (\eqn{1.06\,\hat\sigma\,n^{-1/5}} for \eqn{g},
-#' \eqn{1.06\,\hat\sigma\,n^{-1/7}} for \eqn{g'}).
+#' \eqn{1.06\,\hat\sigma\,n^{-1/7}} for \eqn{g'}). This function is an R
+#' translation of the authors' MATLAB implementation.
 #'
 #' @param x evaluation points on the value scale.
 #' @param bids pooled bids.
@@ -109,7 +116,7 @@ kde_hh <- function(x, data, kernel = "triweight", side = c("lower", "both"),
 #' @return numeric vector of density estimates at `x`.
 #' @references
 #' Marmer, V. and Shneyerov, A. (2012). Quantile-based nonparametric inference
-#' for first-price auctions. *Journal of Econometrics*, 167, 345--357.
+#' for first-price auctions. *Journal of Econometrics*, 167(2), 345--357.
 #' @export
 density_marmer_shneyerov <- function(x, bids, n, tau0 = 0.5, cap = 1000) {
   b <- sort(as.numeric(bids)); N <- length(b)

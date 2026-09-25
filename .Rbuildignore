@@ -10,3 +10,7 @@
 ^data-raw$
 ^doc$
 ^vignettes/.*\.html$
+^tests/testthat/helper-soni\.R$
+^tests/testthat/test-soni-original\.R$
+^tests/testthat/helper-legacy\.R$
+^tests/testthat/test-legacy-agreement\.R$

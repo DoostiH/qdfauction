@@ -40,6 +40,6 @@ qdf_bernstein(c(0.25, 0.5, 0.75), x, h = 0.05)
 }
 \references{
 Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of
-the quantile function for a stationary associated process. \emph{Sankhya B}, 83,
-S114--S139.
+the quantile function for a stationary associated process. \emph{Sankhya B},
+83 (Suppl 1), 114--139. \doi{10.1007/s13571-020-00242-x}
 }

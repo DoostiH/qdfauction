@@ -1,5 +1,9 @@
 # Quantile density estimators -------------------------------------------------
 #
+# Revised and vectorised from R code by Y. P. Chaubey, I. Dewan and J. Li
+# (Chaubey, Dewan and Li 2021, 2024), (C) the original authors; see
+# inst/COPYRIGHTS.
+#
 # All functions take an evaluation grid `u` in [0, 1], a *sorted* sample `x`
 # and a smoothing parameter `h`. They return the estimated quantile density
 # q(u) = Q'(u) = 1 / g(Q(u)) at each u. They are the workhorses behind
@@ -89,8 +93,8 @@ qdf_kernel_corrected <- function(u, x, h, kernel = "gaussian") {
 #' @return numeric vector of quantile density estimates at `u`.
 #' @references
 #' Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of
-#' the quantile function for a stationary associated process. *Sankhya B*, 83,
-#' S114--S139.
+#' the quantile function for a stationary associated process. *Sankhya B*,
+#' 83 (Suppl 1), 114--139. \doi{10.1007/s13571-020-00242-x}
 #' @examples
 #' x <- rgamma(100, 5, 1)
 #' qdf_poisson(c(0.25, 0.5, 0.75), x, h = 0.05)

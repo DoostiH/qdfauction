@@ -1,7 +1,9 @@
 # Wavelet machinery -----------------------------------------------------------
 #
-# Self-contained port of the MATLAB routines used in Chesneau, Dewan and
-# Doosti (2016) and Shirazi and Doosti (2022): Daubechies-Lagarias evaluation
+# R translation of the MATLAB routines of Brani Vidakovic (Phijk.m, dwtr.m,
+# Idwtr.m, loc_lin.m; (C) B. Vidakovic, see inst/COPYRIGHTS) used in Ramirez and
+# Vidakovic (2010), Chesneau, Dewan and Doosti (2016) and Shirazi and Doosti
+# (2022): Daubechies-Lagarias evaluation
 # of the scaling function, the periodic discrete wavelet transform, hard and
 # block (Cai 1999) thresholding, and the local-linear post-smoother of
 # Ramirez and Vidakovic (2010). No external wavelet package is needed.
@@ -64,7 +66,8 @@ wavelet_filter <- function(filter = "db3") {
 #' Evaluates \eqn{\phi} on the dyadic grid \eqn{k/2^{L}} of its support
 #' \eqn{[0, N-1]} (\eqn{N} = filter length) by the Daubechies--Lagarias
 #' product formula (Vidakovic 1999, Section 3.4), and caches the result.
-#' [phi_jk()] interpolates from this table.
+#' [phi_jk()] interpolates from this table. Translated from the MATLAB routine
+#' `Phijk` of B. Vidakovic (Ramirez and Vidakovic 2010).
 #' @param filter see [wavelet_filter()].
 #' @param levels dyadic resolution of the table (default 10, i.e. 1024 points
 #'   per unit interval).
@@ -141,7 +144,8 @@ phi_jk <- function(z, j, k, filter = "db3", levels = 10L) {
 #' Forward (`dwt_periodic()`) and inverse (`idwt_periodic()`) periodised
 #' orthonormal DWT with `L` levels, as in Vidakovic (1999). `length(x)` must be
 #' divisible by `2^L`. Coefficients are returned as
-#' `c(smooth, detail_coarsest, ..., detail_finest)`.
+#' `c(smooth, detail_coarsest, ..., detail_finest)`. Translated from the
+#' MATLAB routines `dwtr` and `Idwtr` of B. Vidakovic.
 #' @param x numeric vector.
 #' @param L number of levels.
 #' @param filter see [wavelet_filter()].
@@ -255,6 +259,7 @@ threshold_coefficients <- function(w, L, n, type = c("hard", "block"),
 #' Post-smoothing of a wavelet estimate on a grid (Ramirez and Vidakovic 2010;
 #' Fan 1992): for each `x` solves the weighted least-squares line through
 #' `(grid, y)` with weights \eqn{K((grid - x)/h)} and returns its value at `x`.
+#' Translated from the MATLAB routine `loc_lin` of B. Vidakovic.
 #' @param x evaluation points.
 #' @param grid,y tabulated function.
 #' @param h bandwidth.

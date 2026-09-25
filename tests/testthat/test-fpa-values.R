@@ -9,6 +9,7 @@ bids <- sort(bids); n <- length(bids); u <- (1:n) / (n + 1)
 Xsd <- diff(c(0, bids)); ni <- (1:n) / n
 
 test_that("fpa_values() reproduces the 2025 pseudo-values (Bernstein, BCV)", {
+  skip_if(!exists("legacy"), "reference code not shipped in this build")
   bh <- 1 / optimize(legacy$BCVfB, c(10, 50), X = bids, Xsd = Xsd, ni = ni, n = n)$minimum
   v_legacy <- bids + u / (N - 1) * legacy$dqb(u, bids, bh)
   fit <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv")

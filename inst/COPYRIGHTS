@@ -1,0 +1,79 @@
+qdfauction: copyright notes
+============================
+
+The package is Copyright (C) 2026 Hassan Doosti and is distributed under the
+GNU General Public License, version 3 or later, with the following exception.
+
+The quantile density estimators in R/estimators.R (qdf_kernel,
+qdf_kernel_corrected, qdf_poisson, qdf_bernstein, qdf_jones, qdf_soni,
+qdf_indirect_poisson, quantile_indirect_poisson) and the cross-validation
+criteria bcv_criterion() and rlcv_criterion() in R/bandwidth.R are revised,
+vectorised versions of R code by Yogendra P. Chaubey, Isha Dewan and Jun Li
+accompanying
+
+  Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of
+  the quantile function for a stationary associated process. Sankhya B,
+  83 (Suppl 1), 114-139. <doi:10.1007/s13571-020-00242-x>
+
+  Chaubey, Y. P., Dewan, I. and Li, J. (2024). On some non parametric
+  estimators of the quantile density function for a stationary associated
+  process. Communications in Statistics - Theory and Methods, 53, 5553-5573.
+
+as further developed in Doosti, Dewan and Talebian (2025). The original code
+is (C) Yogendra P. Chaubey, Isha Dewan and Jun Li.
+
+kde_hh() and its internal helpers (hh_kernel, hh_hardle_c, hh_b0) in
+R/competitors.R are an R translation of the MATLAB functions kspdf_bc.m,
+evalkspdf.m, evalkspdf_num.m and evalkspdf_denom.m distributed by
+Brent R. Hickman and Timothy P. Hubbard with
+
+  Hickman, B. R. and Hubbard, T. P. (2015). Replacing sample trimming with
+  boundary correction in nonparametric estimation of first-price auctions.
+  Journal of Applied Econometrics, 30, 739-762. <doi:10.1002/jae.2385>
+
+The original MATLAB code is (C) Brent R. Hickman and Timothy P. Hubbard; its
+authors ask that users cite the paper above, which the documentation of
+kde_hh() does.
+
+scaling_function(), phi_jk(), dwt_periodic(), idwt_periodic() and
+loclin_smooth() in R/wavelet_core.R are R translations of the MATLAB routines
+Phijk.m (Daubechies-Lagarias evaluation of the scaling function), dwtr.m and
+Idwtr.m (periodic discrete wavelet transform and its inverse) and loc_lin.m
+(local linear smoothing) written by Brani Vidakovic and used in
+
+  Ramirez, P. and Vidakovic, B. (2010). Wavelet density estimation for
+  stratified size-biased sample. Journal of Statistical Planning and
+  Inference, 140, 419-432.
+
+and in Chesneau, Dewan and Doosti (2016). The original MATLAB code is
+(C) Brani Vidakovic.
+
+density_marmer_shneyerov() in R/competitors.R is an R translation of the
+MATLAB implementation (qbest4.m) of the quantile-based estimator of
+
+  Marmer, V. and Shneyerov, A. (2012). Quantile-based nonparametric inference
+  for first-price auctions. Journal of Econometrics, 167(2), 345-357.
+
+The original code is (C) Vadim Marmer and Artyom Shneyerov.
+
+The internal function values_zincenko() in R/fpa_revenue.R, used by
+fpa_values(method = "zincenko"), is adapted from code provided by
+Federico Zincenko implementing the estimator of
+
+  Zincenko, F. (2024). Estimation and inference of seller's expected revenue
+  in first-price auctions. Journal of Econometrics, 241(1), 105734.
+  <doi:10.1016/j.jeconom.2024.105734>
+
+The original code is (C) Federico Zincenko.
+
+All other code is original to this package. Algorithms from the literature
+(Daubechies-Lagarias evaluation of scaling functions, the periodic discrete
+wavelet transform, local linear smoothing, the estimators of Jones (1992),
+Soni, Dewan and Jain (2012), Chaubey, Dewan and Li (2021, 2024) and the others
+cited in the documentation) are implemented from their published descriptions
+or from the author's own earlier code; wavelet filter coefficients are
+standard published constants.
+
+The data set 'timber' is derived from the replication data of Lu and
+Perrigne (2008) in the Journal of Applied Econometrics Data Archive; see
+?timber.

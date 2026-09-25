@@ -16,7 +16,8 @@
 #' `method = "zincenko"` gives the kernel estimator of Zincenko (2024): a
 #' triweight kernel for \eqn{\hat G} and \eqn{\hat g} with normal-reference
 #' bandwidths, and linear extrapolation of the inverse bid function within
-#' \eqn{h_g^{0.99}} of the boundaries instead of trimming.
+#' \eqn{h_g^{0.99}} of the boundaries instead of trimming; the implementation
+#' is adapted from code provided by F. Zincenko.
 #' `method = "gpv"` gives the conventional benchmark
 #' \eqn{\hat v = b + \hat G(b)/\{(n-1)\hat g(b)\}} with a Gaussian kernel and
 #' Sheather--Jones bandwidth for \eqn{\hat g}; `"gpv_bc"` renormalises a

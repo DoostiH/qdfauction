@@ -25,7 +25,8 @@ numeric vector of the same length as \code{x}.
 Forward (\code{dwt_periodic()}) and inverse (\code{idwt_periodic()}) periodised
 orthonormal DWT with \code{L} levels, as in Vidakovic (1999). \code{length(x)} must be
 divisible by \code{2^L}. Coefficients are returned as
-\code{c(smooth, detail_coarsest, ..., detail_finest)}.
+\code{c(smooth, detail_coarsest, ..., detail_finest)}. Translated from the
+MATLAB routines \code{dwtr} and \code{Idwtr} of B. Vidakovic.
 }
 \examples{
 x <- rnorm(32)

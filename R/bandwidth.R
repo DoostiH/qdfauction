@@ -1,4 +1,8 @@
 # Bandwidth selection ----------------------------------------------------------
+#
+# bcv_criterion() and rlcv_criterion() are revised from R code by Y. P. Chaubey,
+# I. Dewan and J. Li (see inst/COPYRIGHTS); wbcv_criterion() is from
+# Doosti (2026b).
 
 # internal: evaluate an estimator on the CV grid with and without observation i
 cv_fits <- function(x, h, fun, u, loo = TRUE) {

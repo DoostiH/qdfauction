@@ -3,10 +3,28 @@ Type: Package
 Title: Nonparametric Quantile Density Estimation and Structural Analysis of First-Price Auctions
 Version: 1.0.0
 Authors@R: c(
-    person("Hassan", "Doosti", role = c("aut", "cre"),
+    person("Hassan", "Doosti", role = c("aut", "cre", "cph"),
            email = "Hassan.doosti@mq.edu.au",
            comment = c(ORCID = "0000-0002-0290-8122",
-                       affiliation = "School of Mathematical and Physical Sciences, Macquarie University")))
+                       affiliation = "School of Mathematical and Physical Sciences, Macquarie University")),
+    person("Yogendra P.", "Chaubey", role = c("ctb", "cph"),
+           comment = "original R code of the quantile density estimators and cross-validation criteria, revised and vectorised in R/estimators.R and R/bandwidth.R"),
+    person("Isha", "Dewan", role = c("ctb", "cph"),
+           comment = "original R code of the quantile density estimators and cross-validation criteria, revised and vectorised in R/estimators.R and R/bandwidth.R"),
+    person("Jun", "Li", role = c("ctb", "cph"),
+           comment = "original R code of the quantile density estimators and cross-validation criteria, revised and vectorised in R/estimators.R and R/bandwidth.R"),
+    person("Brent R.", "Hickman", role = c("ctb", "cph"),
+           comment = "original MATLAB implementation of the boundary-corrected kernel density estimator, translated to R in kde_hh()"),
+    person("Timothy P.", "Hubbard", role = c("ctb", "cph"),
+           comment = "original MATLAB implementation of the boundary-corrected kernel density estimator, translated to R in kde_hh()"),
+    person("Brani", "Vidakovic", role = c("ctb", "cph"),
+           comment = "original MATLAB routines Phijk, dwtr, Idwtr and loc_lin, translated to R in scaling_function(), phi_jk(), dwt_periodic(), idwt_periodic() and loclin_smooth()"),
+    person("Vadim", "Marmer", role = c("ctb", "cph"),
+           comment = "original MATLAB implementation of the quantile-based estimator, translated to R in density_marmer_shneyerov()"),
+    person("Artyom", "Shneyerov", role = c("ctb", "cph"),
+           comment = "original MATLAB implementation of the quantile-based estimator, translated to R in density_marmer_shneyerov()"),
+    person("Federico", "Zincenko", role = c("ctb", "cph"),
+           comment = "original implementation of the kernel estimator of private values with boundary extrapolation, adapted in fpa_values(method = 'zincenko')"))
 Description: Nonparametric estimators of the quantile density function
     (the derivative of the quantile function, also called the sparsity
     function): direct kernel and boundary-corrected kernel smoothers of the

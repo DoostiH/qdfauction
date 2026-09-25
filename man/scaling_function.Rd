@@ -22,6 +22,7 @@ a list with \code{x} and \code{phi}.
 Evaluates \eqn{\phi} on the dyadic grid \eqn{k/2^{L}} of its support
 \eqn{[0, N-1]} (\eqn{N} = filter length) by the Daubechies--Lagarias
 product formula (Vidakovic 1999, Section 3.4), and caches the result.
-\code{\link[=phi_jk]{phi_jk()}} interpolates from this table.
+\code{\link[=phi_jk]{phi_jk()}} interpolates from this table. Translated from the MATLAB routine
+\code{Phijk} of B. Vidakovic (Ramirez and Vidakovic 2010).
 }
 \keyword{internal}

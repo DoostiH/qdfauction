@@ -24,7 +24,8 @@
 #' @return numeric vector \eqn{\hat R(r)}.
 #' @references
 #' Zincenko, F. (2024). Estimation and inference of seller's expected revenue
-#' in first-price auctions. *Journal of Econometrics*, 241, 105734.
+#' in first-price auctions. *Journal of Econometrics*, 241(1), 105734.
+#' \doi{10.1016/j.jeconom.2024.105734}
 #'
 #' Doosti, H. (2026b). Estimating seller's expected revenue in first-price
 #' sealed-bid auctions via quantile density functions. Working paper, SSRN
@@ -272,7 +273,9 @@ plot.fpa_revenue_boot <- function(x, alpha = 0.05, ...) {
   invisible(x)
 }
 
-# Zincenko (2024) kernel-BC pseudo-values with linear extrapolation near the boundaries
+# Zincenko (2024) kernel-BC pseudo-values with linear extrapolation near the boundaries.
+# Adapted from code provided by Federico Zincenko, (C) Federico Zincenko;
+# see inst/COPYRIGHTS.
 values_zincenko <- function(b, n, eta = 0, hg_co = 1.06, hgder_co = 2.83, tau = 0.99) {
   b <- as.numeric(b); N <- length(b)
   hg <- hg_co * stats::sd(b) * N^(-1 / 5); hgder <- hgder_co * stats::sd(b) * N^(-1 / 7)

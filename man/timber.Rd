@@ -12,9 +12,11 @@ A list with two numeric matrices, one row per auction:
 }
 }
 \source{
-Lu, J. and Perrigne, I. (2008). Estimating risk aversion from
+Journal of Applied Econometrics Data Archive, replication files
+of Lu, J. and Perrigne, I. (2008). Estimating risk aversion from
 ascending and sealed-bid auctions: the case of timber auction data.
-\emph{Journal of Applied Econometrics}, 23, 871--896.
+\emph{Journal of Applied Econometrics}, 23, 871--896. \doi{10.1002/jae.1032}.
+Please cite that paper when using the data.
 }
 \usage{
 timber
@@ -25,6 +27,13 @@ the U.S. Forest Service timber auction data assembled by Lu and Perrigne
 (2008) and deposited in the Journal of Applied Econometrics Data Archive,
 split by the number of bidders. The announced reserve price is treated as
 non-binding in the literature using these data.
+}
+\details{
+The bids were extracted from the replication data of Lu and
+Perrigne (2008), which record U.S. Forest Service timber sales; only the
+per-unit bids of the sealed-bid auctions with two and three bidders are
+retained, pooled by the number of bidders. The script that builds the
+object is in \code{data-raw/timber.R} of the package sources.
 }
 \examples{
 data(timber)
