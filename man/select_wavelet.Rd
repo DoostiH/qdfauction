@@ -32,6 +32,12 @@ implied density \eqn{\hat f(x) = 1/\hat g(\hat F_{\rm train}(x))} is scored on t
 held-out observations. This is the criterion used for the same estimators in
 the first-price auction application (Doosti, Dewan and Sbai 2026).
 }
+\section{Reproducibility}{
+
+Fold assignment (or bootstrap resampling) uses R's random number generator;
+call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+}
+
 \examples{
 set.seed(2)
 x <- rbeta(300, 0.5, 0.5)

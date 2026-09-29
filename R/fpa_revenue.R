@@ -40,11 +40,13 @@
 #' @export
 fpa_revenue <- function(values, r, eta = NULL, v_s = 0) {
   if (inherits(values, "fpa_values")) {
-    if (is.null(values$values_mat)) stop("`values` must come from fpa_values() on a bid matrix.", call. = FALSE)
+    if (is.null(values$values_mat))
+      stop("Expected revenue needs the auction structure: call fpa_values() with the bids as ",
+           "a matrix (one row per auction, one column per bidder), not a pooled vector.", call. = FALSE)
     if (is.null(eta)) eta <- values$eta
     vm <- values$values_mat
   } else {
-    if (!is.matrix(values)) stop("`values` must be a matrix or an fpa_values object.", call. = FALSE)
+    values <- as_bid_matrix(values, allow_vector = FALSE, arg = "values")$bids
     if (is.null(eta)) eta <- 0
     vm <- values
   }
@@ -184,6 +186,9 @@ fpa_optimal_reserve <- function(values, eta = NULL, v_s = 0, grid = NULL) {
 #'
 #' @param bids `L` by `n` bid matrix.
 #' @param r reserve prices.
+#' @section Reproducibility:
+#' Fold assignment (or bootstrap resampling) uses R's random number generator;
+#' call [set.seed()] beforehand to make results exactly reproducible.
 #' @param B number of bootstrap replications.
 #' @param eta,v_s as in [fpa_revenue()].
 #' @param resample `"bids"` (pooled bids with replacement, as in the papers)
@@ -210,7 +215,7 @@ fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
                              resample = c("bids", "auctions"), alpha = c(0.10, 0.05, 0.01),
                              trim = Inf, ...) {
   resample <- match.arg(resample)
-  if (!is.matrix(bids)) stop("`bids` must be an L x n matrix.", call. = FALSE)
+  bids <- as_bid_matrix(bids, allow_vector = FALSE)$bids
   L <- nrow(bids); n <- ncol(bids); N <- length(bids)
   fit <- function(bm) {
     fv <- fpa_values(bm, eta = eta, ...)

@@ -16,7 +16,8 @@ qdf_kernel_corrected(u, x, h, kernel = "gaussian")
 
 \item{h}{bandwidth on the probability scale (\eqn{0 < h < 1}).}
 
-\item{kernel}{\code{"gaussian"} (default), \code{"triangular"} or \code{"epanechnikov"}.
+\item{kernel}{\code{"gaussian"} (default), \code{"triangular"} or \code{"epanechnikov"}, or
+a user-defined kernel from \code{\link[=make_kernel]{make_kernel()}} (or a kernel density function).
 Soni, Dewan and Jain (2012) used the triangular and Epanechnikov kernels.}
 }
 \value{

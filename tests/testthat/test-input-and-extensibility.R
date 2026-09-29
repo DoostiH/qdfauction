@@ -1,0 +1,46 @@
+test_that("bid matrices may be data frames; misuse gives informative errors", {
+  data(timber)
+  df3 <- as.data.frame(timber$n3)
+  a <- fpa_values(df3, method = "bernstein", bandwidth = 0.05)
+  b <- fpa_values(timber$n3, method = "bernstein", bandwidth = 0.05)
+  expect_equal(a$values, b$values)
+  expect_s3_class(fpa_density(df3, method = "kde_hh"), "fpa_density")
+  expect_type(copula_fit(df3, "clayton")$theta, "double")
+  expect_error(qdf(faithful), "numeric vector.*faithful\\$eruptions")
+  expect_warning(qdf(c(as.numeric(timber$n3), NA), "bernstein", bandwidth = 0.05), "1 missing")
+  expect_error(fpa_values(as.numeric(timber$n3)), "supply `n`")
+  m <- timber$n3; m[1, 1] <- NA
+  expect_error(fpa_values(m), "same number of bidders")
+  expect_error(fpa_values(timber$n3[, 1, drop = FALSE]), "at least 2")
+  expect_error(fpa_values(matrix(as.character(timber$n3), ncol = 3)), "must be numeric")
+  expect_error(fpa_values(data.frame(a = 1:5, b = letters[1:5])), "non-numeric columns")
+  fv <- fpa_values(as.numeric(timber$n3), n = 3, method = "bernstein", bandwidth = 0.05)
+  expect_error(fpa_revenue(fv, 50), "auction structure")
+})
+
+test_that("user-defined kernels reproduce built-in ones and are checked", {
+  epa <- make_kernel(function(u) 0.75 * pmax(1 - u^2, 0), "epa")
+  x <- rgamma(80, 5); u <- c(0.2, 0.5, 0.8)
+  expect_equal(qdf_kernel(u, x, 0.05, kernel = epa), qdf_kernel(u, x, 0.05, kernel = "epanechnikov"))
+  expect_equal(qdf_soni(u, x, 0.5, H = 0.1, kernel = epa), qdf_soni(u, x, 0.5, H = 0.1, kernel = "epanechnikov"),
+               tolerance = 1e-6)
+  ck <- check_kernel("epanechnikov", verbose = FALSE)
+  expect_equal(ck$mass, 1, tolerance = 1e-8); expect_equal(ck$order, 2L)
+  expect_equal(ck$roughness, 0.6, tolerance = 1e-6)
+  expect_warning(make_kernel(function(u) pmax(1 - abs(u), 0) * 2), "integrates to")
+  expect_warning(make_kernel(function(u) (u > -1 & u < 1) * (0.5 + 0.3 * u)), "not symmetric")
+  expect_output(print(epa), "order")
+  fit <- qdf(x, "kernel", bandwidth = 0.05, kernel = epa)
+  expect_output(print(fit), "epa")
+})
+
+test_that("a user-supplied optimiser is used for bandwidth selection", {
+  set.seed(8); x <- rgamma(60, 5)
+  gridopt <- function(f, interval) { g <- seq(interval[1], interval[2], length.out = 41)
+    v <- sapply(g, f); list(minimum = g[which.min(v)], objective = min(v)) }
+  s <- select_bandwidth(x, qdf_bernstein, "bcv", c(10, 50), optimizer = gridopt)
+  expect_true(s$m %in% seq(10, 50, length.out = 41))
+  fit <- qdf(x, "bernstein", "bcv", optimizer = gridopt)
+  expect_equal(fit$h, s$h)
+  expect_error(select_bandwidth(x, qdf_bernstein, "bcv", optimizer = function(f, i) 1), "minimum")
+})

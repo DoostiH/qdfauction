@@ -14,3 +14,4 @@
 ^tests/testthat/test-soni-original\.R$
 ^tests/testthat/helper-legacy\.R$
 ^tests/testthat/test-legacy-agreement\.R$
+^Rplots\.pdf$

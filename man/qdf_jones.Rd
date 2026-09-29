@@ -35,7 +35,8 @@ qdf_indirect_poisson(
 the data scale; for \code{qdf_indirect_poisson()} the smoothing parameter
 \eqn{1/m} of the Poisson weights on the data scale.}
 
-\item{kernel}{\code{"gaussian"} (default), \code{"triangular"} or \code{"epanechnikov"}.}
+\item{kernel}{\code{"gaussian"} (default), \code{"triangular"}, \code{"epanechnikov"}, or a
+user-defined kernel from \code{\link[=make_kernel]{make_kernel()}}.}
 
 \item{H}{for \code{qdf_soni()}, the bandwidth of the outer Gaussian smoother on
 the probability scale.}

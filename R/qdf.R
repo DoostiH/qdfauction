@@ -42,7 +42,7 @@
 #'   `"triangular"`, `"epanechnikov"`); see [qdf_kernel()].
 #' @param j0 resolution level for the wavelet methods (default 5 when a
 #'   numeric `h` is given; chosen by cross-validation with `bandwidth = "cv"`).
-#' @param loo,grid,u_scheme passed to [select_bandwidth()].
+#' @param loo,grid,u_scheme,optimizer passed to [select_bandwidth()].
 #' @param ... currently unused.
 #'
 #' @return An object of class `"qdf"`: a list with components
@@ -78,7 +78,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
                               "wavelet", "wavelet_hard", "wavelet_block"),
                 bandwidth = c("bcv", "rlcv", "wbcv", "cv"), m_range = NULL,
                 u = NULL, H = NULL, kernel = "gaussian", j0 = NULL, loo = NULL,
-                grid = 0L, u_scheme = NULL, ...) {
+                grid = 0L, u_scheme = NULL, optimizer = NULL, ...) {
   method <- match.arg(method)
   cl <- match.call()
   if (startsWith(method, "wavelet")) return(qdf_wavelet_fit(x, method, bandwidth, u, j0, cl, ...))
@@ -100,7 +100,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
     bandwidth <- match.arg(bandwidth)
     if (is.null(m_range)) m_range <- .default_m_range(method)
     sel <- select_bandwidth(x, fun, bandwidth, m_range = m_range, loo = loo,
-                            grid = grid, u_scheme = u_scheme)
+                            grid = grid, u_scheme = u_scheme, optimizer = optimizer)
     h <- sel$h
   }
   q <- fun(u, x, h)
@@ -173,7 +173,7 @@ print.qdf <- function(x, digits = 4, ...) {
       sprintf(" (m = %s)", format(x$m, digits = digits)), "\n")
   if (!is.null(x$H)) cat("  H         :", format(x$H, digits = digits), "\n")
   if (!is.null(x$kernel) && x$method %in% c("kernel", "kernel_corrected", "jones", "soni"))
-    cat("  kernel    :", x$kernel, "\n")
+    cat("  kernel    :", if (is.character(x$kernel)) x$kernel else kernel_fun(x$kernel)$name, "\n")
   if (!is.null(x$j0)) cat("  j0        :", x$j0, "\n")
   if (!is.null(x$selection))
     cat("  selector  :", x$selection$selector,

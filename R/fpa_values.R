@@ -102,11 +102,9 @@ fpa_values <- function(bids, n = NULL, method = "indirect_poisson", bandwidth = 
   u_scheme <- match.arg(u_scheme); monotone <- match.arg(monotone); replace <- match.arg(replace)
   family <- match.arg(family, .copula_families)
   if (eta < 0 || eta >= 1) stop("`eta` must be in [0, 1).", call. = FALSE)
-  is_mat <- is.matrix(bids)
-  if (is_mat) { n <- ncol(bids); L <- nrow(bids) }
-  if (is.null(n) || n < 2) stop("`n` (bidders per auction, >= 2) is required.", call. = FALSE)
+  bm <- as_bid_matrix(bids, n); bids <- bm$bids; n <- bm$n; is_mat <- bm$is_mat
+  if (is_mat) L <- nrow(bids)
   b_all <- as.numeric(bids)
-  if (any(!is.finite(b_all))) stop("`bids` must be finite.", call. = FALSE)
   o <- order(b_all); b <- b_all[o]; N <- length(b)
   u <- if (u_scheme == "i/(n+1)") seq_len(N) / (N + 1) else seq_len(N) / N
 

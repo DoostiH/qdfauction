@@ -165,9 +165,8 @@ fpa_density <- function(bids, n = NULL, method = c("wavelet_ll", "wavelet_linear
                         kernel = "triweight", side = c("lower", "both"), ...) {
   method <- match.arg(method); scale <- match.arg(scale); side <- match.arg(side)
   dots <- list(...)
-  if (is.matrix(bids)) n <- ncol(bids)
-  if (is.null(n) || n < 2) stop("`n` (bidders per auction, >= 2) is required.", call. = FALSE)
-  b <- sort(as.numeric(bids)); N <- length(b)
+  bm <- as_bid_matrix(bids, n); n <- bm$n
+  b <- sort(as.numeric(bm$bids)); N <- length(b)
 
   # ---- first stage
   fs_label <- if (is.character(first_stage)) first_stage else "fpa_values"
@@ -250,6 +249,9 @@ fpa_density <- function(bids, n = NULL, method = c("wavelet_ll", "wavelet_linear
 #' (`-LSCV` for `"lscv"`).
 #'
 #' @inheritParams fpa_density
+#' @section Reproducibility:
+#' Fold assignment (or bootstrap resampling) uses R's random number generator;
+#' call [set.seed()] beforehand to make results exactly reproducible.
 #' @param j0_grid,h_grid candidate values.
 #' @param folds number of folds.
 #' @param criterion `"lscv"` or `"loglik"`.
@@ -325,7 +327,7 @@ select_fpa_density <- function(bids, n, method = "wavelet_ll", first_stage = "gp
 fpa_density_cv <- function(bids, n = NULL, methods = c("wavelet_ll", "kde_hh", "marmer_shneyerov"),
                            folds = 5L, j0 = 5L, h = 0.15, first_stage = "gpv_hh",
                            scale = "auto", kernel = "triweight", side = "lower", ...) {
-  if (is.matrix(bids)) n <- ncol(bids)
+  bm <- as_bid_matrix(bids, n); bids <- bm$bids; n <- bm$n
   b <- sort(as.numeric(bids)); N <- length(b)
   fold <- sample(rep_len(seq_len(folds), N))
   out <- stats::setNames(numeric(length(methods)), methods)

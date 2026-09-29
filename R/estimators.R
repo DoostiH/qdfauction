@@ -31,7 +31,8 @@
 #' @param u numeric vector of evaluation points in \eqn{[0, 1]}.
 #' @param x numeric sample (sorted internally).
 #' @param h bandwidth on the probability scale (\eqn{0 < h < 1}).
-#' @param kernel `"gaussian"` (default), `"triangular"` or `"epanechnikov"`.
+#' @param kernel `"gaussian"` (default), `"triangular"` or `"epanechnikov"`, or
+#'   a user-defined kernel from [make_kernel()] (or a kernel density function).
 #'   Soni, Dewan and Jain (2012) used the triangular and Epanechnikov kernels.
 #' @return numeric vector of quantile density estimates at `u`.
 #' @references
@@ -69,7 +70,7 @@ qdf_kernel_corrected <- function(u, x, h, kernel = "gaussian") {
   Qk   <- as.numeric(x %*% Wi) / sumW                   # kernel quantile estimator
   kh   <- function(a) K$d(a / h) / h
   L    <- seq_len(n - 1) / n
-  term1 <- as.numeric(t(kh(outer(L, u, "-"))) %*% diff(x)) # sum (X_(i+1)-X_(i)) k_h(i/n - u)
+  term1 <- as.numeric(crossprod(kh(outer(L, u, "-")), diff(x))) # sum (X_(i+1)-X_(i)) k_h(i/n - u)
   k1 <- kh(1 - u); k0 <- kh(-u)
   (term1 - x[n] * k1 + x[1] * k0 + (k1 - k0) * Qk) / sumW
 }
@@ -160,7 +161,8 @@ qdf_bernstein <- function(u, x, h) {
 #'   the probability scale.
 #' @param tol root-finding tolerance passed to [stats::uniroot()] when
 #'   inverting the smoothed distribution function.
-#' @param kernel `"gaussian"` (default), `"triangular"` or `"epanechnikov"`.
+#' @param kernel `"gaussian"` (default), `"triangular"`, `"epanechnikov"`, or a
+#'   user-defined kernel from [make_kernel()].
 #' @param form for `qdf_soni()`: `"integrated"` (default) or `"riemann"`.
 #' @param status for `qdf_soni()`: optional 0/1 vector (1 = observed,
 #'   0 = right-censored) aligned with `x`.

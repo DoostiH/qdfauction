@@ -101,6 +101,10 @@ plot(fd)
 fpa_density_cv(timber$n3, methods = c("wavelet_ll", "kde_hh", "marmer_shneyerov"))
 ```
 
+`fpa_density_ci()` gives analytic standard errors, pointwise confidence
+intervals and bootstrap uniform confidence bands for the GPV density
+estimator (Ma, Marmer and Shneyerov 2019).
+
 ## Expected revenue and counterfactuals
 
 `fpa_revenue()` is the plug-in estimator of the seller's expected revenue at

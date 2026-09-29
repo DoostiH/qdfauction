@@ -132,6 +132,20 @@ fpa_density_cv(timber$n3, methods = c("wavelet_ll", "kde_hh", "marmer_shneyerov"
                folds = 5, j0 = fd_cv$j0, h = fd_cv$h)
 ```
 
+### Confidence bands
+
+For the GPV estimator, `fpa_density_ci()` adds analytic standard errors,
+pointwise confidence intervals and a bootstrap uniform confidence band
+(Ma, Marmer and Shneyerov 2019). The band is valid over an interior range of
+values; by default the grid spans the 10th to 90th percentiles of the trimmed
+pseudo-values.
+
+```{r}
+ci3 <- fpa_density_ci(timber$n3, B = 199)
+ci3
+plot(ci3, main = "GPV density with 95% uniform band, N = 3")
+```
+
 ## 4. Expected revenue and the optimal reserve price
 
 Given recovered values, `fpa_revenue()` estimates the seller's expected
@@ -192,6 +206,8 @@ Doosti, H., Dewan, I. and Talebian, M. (2025). Nonparametric estimation of priva
 Guerre, E., Perrigne, I. and Vuong, Q. (2000). Optimal nonparametric estimation of first-price auctions. *Econometrica*, 68, 525–574.
 
 Hickman, B. R. and Hubbard, T. P. (2015). Replacing sample trimming with boundary correction in nonparametric estimation of first-price auctions. *Journal of Applied Econometrics*, 30, 739–762.
+
+Ma, J., Marmer, V. and Shneyerov, A. (2019). Inference for first-price auctions with Guerre, Perrigne, and Vuong's estimator. *Journal of Econometrics*, 211, 507–538.
 
 Lu, J. and Perrigne, I. (2008). Estimating risk aversion from ascending and sealed-bid auctions: the case of timber auction data. *Journal of Applied Econometrics*, 23, 871–896.
 

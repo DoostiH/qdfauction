@@ -11,7 +11,8 @@ select_bandwidth(
   m_range = c(10, 50),
   loo = NULL,
   grid = 0L,
-  u_scheme = NULL
+  u_scheme = NULL,
+  optimizer = NULL
 )
 }
 \arguments{
@@ -38,6 +39,11 @@ over \code{m_range}, which reproduces the published simulations.}
 
 \item{u_scheme}{grid on which the criterion is evaluated: \code{"i/n"} (the
 published convention) or \code{"i/(n+1)"}.}
+
+\item{optimizer}{optional function \code{optimizer(f, interval)} used instead of
+\code{\link[stats:optimize]{stats::optimize()}}; it must return a list with elements \code{minimum} and
+\code{objective}. Useful to plug in a global optimiser for criteria with several
+local minima, e.g. \code{function(f, interval) { g <- seq(interval[1], interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)], objective = min(v)) }} for an exhaustive grid search.}
 }
 \value{
 a list with \code{h}, \code{m}, \code{selector}, \code{criterion} (the minimised value)

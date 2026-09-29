@@ -62,6 +62,16 @@ The original code is (C) Vadim Marmer and Artyom Shneyerov and is publicly
 available from the first author's website,
 <https://vadimmarmer.com/files/auc-pdf_codes_and_paper.zip>.
 
+fpa_density_ci() in R/fpa_density_ci.R implements the inference procedures
+of
+
+  Ma, J., Marmer, V. and Shneyerov, A. (2019). Inference for first-price
+  auctions with Guerre, Perrigne, and Vuong's estimator. Journal of
+  Econometrics, 211, 507-538. <doi:10.1016/j.jeconom.2019.02.006>
+
+It was written from the paper; the authors' MATLAB simulation code, kindly
+provided by Vadim Marmer, was used only to validate it and is not included.
+
 The internal function values_zincenko() in R/fpa_revenue.R, used by
 fpa_values(method = "zincenko"), is adapted from code provided by
 Federico Zincenko implementing the estimator of

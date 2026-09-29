@@ -55,6 +55,12 @@ band over \code{r} based on the bootstrap distribution of
 \eqn{Z^*} for the pointwise intervals; the symmetric version guarantees
 that the band contains the intervals.)
 }
+\section{Reproducibility}{
+
+Fold assignment (or bootstrap resampling) uses R's random number generator;
+call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+}
+
 \examples{
 \donttest{
 set.seed(1)

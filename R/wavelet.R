@@ -111,6 +111,9 @@ qdf_wavelet <- function(u, x, j0 = 5L, h = 0.15,
 #'
 #' @param x numeric sample.
 #' @param j0_grid,h_grid candidate values.
+#' @section Reproducibility:
+#' Fold assignment (or bootstrap resampling) uses R's random number generator;
+#' call [set.seed()] beforehand to make results exactly reproducible.
 #' @param folds number of folds.
 #' @param ... passed to [qdf_wavelet()] (e.g. `threshold`, `smooth`, `filter`).
 #' @return a list with `j0`, `h`, and the matrix of criterion values

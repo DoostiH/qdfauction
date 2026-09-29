@@ -131,7 +131,7 @@ biv_logc <- function(u, v, family, theta) {
 #' @export
 copula_fit <- function(bids, family = c("clayton", "gumbel", "frank"), bounds = NULL) {
   family <- match.arg(family)
-  if (!is.matrix(bids) || ncol(bids) < 2) stop("`bids` must be an L x n matrix with n >= 2.", call. = FALSE)
+  bids <- as_bid_matrix(bids, allow_vector = FALSE)$bids
   L <- nrow(bids); n <- ncol(bids); N <- length(bids)
   uh <- matrix(rank(bids) / (N + 1), nrow = L)
   cb <- utils::combn(n, 2)

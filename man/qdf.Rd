@@ -17,6 +17,7 @@ qdf(
   loo = NULL,
   grid = 0L,
   u_scheme = NULL,
+  optimizer = NULL,
   ...
 )
 }
@@ -49,7 +50,7 @@ uniform scores, \code{bw.SJ(rank(x)/n)}.}
 \item{j0}{resolution level for the wavelet methods (default 5 when a
 numeric \code{h} is given; chosen by cross-validation with \code{bandwidth = "cv"}).}
 
-\item{loo, grid, u_scheme}{passed to \code{\link[=select_bandwidth]{select_bandwidth()}}.}
+\item{loo, grid, u_scheme, optimizer}{passed to \code{\link[=select_bandwidth]{select_bandwidth()}}.}
 
 \item{...}{currently unused.}
 }

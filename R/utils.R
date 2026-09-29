@@ -58,8 +58,15 @@ a_n <- function(x) sqrt(log(length(x)) / 2) / (stats::sd(x) * length(x))
 #' @keywords internal
 #' @noRd
 prep_sample <- function(x, positive = FALSE) {
-  if (!is.numeric(x)) stop("`x` must be numeric.", call. = FALSE)
-  x <- x[is.finite(x)]
+  if (is.data.frame(x) || (is.matrix(x) && ncol(x) > 1))
+    stop("`x` must be a numeric vector (a univariate sample); got a ",
+         if (is.data.frame(x)) "data frame" else "matrix", " with ", ncol(x),
+         " columns. Pass a single column, e.g. `faithful$eruptions`, or for a bid ",
+         "matrix use `as.numeric(bids)`.", call. = FALSE)
+  if (!is.numeric(x)) stop("`x` must be a numeric vector.", call. = FALSE)
+  bad <- !is.finite(x)
+  if (any(bad)) warning(sum(bad), " missing or non-finite value(s) removed from `x`.", call. = FALSE)
+  x <- x[!bad]
   if (length(x) < 5L) stop("`x` must contain at least 5 finite values.", call. = FALSE)
   if (positive && any(x <= 0))
     stop("This estimator requires strictly positive data ",
@@ -90,6 +97,8 @@ default_u <- function(n, scheme = c("i/n", "i/(n+1)")) {
 #' @keywords internal
 #' @noRd
 kernel_fun <- function(kernel = c("gaussian", "triangular", "epanechnikov")) {
+  if (inherits(kernel, "qdf_kernel")) return(kernel)
+  if (is.function(kernel)) return(make_kernel(kernel))
   kernel <- match.arg(kernel)
   switch(kernel,
     gaussian = list(d = stats::dnorm, p = stats::pnorm, name = kernel),
@@ -114,4 +123,39 @@ km_cdf <- function(x, status) {
   at_risk <- n:1
   surv <- cumprod(1 - status / at_risk)
   1 - surv
+}
+
+#' Coerce bids to an auction-by-bidder matrix, with informative errors
+#' @keywords internal
+#' @noRd
+as_bid_matrix <- function(bids, n = NULL, allow_vector = TRUE, arg = "bids") {
+  if (is.data.frame(bids)) {
+    num <- vapply(bids, is.numeric, logical(1))
+    if (!all(num)) stop("`", arg, "` is a data frame with non-numeric columns (",
+                        paste(names(bids)[!num], collapse = ", "),
+                        "). Supply one numeric column per bidder.", call. = FALSE)
+    bids <- as.matrix(bids)
+  }
+  if (!is.numeric(bids))
+    stop("`", arg, "` must be numeric: a vector of pooled bids, or a matrix or data frame ",
+         "with one row per auction and one column per bidder.", call. = FALSE)
+  if (is.matrix(bids)) {
+    if (ncol(bids) < 2)
+      stop("`", arg, "` has ", ncol(bids), " column; a bid matrix needs one column per ",
+           "bidder (at least 2). For pooled bids pass a vector together with `n`.", call. = FALSE)
+    if (anyNA(bids) || any(!is.finite(bids)))
+      stop("`", arg, "` contains missing or non-finite values. The model assumes the same ",
+           "number of bidders in every auction: drop incomplete auctions, or analyse ",
+           "auctions with different numbers of bidders separately.", call. = FALSE)
+    return(list(bids = bids, n = ncol(bids), is_mat = TRUE))
+  }
+  if (!allow_vector)
+    stop("`", arg, "` must be a matrix or data frame with one row per auction and one ",
+         "column per bidder.", call. = FALSE)
+  if (is.null(n) || n < 2)
+    stop("For a vector of pooled bids, supply `n`, the number of bidders per auction ",
+         "(at least 2), or pass the bids as a matrix with one column per bidder.", call. = FALSE)
+  if (anyNA(bids) || any(!is.finite(bids)))
+    stop("`", arg, "` contains missing or non-finite values.", call. = FALSE)
+  list(bids = as.numeric(bids), n = n, is_mat = FALSE)
 }

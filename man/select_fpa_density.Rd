@@ -84,6 +84,12 @@ an unbiased estimate of the ISE over the interior up to a constant.
 The returned score is oriented so that larger is better in both cases
 (\code{-LSCV} for \code{"lscv"}).
 }
+\section{Reproducibility}{
+
+Fold assignment (or bootstrap resampling) uses R's random number generator;
+call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+}
+
 \references{
 Rudemo, M. (1982). Empirical choice of histograms and kernel density
 estimators. \emph{Scandinavian Journal of Statistics}, 9, 65--78.

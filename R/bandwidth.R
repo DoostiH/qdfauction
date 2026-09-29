@@ -110,6 +110,12 @@ wbcv_criterion <- function(m, x, fun, loo = FALSE, u_scheme = c("i/(n+1)", "i/n"
 #'   run in the bracket around the grid minimum. This guards against local
 #'   minima of the (often non-convex) criteria. `0` runs `optimize()` directly
 #'   over `m_range`, which reproduces the published simulations.
+#' @param optimizer optional function `optimizer(f, interval)` used instead of
+#'   [stats::optimize()]; it must return a list with elements `minimum` and
+#'   `objective`. Useful to plug in a global optimiser for criteria with several
+#'   local minima, e.g. `function(f, interval) { g <- seq(interval[1],
+#'   interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)],
+#'   objective = min(v)) }` for an exhaustive grid search.
 #' @return a list with `h`, `m`, `selector`, `criterion` (the minimised value)
 #'   and `m_range`.
 #' @examples
@@ -118,7 +124,7 @@ wbcv_criterion <- function(m, x, fun, loo = FALSE, u_scheme = c("i/(n+1)", "i/n"
 #' @export
 select_bandwidth <- function(x, fun, selector = c("bcv", "rlcv", "wbcv"),
                              m_range = c(10, 50), loo = NULL, grid = 0L,
-                             u_scheme = NULL) {
+                             u_scheme = NULL, optimizer = NULL) {
   selector <- match.arg(selector)
   crit <- switch(selector, bcv = bcv_criterion, rlcv = rlcv_criterion,
                  wbcv = wbcv_criterion)
@@ -138,7 +144,12 @@ select_bandwidth <- function(x, fun, selector = c("bcv", "rlcv", "wbcv"),
     lo <- mg[max(1L, k - 1L)]; hi <- mg[min(grid, k + 1L)]
     if (hi <= lo) { lo <- m_range[1]; hi <- m_range[2] }
   }
-  o <- stats::optimize(obj, c(lo, hi))
+  o <- if (is.null(optimizer)) stats::optimize(obj, c(lo, hi)) else {
+    oo <- optimizer(obj, c(lo, hi))
+    if (!is.list(oo) || is.null(oo$minimum) || is.null(oo$objective))
+      stop("`optimizer` must return a list with elements `minimum` and `objective`.", call. = FALSE)
+    oo
+  }
   if (!is.finite(o$objective))
     stop("Bandwidth selection failed: criterion is non-finite. ",
          "Try a different `m_range` or estimator.", call. = FALSE)
