@@ -12,7 +12,7 @@
 \item{true}{optional function of \code{u} giving the true quantile density, drawn
 for comparison.}
 
-\item{...}{further arguments passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
+\item{...}{further arguments passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 }
 \value{
 No return value, called for its side effect of drawing the

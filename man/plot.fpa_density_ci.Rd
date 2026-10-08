@@ -11,7 +11,7 @@
 
 \item{true}{optional true density function for simulated data.}
 
-\item{...}{passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
+\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 }
 \value{
 No return value, called for its side effect of drawing the
