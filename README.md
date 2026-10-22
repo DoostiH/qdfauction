@@ -13,8 +13,7 @@ toolkit that regenerates the Monte Carlo tables of the underlying papers.
 ## Installation
 
 ```r
-# from the source tarball
-install.packages("qdfauction_0.1.0.tar.gz", repos = NULL, type = "source")
+install.packages("qdfauction")
 ```
 
 ## What it does
