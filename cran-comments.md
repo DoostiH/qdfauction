@@ -19,11 +19,6 @@ It also adds functions for the affiliated virtual value and a corner test for
 the optimal reserve, and warns when a selected bandwidth lies at the end of its
 search range or when the scale-dependent WBCV criterion is used. See NEWS.md.
 
-I am sorry for submitting so soon after 0.1.0. The fixes above change results
-for users of the affected functions, and the first makes one documented call
-fail outright, so I would rather not leave them on CRAN. I will leave a longer
-interval before the next update.
-
 ## Test environments
 
 * local Windows 11, R 4.6.1
@@ -33,7 +28,9 @@ interval before the next update.
 
 0 errors | 0 warnings | 1 note
 
-* Days since last update: 2. See the explanation above.
+* Days since last update: 2. The update fixes the bugs listed above, which
+  change results for users of the affected functions; the first makes a
+  documented call fail outright.
 
 The two further notes on the local machine ("Skipping checking math rendering:
 package 'V8' unavailable" and a 'lastMiKTeXException' file left in the temp
