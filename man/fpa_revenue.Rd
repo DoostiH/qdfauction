@@ -36,7 +36,7 @@ bidders with parameter \eqn{\eta} (\eqn{\eta = 0}: risk neutral), and
 \examples{
 set.seed(1)
 sim <- fpa_simulate(100, 3, Q = function(u) 10 * u)      # values U[0, 10]
-fv  <- fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv")
+fv  <- fpa_values(sim$bids, method = "bernstein", bandwidth = "bcv")
 r   <- 3:8
 cbind(r, estimate = fpa_revenue(fv, r, v_s = 2),
       truth = fpa_revenue_model(function(u) 10 * u, n = 3, r = r, v_s = 2))
@@ -47,6 +47,6 @@ in first-price auctions. \emph{Journal of Econometrics}, 241(1), 105734.
 \doi{10.1016/j.jeconom.2024.105734}
 
 Doosti, H. (2026b). Estimating seller's expected revenue in first-price
-sealed-bid auctions via quantile density functions. Working paper, SSRN
-7071380.
+sealed-bid auctions via quantile density functions. SSRN preprint.
+\doi{10.2139/ssrn.7071380}
 }

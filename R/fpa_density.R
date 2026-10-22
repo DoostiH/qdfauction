@@ -149,7 +149,8 @@ second_stage_unit <- function(v, method, j0 = 5L, h = 0.15, filter = "db3",
 #'   function returning the density at arbitrary values.
 #' @references
 #' Doosti, H., Dewan, I. and Sbai, E. (2026). Adaptive wavelet estimation of
-#' private-value densities in first-price auctions. Working paper.
+#' private-value densities in first-price auctions. SSRN preprint.
+#' \doi{10.2139/ssrn.7618223}
 #'
 #' Hickman, B. R. and Hubbard, T. P. (2015). *Journal of Applied
 #' Econometrics*, 30, 739--762.

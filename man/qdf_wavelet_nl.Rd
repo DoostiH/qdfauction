@@ -80,7 +80,12 @@ estimate is post-smoothed by local linear regression (Ramirez and Vidakovic
 The periodised basis replaces the boundary-corrected basis of Cohen et al.
 (1993) assumed by the theory; periodisation identifies the endpoints of
 \eqn{[0,1]}, so near \eqn{u = 0} and \eqn{u = 1} these estimators should be
-read with care, and the smoothed versions are usually preferable there.
+read with care. Local-linear post-smoothing (\code{smooth = TRUE}) helps when
+\eqn{q} is small at both ends of \eqn{[0,1]}, but when \eqn{q} is large at
+an endpoint it spreads the error caused by periodisation into the interior,
+and the unsmoothed estimators are then more accurate. In simulations the
+cross-validated estimators of \code{\link[=qdf]{qdf()}} were more accurate than all of these
+rules; the estimators here are mainly intended for studying the theory.
 }
 \examples{
 set.seed(1)

@@ -88,10 +88,24 @@ qdf_kernel_corrected <- function(u, x, h, kernel = "gaussian") {
 #' * `qdf_bernstein()` uses Bernstein polynomials (estimator 4):
 #'   \deqn{\hat q(u) = m \sum_{k=0}^{m-1} \{Q_n((k+1)/m) - Q_n(k/m)\} b_k(u; m-1).}
 #'
-#' Both require non-negative data because \eqn{Q_n(0)} is taken to be 0.
+#' Both require non-negative data because \eqn{Q_n(0)} is taken to be 0;
+#' `qdf_bernstein()` can instead use \eqn{Q_n(0) = X_{(1)}}
+#' (`zero_at_origin = FALSE`), which is preferable when the data do not start
+#' near zero (for example bids in dollars).
+#'
+#' `qdf_bernstein_loo()` returns the exact leave-one-out Bernstein estimates
+#' \eqn{\hat q_{-i}(u_i)}, \eqn{i = 1, \dots, n}, used by the cross-validation
+#' criteria: removing \eqn{X_{(i)}} shifts every higher order statistic down
+#' by one position, so the leave-one-out lattice values are obtained by an
+#' index shift in \eqn{O(nK)} operations, without refitting.
 #'
 #' @inheritParams qdf_kernel
-#' @return numeric vector of quantile density estimates at `u`.
+#' @param zero_at_origin logical; `TRUE` (default) takes \eqn{Q_n(0) = 0},
+#'   `FALSE` takes \eqn{Q_n(0) = X_{(1)}}.
+#' @return numeric vector of quantile density estimates at `u`; for
+#'   `qdf_bernstein_loo()`, the vector
+#'   \eqn{(\hat q_{-1}(u_1), \dots, \hat q_{-n}(u_n))}, where `u` has the
+#'   length of `x` and is paired with the sorted sample.
 #' @references
 #' Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of
 #' the quantile function for a stationary associated process. *Sankhya B*,
@@ -100,6 +114,10 @@ qdf_kernel_corrected <- function(u, x, h, kernel = "gaussian") {
 #' x <- rgamma(100, 5, 1)
 #' qdf_poisson(c(0.25, 0.5, 0.75), x, h = 0.05)
 #' qdf_bernstein(c(0.25, 0.5, 0.75), x, h = 0.05)
+#' # exact leave-one-out estimates at u_i = i/n agree with refitting
+#' xs <- sort(x); u <- seq_along(xs) / length(xs)
+#' loo <- qdf_bernstein_loo(u, xs, h = 0.05)
+#' all.equal(loo[10], qdf_bernstein(u[10], xs[-10], h = 0.05))
 #' @export
 qdf_poisson <- function(u, x, h) {
   x <- prep_sample(x, positive = TRUE); u <- check_u(u)
@@ -117,14 +135,44 @@ qdf_poisson <- function(u, x, h) {
 
 #' @rdname qdf_poisson
 #' @export
-qdf_bernstein <- function(u, x, h) {
+qdf_bernstein <- function(u, x, h, zero_at_origin = TRUE) {
   x <- prep_sample(x, positive = TRUE); u <- check_u(u)
   m   <- 1 / h
   K   <- floor(m)
-  eq  <- eq_lattice((0:K) / m, x)
+  eq  <- eq_lattice((0:K) / m, x, zero_at_origin = zero_at_origin)
   deq <- diff(eq)
   B   <- outer(u, 0:(K - 1L), function(uu, k) stats::dbinom(k, K - 1L, uu))
   m * as.numeric(B %*% deq)
+}
+
+#' @rdname qdf_poisson
+#' @export
+# Exact leave-one-out Bernstein QDF estimates at the grid points u_i, i = 1..n:
+# removing x_(i) shifts every order statistic above it by one position, so the
+# lattice values of the leave-one-out empirical quantile function are
+# x_(j + 1{j >= i}) with j the lattice index for a sample of size n - 1.
+# Cost O(n K) per bandwidth, the same as the estimator itself.
+qdf_bernstein_loo <- function(u, x, h, zero_at_origin = TRUE) {
+  xs <- prep_sample(x, positive = TRUE); n <- length(xs)
+  if (!is.numeric(u) || length(u) != n)
+    stop("`u` must have one value per observation (u[i] is paired with the i-th ",
+         "order statistic); got length ", length(u), " for ", n, " observations.", call. = FALSE)
+  if (n < 2L) stop("`x` must contain at least 2 observations.", call. = FALSE)
+  if (is.unsorted(u, strictly = TRUE) || any(u < 0 | u > 1))
+    stop("`u` must be strictly increasing in [0, 1], e.g. (1:n)/(n + 1).", call. = FALSE)
+  if (length(h) != 1L || !is.finite(h) || h <= 0 || floor(1 / h) < 2)
+    stop("`h` must be a single positive number with floor(1/h) >= 2.", call. = FALSE)
+  m <- 1 / h; K <- floor(m); t <- (0:K) / m
+  j  <- pmin(floor((n - 1) * t) + 1L, n - 1L)
+  B  <- outer(u, 0:(K - 1L), function(uu, k) stats::dbinom(k, K - 1L, uu))
+  out <- numeric(n)
+  for (i in seq_len(n)) {
+    eq <- xs[j + (j >= i)]
+    if (zero_at_origin) eq[t <= 0] <- 0
+    eq[t >= 1] <- if (i == n) xs[n - 1L] else xs[n]
+    out[i] <- m * sum(B[i, ] * diff(eq))
+  }
+  out
 }
 
 #' Indirect estimators of the quantile density

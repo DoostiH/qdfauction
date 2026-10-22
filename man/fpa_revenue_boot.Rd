@@ -10,7 +10,7 @@ fpa_revenue_boot(
   B = 200,
   eta = 0,
   v_s = 0,
-  resample = c("bids", "auctions"),
+  resample = c("auctions", "bids"),
   alpha = c(0.1, 0.05, 0.01),
   trim = Inf,
   ...
@@ -25,8 +25,14 @@ fpa_revenue_boot(
 
 \item{eta, v_s}{as in \code{\link[=fpa_revenue]{fpa_revenue()}}.}
 
-\item{resample}{\code{"bids"} (pooled bids with replacement, as in the papers)
-or \code{"auctions"} (whole auctions with replacement).}
+\item{resample}{\code{"auctions"} (whole auctions with replacement; the
+default) or \code{"bids"} (pooled bids with replacement). The revenue
+estimator uses the highest pseudo-value in each auction, and pooled
+resampling breaks that structure: it shifts the bootstrap distribution
+by an amount of the same order as the estimation error, so the
+intervals under-cover (about 0.65-0.80 at nominal 0.90 for the
+Bernstein estimator with \eqn{m = \lceil\sqrt N\rceil} in the design of
+Zincenko, 2024). \code{"bids"} is kept for comparison only.}
 
 \item{alpha}{significance levels for the intervals and band.}
 
@@ -34,17 +40,22 @@ or \code{"auctions"} (whole auctions with replacement).}
 (\eqn{c_b} in Zincenko's eq. 24; default no trimming).}
 
 \item{...}{arguments to \code{\link[=fpa_values]{fpa_values()}} (e.g. \code{method}, \code{bandwidth},
-\code{monotone}).}
+\code{monotone}). A data-driven \code{bandwidth} is selected once, on the full
+sample, and held fixed in every bootstrap replication, as assumed by the
+theory (Doosti 2026b, Theorems 6--7).}
 }
 \value{
 an object of class \code{"fpa_revenue_boot"}: a list with \code{r},
 \code{estimate}, \code{se}, \code{ci} (array \code{r} by \code{c(lower, upper)} by \code{alpha}),
-\code{band} (same layout), the bootstrap critical values and the \code{B} by
-\code{length(r)} matrix of bootstrap estimates.
+\code{band} (same layout), the bootstrap critical values, the \code{B} by
+\code{length(r)} matrix of bootstrap estimates and, when the bandwidth was
+selected from the data, \code{bandwidth}: a list with the selected \code{h} and \code{m},
+the \code{selector}, and \code{at_boundary}/\code{boundary} (see \code{\link[=select_bandwidth]{select_bandwidth()}}).
 }
 \description{
 Recomputes the pseudo-values and the plug-in revenue on \code{B} bootstrap
-samples of the pooled bids (Zincenko 2024, Section 4.3; Doosti 2026b) and
+samples of whole auctions (by default; see \code{resample}) (Zincenko 2024,
+Section 4.3; Doosti 2026b) and
 returns the bootstrap standard error
 \eqn{\hat\sigma^*(r) = \{B^{-1}\sum_b (\hat R^*_b(r) - \hat R(r))^2\}^{1/2}},
 symmetric percentile-\eqn{t} pointwise confidence intervals (critical value:
@@ -66,7 +77,7 @@ call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly repr
 set.seed(1)
 sim <- fpa_simulate(60, 3, Q = function(u) 10 * u)
 rb <- fpa_revenue_boot(sim$bids, r = c(3, 5, 7), B = 50, v_s = 2,
-                       method = "bernstein", bandwidth = "wbcv")
+                       method = "bernstein", bandwidth = "sqrt")
 rb
 }
 }

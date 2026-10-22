@@ -1,0 +1,8 @@
+# The Lu and Perrigne (2008) archive files are not redistributed with this
+# package: download them into this directory to run timber.R, but do not
+# commit them. See the header of timber.R.
+SealedBid_2Bidders.txt
+SealedBid_3Bidders.txt
+Ascending_2Bidders.txt
+Ascending_3Bidders.txt
+lp-data.zip

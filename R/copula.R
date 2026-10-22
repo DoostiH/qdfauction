@@ -44,10 +44,23 @@ copula_psi <- function(u, family = "independence", theta = NULL, n) {
            n * u * lu / ((n - 1) * (theta - 1 + n^(1 / theta) * lu))
          },
          frank   = {
-           a <- expm1(-theta * u); D <- expm1(-theta)
-           y <- 1 + a^n / D^(n - 1)
-           -y * a / ((n - 1) * theta * exp(-theta * u))
+           a <- expm1(-theta * u)
+           -.frank_y(u, theta, n) * a / ((n - 1) * theta * exp(-theta * u))
          })
+}
+
+
+# Stable evaluation of y(u) = 1 + a^n / D^(n-1) for the Frank family, with
+# a = e^{-theta u} - 1 and D = e^{-theta} - 1.  The direct form cancels
+# catastrophically for large theta (y = 0 at u = 0.999 when theta = 38, i.e.
+# Kendall's tau = 0.9).  Expanding the binomials and dropping the leading ones:
+#   y = [ (1-x)^(n-1) - (1-z)^n ] / (1-x)^(n-1),   x = e^{-theta}, z = e^{-theta u}.
+.frank_y <- function(u, theta, n) {
+  x <- exp(-theta); z <- exp(-theta * u)
+  k1 <- seq_len(n - 1); k2 <- seq_len(n)
+  cx <- sum(choose(n - 1, k1) * (-x)^k1)
+  num <- vapply(z, function(zz) cx - sum(choose(n, k2) * (-zz)^k2), numeric(1))
+  num / (1 - x)^(n - 1)
 }
 
 #' @rdname copula_psi
@@ -59,10 +72,7 @@ copula_delta <- function(u, family = "independence", theta = NULL, n) {
          independence = u^n,
          clayton = (n * u^(-theta) - (n - 1))^(-1 / theta),
          gumbel  = u^(n^(1 / theta)),
-         frank   = {
-           a <- expm1(-theta * u); D <- expm1(-theta)
-           -log1p(a^n / D^(n - 1)) / theta
-         })
+         frank   = -log(.frank_y(u, theta, n)) / theta)
 }
 
 #' @rdname copula_psi
@@ -79,8 +89,7 @@ copula_delta_prime <- function(u, family = "independence", theta = NULL, n) {
          gumbel  = { m <- n^(1 / theta); m * u^(m - 1) },
          frank   = {
            a <- expm1(-theta * u); D <- expm1(-theta)
-           y <- 1 + a^n / D^(n - 1)
-           n * a^(n - 1) * exp(-theta * u) / (D^(n - 1) * y)
+           n * a^(n - 1) * exp(-theta * u) / (D^(n - 1) * .frank_y(u, theta, n))
          })
 }
 

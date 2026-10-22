@@ -86,5 +86,6 @@ fpa_optimal_reserve_model(Q, 3, family = "clayton", theta = th, v_s = 1)$r_star
 }
 \references{
 Doosti, H. (2026c). Optimal reserve prices in affiliated private value
-auctions: a copula--quantile density approach. Working paper, SSRN 7273869.
+auctions: a copula--quantile density approach. SSRN preprint.
+\doi{10.2139/ssrn.7273869}
 }

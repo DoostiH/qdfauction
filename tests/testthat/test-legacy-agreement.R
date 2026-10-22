@@ -62,12 +62,12 @@ test_that("RLCV criteria reproduce the original (_N) functions", {
 
 test_that("qdf() with selectors reproduces the original optimize() workflow", {
   bh <- 1 / optimize(legacy$BCVfB, c(10, 50), X = X, Xsd = Xsd, ni = ni, n = n)$minimum
-  fit <- qdf(X, method = "bernstein", bandwidth = "bcv", u = u)
+  fit <- qdf(X, method = "bernstein", bandwidth = "bcv", u = u, grid = 0L)
   expect_equal(fit$h, bh)
   expect_equal(fit$q, legacy$dqb(u, X, bh))
 
   lh <- 1 / optimize(legacy$RLCVK_N, c(10, 50), y = X)$minimum
-  fit2 <- qdf(X, method = "kernel", bandwidth = "rlcv", u = u)
+  fit2 <- qdf(X, method = "kernel", bandwidth = "rlcv", u = u, grid = 0L)
   expect_equal(fit2$h, lh)
   expect_equal(fit2$q, legacy$dqk(u, X, lh))
 })

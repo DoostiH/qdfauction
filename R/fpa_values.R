@@ -43,7 +43,9 @@
 #' @param n number of bidders per auction (taken from `ncol(bids)` for a matrix).
 #' @param method quantile-density estimator passed to [qdf()], or `"gpv"`,
 #'   `"gpv_bc"`, `"zincenko"` for the kernel benchmarks.
-#' @param bandwidth passed to [qdf()]; a selector name or a numeric bandwidth.
+#' @param bandwidth passed to [qdf()]: a selector name, the rule `"sqrt"`
+#'   (\eqn{m = \lceil\sqrt{N}\rceil} for `method = "bernstein"`, as in Doosti
+#'   2026b), or a numeric bandwidth.
 #' @param eta CRRA risk-aversion parameter in \eqn{[0, 1)}; `0` is risk
 #'   neutrality.
 #' @param family copula family of the private values: `"independence"`,
@@ -210,7 +212,8 @@ print.fpa_values <- function(x, digits = 4, ...) {
   cat("  method    :", x$method, if (!is.null(x$qdf)) sprintf("(h = %s)", format(x$qdf$h, digits = digits)), "\n")
   cat("  utility   :", if (x$eta == 0) "risk neutral" else sprintf("CRRA, eta = %s", x$eta), "\n")
   cat("  copula    :", x$copula$family,
-      if (x$copula$family != "independence") sprintf("(theta = %s)", format(x$copula$theta, digits = digits)), "\n")
+      if (x$copula$family != "independence" && !is.null(x$copula$theta)) sprintf("(theta = %s)", format(x$copula$theta, digits = digits))
+      else if (x$copula$family == "nonparametric") "(beta-kernel multiplier)", "\n")
   cat("  monotone  :", x$monotone, "\n")
   mk <- x$values - x$bids
   cat("  markup    : median", format(stats::median(mk), digits = digits),

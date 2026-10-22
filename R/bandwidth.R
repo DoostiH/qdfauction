@@ -9,9 +9,14 @@ cv_fits <- function(x, h, fun, u, loo = TRUE) {
   n  <- length(x)
   q  <- fun(u, x, h)
   q_loo <- if (loo) {
-    vapply(seq_len(n), function(i) fun(u[i], x[-i], h), numeric(1))
+    if (identical(fun, qdf_bernstein)) qdf_bernstein_loo(u, x, h)       # exact, O(n K)
+    else vapply(seq_len(n), function(i) fun(u[i], x[-i], h), numeric(1))
   } else {
-    q * (n - 1) / n          # linear-smoother approximation (Doosti 2026b, Remark 2)
+    # Scaling approximation q_{-i} ~ q (n-1)/n. NOT valid for estimators built
+    # from order statistics (removing x_(i) shifts the quantile positions);
+    # with it, least-squares criteria select the roughest fit on the grid.
+    # Kept only for backward compatibility; the default is exact LOO.
+    q * (n - 1) / n
   }
   list(q = q, q_loo = q_loo)
 }
@@ -40,6 +45,15 @@ cv_fits <- function(x, h, fun, u, loo = TRUE) {
 #'   targets \eqn{u\,q(u)} (the quantity entering the first-price auction
 #'   inversion) rather than \eqn{q(u)}:
 #'   \deqn{\mathrm{WBCV}(h) = \sum_i \Delta_i\{u_i \hat q(u_i)\}^2 - \frac{2}{n}\sum_i u_i / \hat q_{-i}(u_i).}
+#'   **Not recommended; kept only for backward compatibility.** The criterion
+#'   is not scale-invariant: its two terms have different units (the first scales
+#'   like the cube of the data units, the second like their inverse), so the
+#'   selected bandwidth depends on the units of the data; on data of order one
+#'   or larger the first term dominates and the criterion tends to select the
+#'   smoothest fit in `m_range`. The criterion is being revised (Doosti 2026b,
+#'   revised version); `wbcv_criterion()` and `bandwidth = "wbcv"` issue a
+#'   warning and are kept only so that existing code runs. Use BCV, RLCV or a
+#'   numeric bandwidth instead.
 #'
 #' @param m inverse bandwidth, \eqn{m = 1/h}.
 #' @param x numeric sample (sorted internally).
@@ -47,9 +61,13 @@ cv_fits <- function(x, h, fun, u, loo = TRUE) {
 #'   Extra arguments (such as `H` for [qdf_soni()]) should be bound with a
 #'   closure before calling.
 #' @param loo logical; if `TRUE` (default) leave-one-out fits are computed
-#'   exactly by refitting without observation \eqn{i}. If `FALSE` the
-#'   approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used, which is
-#'   exact up to \eqn{O(n^{-2})} for linear smoothers and much faster.
+#'   exactly (by refitting without observation \eqn{i}, or by the index shift of
+#'   [qdf_bernstein_loo()] for the Bernstein estimator). If `FALSE` the scaling
+#'   approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used. The
+#'   approximation is not valid for estimators built from order statistics:
+#'   removing \eqn{X_{(i)}} shifts every higher quantile position, and with it
+#'   least-squares criteria select the roughest fit in `m_range`. It is kept
+#'   only for backward compatibility.
 #' @param u_scheme grid on which the criterion is evaluated: `"i/n"` (the
 #'   published convention) or `"i/(n+1)"`.
 #' @return a single numeric value; smaller is better.
@@ -65,6 +83,7 @@ cv_fits <- function(x, h, fun, u, loo = TRUE) {
 #' @export
 bcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)")) {
   x <- prep_sample(x); n <- length(x); h <- 1 / m
+  u_scheme <- match.arg(u_scheme)
   u <- default_u(n, u_scheme)
   d <- diff(c(0, x))
   f <- cv_fits(x, h, fun, u, loo)
@@ -75,6 +94,7 @@ bcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)"))
 #' @export
 rlcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)")) {
   x <- prep_sample(x); n <- length(x); h <- 1 / m
+  u_scheme <- match.arg(u_scheme)
   u <- default_u(n, u_scheme)
   d <- diff(c(0, x))
   f <- cv_fits(x, h, fun, u, loo)
@@ -88,8 +108,20 @@ rlcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)")
 
 #' @rdname bcv_criterion
 #' @export
-wbcv_criterion <- function(m, x, fun, loo = FALSE, u_scheme = c("i/(n+1)", "i/n")) {
+wbcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/(n+1)", "i/n")) {
+  .wbcv_warning()
+  .wbcv_criterion(m, x, fun, loo = loo, u_scheme = u_scheme)
+}
+
+.wbcv_warning <- function()
+  warning("The WBCV criterion depends on the units of the data and tends to select the ",
+          "smoothest fit; it is being revised (Doosti 2026b). Use BCV, RLCV or a numeric ",
+          "bandwidth instead.", call. = FALSE)
+
+# WBCV criterion without the warning (used inside select_bandwidth(), which warns once)
+.wbcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/(n+1)", "i/n")) {
   x <- prep_sample(x); n <- length(x); h <- 1 / m
+  u_scheme <- match.arg(u_scheme)
   u <- default_u(n, u_scheme)
   d <- diff(c(0, x))
   f <- cv_fits(x, h, fun, u, loo)
@@ -105,38 +137,75 @@ wbcv_criterion <- function(m, x, fun, loo = FALSE, u_scheme = c("i/(n+1)", "i/n"
 #' @inheritParams bcv_criterion
 #' @param selector `"bcv"`, `"rlcv"` or `"wbcv"`.
 #' @param m_range numeric length-2 range for \eqn{m = 1/h}.
-#' @param grid integer; if positive, the criterion is first evaluated on this
-#'   many equally spaced points in `m_range` and [stats::optimize()] is then
-#'   run in the bracket around the grid minimum. This guards against local
-#'   minima of the (often non-convex) criteria. `0` runs `optimize()` directly
-#'   over `m_range`, which reproduces the published simulations.
+#' @param grid search method: `0` (the default, as in the published
+#'   simulations) runs [stats::optimize()] directly over `m_range`; an integer
+#'   `grid > 0` first evaluates the criterion on that many equally spaced
+#'   points and then runs `optimize()` in the bracket around the grid minimum;
+#'   `"exhaustive"` evaluates the criterion at every integer `m` in `m_range`
+#'   and returns the global minimiser. When a criterion is multimodal in `m`,
+#'   `optimize()` can return an interior local minimum, while the global
+#'   minimiser can lie at an end of `m_range`; boundary solutions are flagged
+#'   (see below). `NULL` is the same as `0`.
 #' @param optimizer optional function `optimizer(f, interval)` used instead of
 #'   [stats::optimize()]; it must return a list with elements `minimum` and
 #'   `objective`. Useful to plug in a global optimiser for criteria with several
 #'   local minima, e.g. `function(f, interval) { g <- seq(interval[1],
 #'   interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)],
-#'   objective = min(v)) }` for an exhaustive grid search.
+#'   objective = min(v)) }` for an exhaustive grid search. When `optimizer`
+#'   is supplied it is used, and `grid = "exhaustive"` is treated as `grid = 0`.
 #' @return a list with `h`, `m`, `selector`, `criterion` (the minimised value)
-#'   and `m_range`.
+#'   and `m_range`; `at_boundary` (logical) and `boundary` (`"lower"`,
+#'   `"upper"` or `NA`), which record a minimiser at an end of `m_range`; with
+#'   `grid = "exhaustive"` also the evaluated grid `grid_m` and criterion values
+#'   `grid_cv`.
+#' @section Boundary solutions:
+#' If the minimiser lies at either end of `m_range`, whatever the search
+#' method, the criterion did not select a bandwidth in that range. A warning is
+#' issued and `at_boundary = TRUE` is returned; widen `m_range` or give the
+#' bandwidth directly.
 #' @examples
 #' x <- rgamma(60, 5, 1)
 #' select_bandwidth(x, qdf_poisson, "bcv", m_range = c(10, 50))
 #' @export
 select_bandwidth <- function(x, fun, selector = c("bcv", "rlcv", "wbcv"),
-                             m_range = c(10, 50), loo = NULL, grid = 0L,
+                             m_range = c(10, 50), loo = NULL, grid = NULL,
                              u_scheme = NULL, optimizer = NULL) {
   selector <- match.arg(selector)
   crit <- switch(selector, bcv = bcv_criterion, rlcv = rlcv_criterion,
                  wbcv = wbcv_criterion)
-  if (is.null(loo)) loo <- selector != "wbcv"
+  if (is.null(loo)) loo <- TRUE
   if (is.null(u_scheme)) u_scheme <- if (selector == "wbcv") "i/(n+1)" else "i/n"
+  # Default search: optimize() over m_range, as in the published simulations.
+  if (is.null(grid)) grid <- 0L
+  if (selector == "wbcv") {
+    .wbcv_warning()
+    crit <- .wbcv_criterion
+  }
+  if (!(identical(grid, "exhaustive") ||
+        (is.numeric(grid) && length(grid) == 1L && is.finite(grid) && grid >= 0 &&
+         grid == round(grid))))
+    stop("`grid` must be \"exhaustive\" or a single non-negative integer (0 runs ",
+         "stats::optimize() over `m_range`).", call. = FALSE)
   obj <- function(m) {
     v <- tryCatch(crit(m, x, fun, loo = loo, u_scheme = u_scheme),
                   error = function(e) NA_real_)
     if (!is.finite(v)) Inf else v
   }
   lo <- m_range[1]; hi <- m_range[2]
-  if (grid > 0L) {
+  # a user-supplied optimizer takes precedence over the exhaustive search
+  if (identical(grid, "exhaustive") && !is.null(optimizer)) grid <- 0L
+  if (identical(grid, "exhaustive")) {
+    # The criteria can be multimodal in m; stats::optimize() then returns an
+    # interior local minimum. Evaluate every integer m.
+    mg <- seq(ceiling(lo), floor(hi), by = 1L)
+    cv <- vapply(mg, obj, numeric(1))
+    if (!any(is.finite(cv))) stop("Criterion is non-finite over the whole range.", call. = FALSE)
+    k  <- which.min(cv)
+    out <- list(h = 1 / mg[k], m = mg[k], selector = selector, criterion = cv[k],
+                m_range = m_range, grid_m = mg, grid_cv = cv)
+    return(.flag_boundary(out, at_lo = k == 1L, at_hi = k == length(mg)))
+  }
+  if (is.numeric(grid) && grid > 0L) {
     mg <- seq(lo, hi, length.out = grid)
     cv <- vapply(mg, obj, numeric(1))
     if (!any(is.finite(cv))) stop("Criterion is non-finite over the whole range.", call. = FALSE)
@@ -153,6 +222,26 @@ select_bandwidth <- function(x, fun, selector = c("bcv", "rlcv", "wbcv"),
   if (!is.finite(o$objective))
     stop("Bandwidth selection failed: criterion is non-finite. ",
          "Try a different `m_range` or estimator.", call. = FALSE)
-  list(h = 1 / o$minimum, m = o$minimum, selector = selector,
-       criterion = o$objective, m_range = m_range)
+  out <- list(h = 1 / o$minimum, m = o$minimum, selector = selector,
+              criterion = o$objective, m_range = m_range)
+  # continuous search: optimize() approaches an end of the interval but never
+  # returns it exactly, so allow a small tolerance
+  tol <- 1e-3 * diff(m_range)
+  .flag_boundary(out, at_lo = o$minimum <= m_range[1] + tol,
+                 at_hi = o$minimum >= m_range[2] - tol)
+}
+
+# A minimiser at an end of m_range means the criterion did not select a
+# bandwidth in that range: record it and warn rather than return the endpoint
+# silently.
+.flag_boundary <- function(out, at_lo, at_hi) {
+  out$at_boundary <- at_lo || at_hi
+  out$boundary <- if (at_lo) "lower" else if (at_hi) "upper" else NA_character_
+  if (out$at_boundary)
+    warning(sprintf(paste0("The %s criterion is minimised at the %s end of m_range = [%s, %s] ",
+                           "(m = %s): it did not select a bandwidth in this range. ",
+                           "Widen `m_range` or give the bandwidth directly."),
+                    toupper(out$selector), out$boundary, format(out$m_range[1]),
+                    format(out$m_range[2]), format(signif(out$m, 4))), call. = FALSE)
+  out
 }

@@ -38,8 +38,9 @@ with one of seven estimators and a data-driven smoothing parameter:
 The kernel-type estimators accept `kernel = "gaussian"`, `"triangular"` or
 `"epanechnikov"`.
 
-Bandwidth selectors: `"bcv"` (biased CV), `"rlcv"` (robust likelihood CV,
-Wu 2019) and `"wbcv"` (weighted BCV targeting u·q(u), Doosti 2026). The
+Bandwidth selectors: `"bcv"` (biased CV) and `"rlcv"` (robust likelihood CV,
+Wu 2019); `"wbcv"` (weighted BCV) is kept for existing code but warns, because
+it depends on the units of the data and is being revised. The
 wavelet estimators choose the resolution level `j0` and smoothing bandwidth
 `h` by cross-validated held-out log-likelihood (`bandwidth = "cv"`).
 
@@ -127,7 +128,7 @@ Zincenko's kernel-BC pseudo-values.
 ```r
 sim <- fpa_simulate(50, 3, Q = function(u) 10 * u)
 rb  <- fpa_revenue_boot(sim$bids, r = 3:8, B = 500, v_s = 2,
-                        method = "bernstein", bandwidth = "wbcv")
+                        method = "bernstein", bandwidth = "sqrt")
 plot(rb); fpa_revenue_model(function(u) 10 * u, n = 3, r = 3:8, v_s = 2)
 ```
 
@@ -160,8 +161,9 @@ Chaubey, Y. P., Dewan, I., Li, J. (2021). Sankhya B 83, S114–S139.
 Chaubey, Y. P., Dewan, I., Li, J. (2024). Comm. Statist. Theory Methods 53, 5553–5573.
 Chesneau, C., Dewan, I., Doosti, H. (2016). Comput. Statist. Data Anal. 94, 161–174.
 Doosti, H. (2026a). A copula-quantile density approach to affiliated private value auctions. Economics Letters 261, 112837.
-Doosti, H. (2026b). Estimating seller's expected revenue in first-price sealed-bid auctions via quantile density functions. Working paper, SSRN 7071380.
-Doosti, H., Dewan, I., Sbaï, E. (2026). Adaptive wavelet estimation of private-value densities in first-price auctions. Working paper.
+Doosti, H. (2026b). Estimating seller's expected revenue in first-price sealed-bid auctions via quantile density functions. SSRN preprint, doi:10.2139/ssrn.7071380.
+Doosti, H. (2026c). Optimal reserve prices in affiliated private value auctions: a copula-quantile density approach. SSRN preprint, doi:10.2139/ssrn.7273869.
+Doosti, H., Dewan, I., Sbaï, E. (2026). Adaptive wavelet estimation of private-value densities in first-price auctions. SSRN preprint, doi:10.2139/ssrn.7618223.
 Doosti, H., Dewan, I., Talebian, M. (2025). Economics Letters 257, 112670.
 Guerre, E., Perrigne, I., Vuong, Q. (2000). Econometrica 68, 525–574.
 Hickman, B. R., Hubbard, T. P. (2015). J. Appl. Econometrics 30, 739–762.

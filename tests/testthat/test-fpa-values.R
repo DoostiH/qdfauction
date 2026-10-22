@@ -12,7 +12,8 @@ test_that("fpa_values() reproduces the 2025 pseudo-values (Bernstein, BCV)", {
   skip_if(!exists("legacy"), "reference code not shipped in this build")
   bh <- 1 / optimize(legacy$BCVfB, c(10, 50), X = bids, Xsd = Xsd, ni = ni, n = n)$minimum
   v_legacy <- bids + u / (N - 1) * legacy$dqb(u, bids, bh)
-  fit <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv")
+  fit <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv",
+                    grid = 0L)          # optimize(), as in the 2025 paper
   expect_equal(fit$values_raw, v_legacy)
   expect_equal(fit$values, v_legacy)          # monotone = "none"
   # spline monotonicity step, as in nonparametric_regression() (replace = "all")
@@ -23,11 +24,12 @@ test_that("fpa_values() reproduces the 2025 pseudo-values (Bernstein, BCV)", {
     sf <- lm(yt ~ splines::ns(xt, df = 6))
     fv <- predict(sf, newdata = data.frame(xt = xs)); out <- numeric(nn); out[o] <- fv; out
   }
-  fit_m <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv", monotone = "spline")
+  fit_m <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv", monotone = "spline",
+                      grid = 0L)
   expect_equal(fit_m$values, nr(bids, v_legacy), tolerance = 1e-8)
   expect_true(all(diff(fit_m$values) > -1e-8))
   fit_b <- fpa_values(bids, n = N, method = "bernstein", bandwidth = "bcv",
-                      monotone = "spline", replace = "boundary")
+                      monotone = "spline", replace = "boundary", grid = 0L)
   expect_equal(fit_b$values[11:90], v_legacy[11:90])
 })
 
@@ -105,4 +107,13 @@ test_that("APV inversion with the true copula recovers values", {
   fit2 <- fpa_values(sim$bids, method = "bernstein", bandwidth = 0.05, family = "gumbel")
   expect_true(is.finite(fit2$copula$theta))
   expect_error(fpa_values(as.numeric(sim$bids), n = 3, family = "gumbel"), "matrix")
+})
+
+test_that("print method describes a nonparametric copula without theta = NULL", {
+  set.seed(12)
+  sim <- fpa_simulate(40, 3, function(u) qbeta(u, 2, 2), family = "clayton", theta = 1)
+  fv <- fpa_values(sim$bids, method = "poisson", bandwidth = 0.05, family = "nonparametric")
+  out <- capture.output(print(fv))
+  expect_false(any(grepl("NULL", out)))
+  expect_true(any(grepl("nonparametric", out)))
 })

@@ -32,7 +32,9 @@ within-auction pairs.}
 \item{method}{quantile-density estimator passed to \code{\link[=qdf]{qdf()}}, or \code{"gpv"},
 \code{"gpv_bc"}, \code{"zincenko"} for the kernel benchmarks.}
 
-\item{bandwidth}{passed to \code{\link[=qdf]{qdf()}}; a selector name or a numeric bandwidth.}
+\item{bandwidth}{passed to \code{\link[=qdf]{qdf()}}: a selector name, the rule \code{"sqrt"}
+(\eqn{m = \lceil\sqrt{N}\rceil} for \code{method = "bernstein"}, as in Doosti
+2026b), or a numeric bandwidth.}
 
 \item{eta}{CRRA risk-aversion parameter in \eqn{[0, 1)}; \code{0} is risk
 neutrality.}

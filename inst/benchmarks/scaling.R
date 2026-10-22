@@ -26,3 +26,28 @@ for (s in seq_along(sizes)) {
   }
 }
 print(round(res, 2))
+
+# Functions for affiliated values, timed on values drawn from a Gumbel copula
+# (theta = 1.5). The density bootstrap with the Marmer-Shneyerov estimator is
+# the slowest case (several minutes at 3000 bids).
+cases_apv <- list(
+  `qdf_wavelet_nl, block`               = function(bm, fv) qdf_wavelet_nl(seq(0.01, 0.99, by = 0.01), as.numeric(bm), "block"),
+  `fpa_values, nonparametric copula`    = function(bm, fv) fpa_values(bm, method = "poisson", bandwidth = 0.05, family = "nonparametric"),
+  `copula_spec_test, B = 199`           = function(bm, fv) copula_spec_test(bm, "gumbel", B = 199),
+  `fpa_density_boot, MS, B = 199`       = function(bm, fv) fpa_density_boot(bm, method = "marmer_shneyerov", B = 199),
+  `fpa_optimal_reserve_qd, fixed h`     = function(bm, fv) fpa_optimal_reserve_qd(fv, v_s = 0, bandwidth = 0.05)
+)
+res_apv <- matrix(NA_real_, length(cases_apv), length(sizes),
+                  dimnames = list(names(cases_apv), paste0("n=", sizes)))
+for (s in seq_along(sizes)) {
+  set.seed(1)
+  sim <- fpa_simulate(sizes[s] / n_bidders, n_bidders, function(u) qbeta(u, 2, 2),
+                      family = "gumbel", theta = 1.5)
+  fv <- fpa_values(sim$bids, method = "poisson", bandwidth = 0.05, family = "gumbel")
+  for (k in seq_along(cases_apv)) {
+    t0 <- proc.time()[["elapsed"]]
+    ok <- tryCatch({ cases_apv[[k]](sim$bids, fv); TRUE }, error = function(e) FALSE)
+    res_apv[k, s] <- if (ok) proc.time()[["elapsed"]] - t0 else NA
+  }
+}
+print(round(res_apv, 2))

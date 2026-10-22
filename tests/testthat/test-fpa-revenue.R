@@ -54,7 +54,7 @@ test_that("revenue from recovered values is close to the truth", {
   Q <- function(u) 10 * u; r <- c(3, 5, 7)
   sim <- fpa_simulate(100, 3, Q)
   Rt <- fpa_revenue_model(Q, 3, r = r, v_s = 2)
-  fv <- fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv")
+  fv <- suppressWarnings(fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv"))  # boundary m warned
   expect_lt(max(abs(fpa_revenue(fv, r, v_s = 2) - Rt) / Rt), 0.1)
   fz <- fpa_values(sim$bids, method = "zincenko")
   expect_lt(max(abs(fpa_revenue(fz, r, v_s = 2) - Rt) / Rt), 0.15)
@@ -111,7 +111,7 @@ test_that("CRRA bids and revenue match the integral form of Zincenko (2024)", {
   set.seed(9)
   sim <- fpa_simulate(60, n, function(u) 10 * u, eta = eta)
   expect_equal(sim$eta, eta)
-  fv <- fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv", eta = eta)
+  fv <- suppressWarnings(fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv", eta = eta))
   expect_lt(abs(fpa_revenue(fv, r, v_s = 2) - Rt) / Rt, 0.1)
 })
 

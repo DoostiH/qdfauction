@@ -16,9 +16,9 @@
 #' @description
 #' Estimates the quantile density function \eqn{q(u) = Q'(u) = 1/g(Q(u))}
 #' (Parzen 1979; also called the sparsity function, Tukey 1965) from an i.i.d.
-#' sample, with the smoothing parameter chosen by cross-validation. Seven
-#' estimators are available; see [qdf_kernel()], [qdf_poisson()] and
-#' [qdf_jones()] for their definitions and the simulation evidence in Doosti,
+#' sample, with the smoothing parameter chosen by cross-validation. Ten
+#' estimators are available; see [qdf_kernel()], [qdf_poisson()],
+#' [qdf_jones()] and [qdf_wavelet()] for their definitions and the simulation evidence in Doosti,
 #' Dewan and Talebian (2025), where the indirect Poisson estimator with BCV
 #' bandwidth performed best for first-price auction inversion.
 #'
@@ -28,9 +28,15 @@
 #'   `"kernel_corrected"`, `"poisson"`, `"bernstein"`, `"jones"`, `"soni"`, or
 #'   the wavelet estimators `"wavelet"` (linear), `"wavelet_hard"`,
 #'   `"wavelet_block"` of [qdf_wavelet()], all with local-linear smoothing.
-#' @param bandwidth either a selector name (`"bcv"`, `"rlcv"`, `"wbcv"`; for
-#'   the wavelet methods `"cv"`, see [select_wavelet()]) or a numeric
-#'   bandwidth \eqn{h} to use directly.
+#' @param bandwidth either a selector name (`"bcv"`, the default, or `"rlcv"`;
+#'   `"wbcv"` is kept only for backward compatibility: it is not scale-invariant,
+#'   is not recommended and warns, see [bcv_criterion()]; for the wavelet
+#'   methods `"cv"`, the default for them, see [select_wavelet()]), the rule
+#'   `"sqrt"`, or a numeric bandwidth \eqn{h} to use directly. `"sqrt"`, for
+#'   `method = "bernstein"` only, sets \eqn{m = \lceil\sqrt{n}\rceil}, the rule
+#'   used in Doosti (2026b): it lies inside the range
+#'   \eqn{n^{2/5} \ll m \ll n^{2/3}} covered by that paper's asymptotic theory
+#'   and was calibrated there over the designs of Zincenko (2024).
 #' @param m_range search range for \eqn{m = 1/h} when a selector is used.
 #'   Defaults to `c(10, 50)` (`c(1, 50)` for `"jones"` and `"soni"`), the
 #'   ranges used in the published simulations.
@@ -70,7 +76,7 @@
 #' \doi{10.1016/j.econlet.2025.112670}
 #'
 #' Parzen, E. (1979). Nonparametric statistical data modeling. *Journal of the
-#' American Statistical Association*, 74, 105--131.
+#' American Statistical Association*, 74, 105--121.
 #' @examples
 #' set.seed(1)
 #' x <- rgamma(80, 5, 1)
@@ -83,12 +89,15 @@
 qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
                               "poisson", "bernstein", "jones", "soni",
                               "wavelet", "wavelet_hard", "wavelet_block"),
-                bandwidth = c("bcv", "rlcv", "wbcv", "cv"), m_range = NULL,
+                bandwidth = c("bcv", "rlcv", "wbcv", "sqrt", "cv"), m_range = NULL,
                 u = NULL, H = NULL, kernel = "gaussian", j0 = NULL, loo = NULL,
-                grid = 0L, u_scheme = NULL, optimizer = NULL, rescale = TRUE, ...) {
+                grid = NULL, u_scheme = NULL, optimizer = NULL, rescale = TRUE, ...) {
   method <- match.arg(method)
   cl <- match.call()
-  if (startsWith(method, "wavelet")) return(qdf_wavelet_fit(x, method, bandwidth, u, j0, cl, ...))
+  if (startsWith(method, "wavelet")) {
+    if (missing(bandwidth)) bandwidth <- "cv"
+    return(qdf_wavelet_fit(x, method, bandwidth, u, j0, cl, ...))
+  }
   positive <- method %in% c("poisson", "bernstein", "indirect_poisson")
   x <- prep_sample(x, positive = positive)
   n <- length(x)
@@ -103,10 +112,18 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
   }
   fun <- estimator_fun(method, H, kernel)
 
+  rule <- NULL
   if (is.numeric(bandwidth)) {
     if (length(bandwidth) != 1L || bandwidth <= 0)
       stop("`bandwidth` must be a single positive number or a selector name.", call. = FALSE)
     h <- bandwidth; sel <- NULL
+  } else if (identical(bandwidth, "sqrt")) {
+    # deterministic rule of Doosti (2026b): m = ceiling(sqrt(n)) Bernstein pieces,
+    # inside the range n^(2/5) << m << n^(2/3) required by its Theorems 4-6
+    if (method != "bernstein")
+      stop("`bandwidth = \"sqrt\"` (m = ceiling(sqrt(n))) is the rule of Doosti (2026b) ",
+           "for the Bernstein estimator; use `method = \"bernstein\"`.", call. = FALSE)
+    h <- 1 / ceiling(sqrt(n)); sel <- NULL; rule <- "sqrt"
   } else {
     bandwidth <- match.arg(bandwidth)
     if (is.null(m_range)) m_range <- .default_m_range(method)
@@ -118,7 +135,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
   structure(list(call = cl, x = x0, n = n, u = u, q = q, scale = s,
                  Q = stats::quantile(x0, u, type = 1, names = FALSE),
                  method = method, h = h, m = 1 / h, H = H, kernel = kernel,
-                 selection = sel),
+                 selection = sel, rule = rule),
             class = "qdf")
 }
 
@@ -193,7 +210,12 @@ print.qdf <- function(x, digits = 4, ...) {
     cat("  selector  :", x$selection$selector,
         sprintf(" (criterion = %s, m in [%s, %s])",
                 format(x$selection$criterion, digits = digits),
-                x$selection$m_range[1], x$selection$m_range[2]), "\n")
+                x$selection$m_range[1], x$selection$m_range[2]),
+        if (isTRUE(x$selection$at_boundary))
+          sprintf("\n              minimum at the %s end of the range: no bandwidth selected",
+                  x$selection$boundary), "\n")
+  else if (identical(x$rule, "sqrt"))
+    cat("  rule      : m = ceiling(sqrt(n)) (Doosti 2026b)\n")
   else cat("  selector  : fixed bandwidth\n")
   cat("  q(u) on", length(x$u), "grid points; range",
       paste(format(range(x$q), digits = digits), collapse = " to "), "\n")

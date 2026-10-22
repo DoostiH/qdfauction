@@ -47,7 +47,9 @@ call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly repr
 }
 
 \examples{
+\donttest{
 set.seed(2)
 x <- rbeta(300, 0.5, 0.5)
 select_wavelet(x, j0_grid = 4:6, h_grid = c(0.05, 0.15), folds = 3)
+}
 }

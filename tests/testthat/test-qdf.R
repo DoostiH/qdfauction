@@ -21,7 +21,8 @@ test_that("qdf() runs for every method and selector and returns a valid object",
   set.seed(2)
   xs <- rgamma(40, 5, 1)
   for (m in methods) for (s in c("bcv", "rlcv", "wbcv")) {
-    fit <- qdf(xs, method = m, bandwidth = s, u = c(0.25, 0.5, 0.75))
+    # small sample: WBCV may be minimised at an end of m_range (warned)
+    fit <- suppressWarnings(qdf(xs, method = m, bandwidth = s, u = c(0.25, 0.5, 0.75)))
     expect_s3_class(fit, "qdf")
     expect_length(fit$q, 3)
     expect_true(all(is.finite(fit$q)))
@@ -60,4 +61,13 @@ test_that("grid search never does worse than plain optimize", {
   s0 <- select_bandwidth(xs, qdf_kernel, "bcv", c(10, 50), grid = 0)
   s1 <- select_bandwidth(xs, qdf_kernel, "bcv", c(10, 50), grid = 15)
   expect_lte(s1$criterion, s0$criterion + 1e-8)
+})
+
+test_that("wavelet methods of qdf() work with the default bandwidth", {
+  set.seed(11)
+  x <- rgamma(200, 4, 2)
+  fit <- qdf(x, method = "wavelet")
+  expect_s3_class(fit, "qdf")
+  expect_true(all(is.finite(fit$q)))
+  expect_error(qdf(x, method = "wavelet", bandwidth = "bcv"), "cv")
 })

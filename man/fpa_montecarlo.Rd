@@ -15,7 +15,9 @@ fpa_montecarlo(
   estimators,
   score,
   seed = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  p0 = 0,
+  eta = 0
 )
 }
 \arguments{
@@ -35,6 +37,9 @@ numeric vector, e.g. a wrapper around \code{\link[=fpa_evaluate_values]{fpa_eval
 \item{seed}{optional seed.}
 
 \item{verbose}{print progress every 10 replications.}
+
+\item{p0, eta}{screening quantile of the reserve price and CRRA parameter,
+passed to \code{\link[=fpa_bid_function]{fpa_bid_function()}} and \code{\link[=fpa_simulate]{fpa_simulate()}}.}
 }
 \value{
 a data frame with columns \code{rep}, \code{estimator} and one column per

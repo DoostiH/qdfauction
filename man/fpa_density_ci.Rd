@@ -24,8 +24,9 @@ fpa_density_ci(
 
 \item{n}{number of bidders per auction (from \code{ncol(bids)} for a matrix).}
 
-\item{grid}{evaluation points; default 201 points between the 10th and
-90th percentiles of the trimmed pseudo-values.}
+\item{grid}{evaluation points; default 201 points between the 5th and
+95th percentiles of the pseudo-values of the bids between the 10th and
+90th bid percentiles (see Details).}
 
 \item{level}{confidence level.}
 
@@ -110,11 +111,13 @@ call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly repr
 }
 
 \examples{
+\donttest{
 set.seed(1)
 sim <- fpa_simulate(100, 5, Q = function(u) u)       # uniform values
 ci  <- fpa_density_ci(sim$bids, grid = seq(0.2, 0.8, by = 0.01), B = 99)
 ci
 plot(ci, true = function(v) dunif(v))
+}
 }
 \references{
 Ma, J., Marmer, V. and Shneyerov, A. (2019). Inference for first-price

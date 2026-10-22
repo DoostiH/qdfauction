@@ -79,6 +79,8 @@ fpa_evaluate_density <- function(density, pdf, tail = 0.1) {
 #'   numeric vector, e.g. a wrapper around [fpa_evaluate_values()].
 #' @param seed optional seed.
 #' @param verbose print progress every 10 replications.
+#' @param p0,eta screening quantile of the reserve price and CRRA parameter,
+#'   passed to [fpa_bid_function()] and [fpa_simulate()].
 #' @return a data frame with columns `rep`, `estimator` and one column per
 #'   criterion; `summary()` on the result (via `aggregate`) gives the table.
 #' @examples
@@ -94,12 +96,12 @@ fpa_evaluate_density <- function(density, pdf, tail = 0.1) {
 #' }
 #' @export
 fpa_montecarlo <- function(R, L, n, Q, q = NULL, family = "independence", theta = NULL,
-                           estimators, score, seed = NULL, verbose = FALSE) {
+                           estimators, score, seed = NULL, verbose = FALSE, p0 = 0, eta = 0) {
   if (!is.null(seed)) set.seed(seed)
-  bf <- fpa_bid_function(Q, q, n, family, theta)
+  bf <- fpa_bid_function(Q, q, n, family, theta, p0 = p0, eta = eta)
   rows <- vector("list", R * length(estimators)); k <- 0L
   for (r in seq_len(R)) {
-    sim <- fpa_simulate(L, n, Q, q, family, theta, bid_function = bf)
+    sim <- fpa_simulate(L, n, Q, q, family, theta, p0 = p0, eta = eta, bid_function = bf)
     for (nm in names(estimators)) {
       sc <- tryCatch(score(estimators[[nm]](sim$bids, sim$values), sim$bids, sim$values),
                      error = function(e) NULL)

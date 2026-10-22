@@ -107,7 +107,8 @@ plot(fd3)
 }
 \references{
 Doosti, H., Dewan, I. and Sbai, E. (2026). Adaptive wavelet estimation of
-private-value densities in first-price auctions. Working paper.
+private-value densities in first-price auctions. SSRN preprint.
+\doi{10.2139/ssrn.7618223}
 
 Hickman, B. R. and Hubbard, T. P. (2015). \emph{Journal of Applied
 Econometrics}, 30, 739--762.

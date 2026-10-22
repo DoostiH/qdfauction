@@ -28,12 +28,12 @@
 #' \doi{10.1016/j.jeconom.2024.105734}
 #'
 #' Doosti, H. (2026b). Estimating seller's expected revenue in first-price
-#' sealed-bid auctions via quantile density functions. Working paper, SSRN
-#' 7071380.
+#' sealed-bid auctions via quantile density functions. SSRN preprint.
+#' \doi{10.2139/ssrn.7071380}
 #' @examples
 #' set.seed(1)
 #' sim <- fpa_simulate(100, 3, Q = function(u) 10 * u)      # values U[0, 10]
-#' fv  <- fpa_values(sim$bids, method = "bernstein", bandwidth = "wbcv")
+#' fv  <- fpa_values(sim$bids, method = "bernstein", bandwidth = "bcv")
 #' r   <- 3:8
 #' cbind(r, estimate = fpa_revenue(fv, r, v_s = 2),
 #'       truth = fpa_revenue_model(function(u) 10 * u, n = 3, r = r, v_s = 2))
@@ -128,7 +128,7 @@ fpa_revenue_model <- function(Q, n, r = NULL, p = NULL, q = NULL, family = "inde
 #' @param p_lo,p_hi search interval for the optimal reserve quantile.
 #' @export
 fpa_optimal_reserve_model <- function(Q, n, q = NULL, family = "independence", theta = NULL,
-                                      v_s = 0, eta = 0, p_lo = 0.02, p_hi = 0.98, U = fpa_ugrid()) {
+                                      v_s = 0, eta = 0, p_lo = 1e-4, p_hi = 0.98, U = fpa_ugrid()) {
   if (is.null(q)) {
     eps <- 1e-6
     q <- function(u) (Q(pmin(u + eps, 1 - 1e-9)) - Q(pmax(u - eps, 1e-9))) /
@@ -173,7 +173,8 @@ fpa_optimal_reserve <- function(values, eta = NULL, v_s = 0, grid = NULL) {
 #'
 #' @description
 #' Recomputes the pseudo-values and the plug-in revenue on `B` bootstrap
-#' samples of the pooled bids (Zincenko 2024, Section 4.3; Doosti 2026b) and
+#' samples of whole auctions (by default; see `resample`) (Zincenko 2024,
+#' Section 4.3; Doosti 2026b) and
 #' returns the bootstrap standard error
 #' \eqn{\hat\sigma^*(r) = \{B^{-1}\sum_b (\hat R^*_b(r) - \hat R(r))^2\}^{1/2}},
 #' symmetric percentile-\eqn{t} pointwise confidence intervals (critical value:
@@ -191,37 +192,59 @@ fpa_optimal_reserve <- function(values, eta = NULL, v_s = 0, grid = NULL) {
 #' call [set.seed()] beforehand to make results exactly reproducible.
 #' @param B number of bootstrap replications.
 #' @param eta,v_s as in [fpa_revenue()].
-#' @param resample `"bids"` (pooled bids with replacement, as in the papers)
-#'   or `"auctions"` (whole auctions with replacement).
+#' @param resample `"auctions"` (whole auctions with replacement; the
+#'   default) or `"bids"` (pooled bids with replacement). The revenue
+#'   estimator uses the highest pseudo-value in each auction, and pooled
+#'   resampling breaks that structure: it shifts the bootstrap distribution
+#'   by an amount of the same order as the estimation error, so the
+#'   intervals under-cover (about 0.65-0.80 at nominal 0.90 for the
+#'   Bernstein estimator with \eqn{m = \lceil\sqrt N\rceil} in the design of
+#'   Zincenko, 2024). `"bids"` is kept for comparison only.
 #' @param alpha significance levels for the intervals and band.
 #' @param trim discard bootstrap deviations larger than this constant
 #'   (\eqn{c_b} in Zincenko's eq. 24; default no trimming).
 #' @param ... arguments to [fpa_values()] (e.g. `method`, `bandwidth`,
-#'   `monotone`).
+#'   `monotone`). A data-driven `bandwidth` is selected once, on the full
+#'   sample, and held fixed in every bootstrap replication, as assumed by the
+#'   theory (Doosti 2026b, Theorems 6--7).
 #' @return an object of class `"fpa_revenue_boot"`: a list with `r`,
 #'   `estimate`, `se`, `ci` (array `r` by `c(lower, upper)` by `alpha`),
-#'   `band` (same layout), the bootstrap critical values and the `B` by
-#'   `length(r)` matrix of bootstrap estimates.
+#'   `band` (same layout), the bootstrap critical values, the `B` by
+#'   `length(r)` matrix of bootstrap estimates and, when the bandwidth was
+#'   selected from the data, `bandwidth`: a list with the selected `h` and `m`,
+#'   the `selector`, and `at_boundary`/`boundary` (see [select_bandwidth()]).
 #' @examples
 #' \donttest{
 #' set.seed(1)
 #' sim <- fpa_simulate(60, 3, Q = function(u) 10 * u)
 #' rb <- fpa_revenue_boot(sim$bids, r = c(3, 5, 7), B = 50, v_s = 2,
-#'                        method = "bernstein", bandwidth = "wbcv")
+#'                        method = "bernstein", bandwidth = "sqrt")
 #' rb
 #' }
 #' @export
 fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
-                             resample = c("bids", "auctions"), alpha = c(0.10, 0.05, 0.01),
+                             resample = c("auctions", "bids"), alpha = c(0.10, 0.05, 0.01),
                              trim = Inf, ...) {
   resample <- match.arg(resample)
   bids <- as_bid_matrix(bids, allow_vector = FALSE)$bids
   L <- nrow(bids); n <- ncol(bids); N <- length(bids)
+  # The bandwidth is selected once, on the full sample, and held fixed in every
+  # bootstrap replication (Doosti 2026b, Theorems 6-7): re-selecting it in each
+  # replicate would add selector noise that the theory does not cover.
+  dots <- list(...)
+  fv0 <- fpa_values(bids, eta = eta, ...)
+  est <- fpa_revenue(fv0, r, eta, v_s)
+  bw <- NULL
+  if (!is.null(fv0$qdf) && !is.null(fv0$qdf$selection)) {
+    s <- fv0$qdf$selection
+    bw <- list(h = fv0$qdf$h, m = 1 / fv0$qdf$h, selector = s$selector,
+               at_boundary = isTRUE(s$at_boundary), boundary = s$boundary)
+    dots$bandwidth <- fv0$qdf$h
+  }
   fit <- function(bm) {
-    fv <- fpa_values(bm, eta = eta, ...)
+    fv <- do.call(fpa_values, c(list(bm, eta = eta), dots))
     fpa_revenue(fv, r, eta, v_s)
   }
-  est <- fit(bids)
   boot <- matrix(NA_real_, B, length(r))
   for (b in seq_len(B)) {
     bm <- if (resample == "bids") matrix(sample(bids, N, replace = TRUE), L, n)
@@ -245,12 +268,18 @@ fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
   }
   structure(list(r = r, estimate = est, se = se, ci = ci, band = band, z_pointwise = z_pt,
                  z_band = z_band, alpha = alpha, boot = boot, B = B, resample = resample,
-                 call = match.call()), class = "fpa_revenue_boot")
+                 bandwidth = bw, call = match.call()), class = "fpa_revenue_boot")
 }
 
 #' @export
 print.fpa_revenue_boot <- function(x, digits = 4, ...) {
   cat("Expected revenue with bootstrap inference (B =", x$B, ", resampling", x$resample, ")\n")
+  if (!is.null(x$bandwidth))
+    cat(sprintf("  bandwidth    : m = %s selected by %s on the full sample, fixed in all replications%s\n",
+                format(signif(x$bandwidth$m, 4)), x$bandwidth$selector,
+                if (isTRUE(x$bandwidth$at_boundary))
+                  sprintf("\n                 (minimum at the %s end of m_range: no bandwidth selected)",
+                          x$bandwidth$boundary) else ""))
   a <- x$alpha[which.min(abs(x$alpha - 0.05))]; k <- which(x$alpha == a)
   tab <- cbind(r = x$r, estimate = x$estimate, se = x$se,
                ci_lower = x$ci[, 1, k], ci_upper = x$ci[, 2, k],
@@ -308,6 +337,39 @@ values_zincenko <- function(b, n, eta = 0, hg_co = 1.06, hgder_co = 2.83, tau = 
 
 # ---- quantile-density (Stage 3) revenue estimator ----------------------------
 
+# Stage-3 quantile density of the pseudo-values. If a data-driven bandwidth is
+# minimised at an end of m_range, refit with the published range [10, 50] and
+# stats::optimize() (Doosti 2026c), and warn; stop if that fit is also at an end.
+# q_V enters the revenue functional only below the reserve quantile, where the
+# exact m matters little, but the edge of an arbitrary range should not decide it.
+.stage3_qdf <- function(v, method, bandwidth, U, ...) {
+  quiet <- function(expr) withCallingHandlers(expr, warning = function(w)
+    if (grepl("did not select a bandwidth", conditionMessage(w))) invokeRestart("muffleWarning"))
+  fit <- quiet(qdf(v, method = method, bandwidth = bandwidth, u = U, ...))
+  if (is.null(fit$selection) || !isTRUE(fit$selection$at_boundary)) return(fit)
+  sel <- fit$selection
+  first <- sprintf("the %s criterion for the pseudo-values is minimised at the %s end of m_range = [%s, %s] (m = %s)",
+                   toupper(sel$selector), sel$boundary, format(sel$m_range[1]),
+                   format(sel$m_range[2]), format(signif(sel$m, 4)))
+  dots <- list(...)
+  used_grid <- if (is.null(dots$grid)) 0L else dots$grid
+  published <- isTRUE(all.equal(as.numeric(sel$m_range), c(10, 50))) &&
+    identical(as.numeric(used_grid), 0) && is.null(dots$optimizer)
+  if (!published) {
+    dots$m_range <- c(10, 50); dots$grid <- 0L; dots$optimizer <- NULL
+    fit2 <- quiet(do.call(qdf, c(list(v, method = method, bandwidth = bandwidth, u = U), dots)))
+    if (!isTRUE(fit2$selection$at_boundary)) {
+      warning("Stage 3: ", first, "; refitted with the published range m_range = [10, 50] and ",
+              "stats::optimize(), which selects m = ", format(signif(fit2$selection$m, 4)), ".",
+              call. = FALSE)
+      return(fit2)
+    }
+  }
+  stop("Stage 3: ", first, if (!published) ", and also with the published range [10, 50] and stats::optimize()",
+       ". The criterion does not select a bandwidth for these pseudo-values; give `bandwidth` numerically.",
+       call. = FALSE)
+}
+
 # Q-hat and q-hat of the pseudo-values on the quantile grid U
 qd_value_functions <- function(values, method, bandwidth, U, ...) {
   v <- sort(as.numeric(values$values))
@@ -315,7 +377,7 @@ qd_value_functions <- function(values, method, bandwidth, U, ...) {
     stop("The '", method, "' estimator needs positive pseudo-values; choose `qdf_method = \"kernel\"`.",
          call. = FALSE)
   N   <- length(v)
-  fit <- qdf(v, method = method, bandwidth = bandwidth, u = U, ...)
+  fit <- .stage3_qdf(v, method, bandwidth, U, ...)
   qv  <- pmax(fit$q, 0)
   # Q-hat: the (continuous, type 7) empirical quantile function of the
   # pseudo-values; q-hat enters only through the markup integral of beta and the
@@ -369,7 +431,8 @@ qd_value_functions <- function(values, method, bandwidth, U, ...) {
 #'   i.e. no binding reserve is optimal) and the evaluated curve `p`, `R`.
 #' @references
 #' Doosti, H. (2026c). Optimal reserve prices in affiliated private value
-#' auctions: a copula--quantile density approach. Working paper, SSRN 7273869.
+#' auctions: a copula--quantile density approach. SSRN preprint.
+#' \doi{10.2139/ssrn.7273869}
 #' @examples
 #' \donttest{
 #' set.seed(1)
@@ -420,7 +483,10 @@ qd_revenue_engine <- function(values, qdf_method, bandwidth, ...) {
   dpv  <- copula_delta_prime(U, cop$family, cop$theta, n)
   qv   <- if (is.null(values$.q_true)) vf$q(U) else values$.q_true(U)   # .q_true: testing hook
   cum_trap <- function(x, y) c(0, cumsum(0.5 * diff(x) * (y[-1] + y[-length(y)])))
-  tail_int <- function(y) { cy <- cum_trap(U, y); cy[length(cy)] - cy }   # int_p^1 y
+  # int_p^1 y, accumulated from the top: forming cy[length(cy)] - cy subtracts
+  # terms of size exp(-Lambda(1e-6)) (1e28 for Clayton at tau = 0.75) and
+  # loses all precision in A below.
+  tail_int <- function(y) { seg <- 0.5 * diff(U) * (y[-1] + y[-length(y)]); c(rev(cumsum(rev(seg))), 0) }
   c0 <- max(lam)                                     # constant cancels in K(w,u)
   S  <- cum_trap(U, exp(lam - c0) * qv)              # int_0^p e^{Lambda(w)} q(w) dw
   A  <- tail_int(exp(-(lam - c0)) * dpv)             # int_p^1 e^{-Lambda(u)} delta'(u) du
@@ -430,5 +496,203 @@ qd_revenue_engine <- function(values, qdf_method, bandwidth, ...) {
     k <- vapply(p, function(pp) which.min(abs(U - pp)), integer(1))
     v_s * dv[k] + B[k] + S[k] * A[k]
   }
-  list(U = U, Qv = Qv, R_at = R_at)
+  list(U = U, Qv = Qv, R_at = R_at, A = A, S = S, B = B)   # A, S, B exposed for tests
+}
+
+# Affiliated virtual value and corner test ---------------------------------------
+# (EL revision: Doosti 2026c). H(p) = int_p^1 K(p,u) delta'(u) du / delta'(p),
+# computed with the tail integral accumulated from the top (see qd_revenue_engine()).
+.H_grid <- function(U, psiv, dpv) {
+  lam <- make_lambda(U, psiv); NU <- length(U)
+  c0 <- max(lam)
+  # A(p) = int_p^1 e^{-Lambda(u)} delta'(u) du  (one pass, cumulative trapezoid)
+  # NB: integrate from the top (reverse cumsum). Forming cy[NU] - cy, as in
+  # qd_revenue_engine(), subtracts numbers of size e^{-Lambda(1e-6)} ~ 1e12
+  # and loses ~1e-4 relative precision at Clayton theta >= 2.
+  y <- exp(-(lam - c0)) * dpv
+  seg <- 0.5 * diff(U) * (y[-1] + y[-NU])
+  A <- c(rev(cumsum(rev(seg))), 0)
+  exp(lam - c0) * A / dpv
+}
+
+#' Affiliated virtual value
+#'
+#' @description
+#' The virtual value of affiliated private values in quantile space,
+#' \deqn{\omega(u; \theta) = Q_V(u) - q_V(u)\, H(u; \theta), \qquad
+#'   H(p) = \frac{1}{\delta'(p)} \int_p^1 K(p, u)\, \delta'(u)\, du,}
+#' with \eqn{K(w, u) = e^{\Lambda(w) - \Lambda(u)}}, \eqn{\Lambda' = 1/\psi}
+#' and \eqn{\delta} the diagonal section of the copula (Doosti 2026c). The
+#' derivative of expected revenue is \eqn{R'(p) = \delta'(p)\{v_s - \omega(p)\}},
+#' so no binding reserve is optimal (a corner) when \eqn{\omega(u) \ge v_s}
+#' for all \eqn{u}; under independence \eqn{\omega} is the Myerson virtual
+#' value \eqn{v - (1 - F(v))/f(v)}.
+#'
+#' `fpa_virtual_value_model()` evaluates \eqn{\omega} for a known model;
+#' `fpa_virtual_value()` estimates it from an [fpa_values()] object, with the
+#' quantile function and quantile density of the pseudo-values estimated as in
+#' [fpa_revenue_qd()].
+#'
+#' @param Q,q quantile function and quantile density of the private values.
+#' @param n number of bidders.
+#' @param family,theta copula family and parameter, as in [copula_psi()].
+#' @param U quantile grid (default [fpa_ugrid()]).
+#' @param values an [fpa_values()] object fitted with a parametric copula.
+#' @param qdf_method,bandwidth quantile density estimator for the
+#'   pseudo-values, passed to [qdf()].
+#' @param ... further arguments to [qdf()].
+#' @return A list with the grid `U`, the virtual value `omega` and the factor
+#'   `H`; `fpa_virtual_value()` also returns the estimated `Q` and `q` on `U`
+#'   and the bandwidth `h` used for the pseudo-values.
+#' @references
+#' Doosti, H. (2026c). Optimal reserve prices in affiliated private value
+#' auctions: a copula--quantile density approach. SSRN preprint.
+#' \doi{10.2139/ssrn.7273869}
+#' @examples
+#' Q <- function(u) (1 - 8 * u / 9)^(-1/2)              # truncated Pareto on [1, 3]
+#' q <- function(u) (4 / 9) * (1 - 8 * u / 9)^(-3/2)
+#' vv <- fpa_virtual_value_model(Q, q, n = 3, family = "clayton", theta = 2)
+#' range(vv$omega)
+#' @export
+fpa_virtual_value_model <- function(Q, q, n, family = "independence", theta = NULL,
+                                    U = fpa_ugrid()) {
+  psiv <- copula_psi(U, family, theta, n); dpv <- copula_delta_prime(U, family, theta, n)
+  list(U = U, omega = Q(U) - q(U) * .H_grid(U, psiv, dpv), H = .H_grid(U, psiv, dpv))
+}
+
+#' @rdname fpa_virtual_value_model
+#' @export
+fpa_virtual_value <- function(values, qdf_method = "poisson", bandwidth = "rlcv", ...) {
+  U <- fpa_ugrid(); n <- values$n; cop <- values$copula
+  vf <- qd_value_functions(values, qdf_method, bandwidth, U, ...)
+  psiv <- (1 - values$eta) * copula_psi(U, cop$family, cop$theta, n)
+  dpv  <- copula_delta_prime(U, cop$family, cop$theta, n)
+  H    <- .H_grid(U, psiv, dpv)
+  list(U = U, omega = vf$Q(U) - vf$q(U) * H, H = H, Q = vf$Q(U), q = vf$q(U), h = vf$fit$h)
+}
+
+#' Test for a corner solution of the optimal reserve under affiliation
+#'
+#' @description
+#' Decides whether any binding reserve price is optimal. The point rule
+#' classifies the sample as a corner (no binding reserve optimal) when
+#' \deqn{T = \min_{u \in [p_{lo},\, p_{hi}]} \hat\omega(u) - v_s \ge 0,}
+#' with \eqn{\hat\omega} the estimated affiliated virtual value of
+#' [fpa_virtual_value()]. The window starts at `p_lo = 0.10` rather than at
+#' the boundary: with \eqn{v_s} equal to the lower end of the support,
+#' \eqn{\omega(u) \to v_s} as \eqn{u \to 0} for every copula, so the region
+#' near zero carries no information about the corner, while the quantile
+#' density of the pseudo-values is least accurately estimated there.
+#'
+#' The decision is the point rule on the full sample (`decision = "point"`,
+#' the default and the rule used in Doosti 2026c): a corner is reported when
+#' \eqn{T \ge 0}. The null tested is "no reserve above the `p_lo` quantile
+#' beats no reserve". In applications the copula family should be chosen with
+#' [copula_spec_test()].
+#'
+#' With `B > 0`, auctions are resampled with replacement, with the bandwidths
+#' of both stages selected once on the full sample and held fixed in every
+#' replication, and the frequency with which the point rule reports a corner is
+#' returned. Two alternative uses of the bootstrap are available but are not
+#' the default: `decision = "bootstrap"` reports a corner when that frequency
+#' is at least `level`; and `corner_not_rejected` records whether the upper
+#' \eqn{1 - \alpha} bootstrap percentile of \eqn{T} is non-negative (a
+#' conservative rule, since \eqn{T}, a minimum of a noisy curve, is biased
+#' downward).
+#'
+#' @param bids an `L` by `n` matrix of bids, one row per auction.
+#' @param v_s seller's valuation.
+#' @param family copula family used to recover the values (see [fpa_values()]);
+#'   required, because the corner result depends on it.
+#' @param method,bandwidth first-stage quantile density estimator and
+#'   bandwidth rule for [fpa_values()]; `bandwidth` is also used for the
+#'   quantile density of the pseudo-values.
+#' @param qdf_method quantile density estimator for the pseudo-values.
+#' @param p_lo,p_hi window of quantiles over which the minimum is taken.
+#' @param B number of bootstrap replications (0: point rule only).
+#' @param decision `"point"` (default): the point rule on the full sample;
+#'   `"bootstrap"`: a corner when the bootstrap frequency is at least `level`
+#'   (requires `B > 0`).
+#' @param level bootstrap corner frequency above which a corner is reported
+#'   when `decision = "bootstrap"`.
+#' @param alpha level for the upper bootstrap percentile of the statistic.
+#' @param ... further arguments to [fpa_values()].
+#' @param x an `"fpa_corner_test"` object.
+#' @return An object of class `"fpa_corner_test"`: a list with the
+#'   `statistic` \eqn{T}, the decision `corner`, the estimated virtual value
+#'   `omega` on the grid `U`, `v_s`, `p_range`, the `bandwidth`s used in
+#'   the two stages and the `decision` rule; with `B > 0` also
+#'   `boot_stat`, `boot_corner_freq`, `boot_upper` and `corner_not_rejected`.
+#'   The `print()` method is called for its side effect of printing the
+#'   decision and returns `x` invisibly.
+#' @references
+#' Doosti, H. (2026c). Optimal reserve prices in affiliated private value
+#' auctions: a copula--quantile density approach. SSRN preprint.
+#' \doi{10.2139/ssrn.7273869}
+#' @section Reproducibility:
+#' Call `set.seed()` beforehand to make the bootstrap reproducible.
+#' @examples
+#' \donttest{
+#' set.seed(1)
+#' Q <- function(u) (1 - 8 * u / 9)^(-1/2)
+#' sim <- fpa_simulate(60, 3, Q, family = "clayton",
+#'                     theta = copula_tau_to_theta(0.5, "clayton"))
+#' fpa_corner_test(sim$bids, v_s = 1, family = "clayton")
+#' }
+#' @export
+fpa_corner_test <- function(bids, v_s = 0, family, method = "poisson",
+                            bandwidth = "rlcv", qdf_method = "poisson",
+                            p_lo = 0.10, p_hi = 0.98, B = 0, decision = c("point", "bootstrap"),
+                            level = 0.5, alpha = 0.1, ...) {
+  decision <- match.arg(decision)
+  if (decision == "bootstrap" && B <= 0)
+    stop("`decision = \"bootstrap\"` needs `B > 0` bootstrap replications.", call. = FALSE)
+  if (missing(family))
+    stop("`family` is required: the corner result depends on the copula family ",
+         "(e.g. \"clayton\", \"gumbel\", \"frank\", \"independence\").", call. = FALSE)
+  one <- function(bm, bw1, bw3) {
+    fv <- fpa_values(bm, method = method, bandwidth = bw1, family = family, ...)
+    vv <- fpa_virtual_value(fv, qdf_method = qdf_method, bandwidth = bw3)
+    idx <- vv$U >= p_lo & vv$U <= p_hi
+    list(stat = min(vv$omega[idx]) - v_s, omega = vv$omega, U = vv$U,
+         h1 = if (is.null(fv$qdf)) NULL else fv$qdf$h, h3 = vv$h)
+  }
+  r0 <- one(bids, bandwidth, bandwidth)
+  # bandwidths selected once on the full sample and held fixed in the bootstrap
+  bw1 <- if (is.null(r0$h1)) bandwidth else r0$h1
+  bw3 <- if (is.null(r0$h3)) bandwidth else r0$h3
+  out <- list(statistic = r0$stat, corner = r0$stat >= 0, omega = r0$omega, U = r0$U,
+              v_s = v_s, p_range = c(p_lo, p_hi), bandwidth = list(values = bw1, pseudo_values = bw3),
+              decision = decision)
+  if (B > 0) {
+    L <- nrow(bids)
+    bs <- vapply(seq_len(B), function(b) {
+      s <- tryCatch(one(bids[sample.int(L, L, replace = TRUE), , drop = FALSE], bw1, bw3)$stat,
+                    error = function(e) NA_real_)
+      s }, numeric(1))
+    out$boot_stat <- bs
+    out$boot_corner_freq <- mean(bs >= 0, na.rm = TRUE)
+    # "corner not rejected": the upper (1 - alpha) bootstrap percentile of the
+    # statistic is non-negative.  The point statistic is biased downward (a
+    # minimum over u of a noisy curve), so this is the conservative rule.
+    out$boot_upper <- unname(stats::quantile(bs, 1 - alpha, na.rm = TRUE))
+    out$corner_not_rejected <- out$boot_upper >= 0
+    if (decision == "bootstrap") out$corner <- out$boot_corner_freq >= level
+  }
+  class(out) <- "fpa_corner_test"
+  out
+}
+
+#' @rdname fpa_corner_test
+#' @export
+print.fpa_corner_test <- function(x, ...) {
+  cat(sprintf("Corner test: min omega_hat - v_s on [%.2f, %.2f] = %.4f\n",
+              x$p_range[1], x$p_range[2], x$statistic))
+  if (!is.null(x$boot_corner_freq))
+    cat(sprintf("Bootstrap frequency of the corner decision: %.3f (B = %d)\n",
+                x$boot_corner_freq, length(x$boot_stat)))
+  rule <- if (identical(x$decision, "bootstrap")) "bootstrap frequency rule" else "point rule"
+  cat("Decision (", rule, "): ",
+      if (x$corner) "CORNER (no binding reserve optimal)" else "INTERIOR optimum", "\n", sep = "")
+  invisible(x)
 }

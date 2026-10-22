@@ -1,7 +1,7 @@
 Package: qdfauction
 Type: Package
 Title: Nonparametric Quantile Density Estimation and Structural Analysis of First-Price Auctions
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person("Hassan", "Doosti", role = c("aut", "cre", "cph"),
            email = "Hassan.doosti@mq.edu.au",
@@ -57,9 +57,9 @@ BugReports: https://github.com/DoostiH/qdfauction/issues
 Encoding: UTF-8
 Depends: R (>= 4.1)
 Imports: stats, splines, utils, graphics, grDevices
-Suggests: testthat (>= 3.0.0), knitr, rmarkdown
+Suggests: testthat (>= 3.1.7), knitr, rmarkdown
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 LazyData: true
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

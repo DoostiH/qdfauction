@@ -27,7 +27,10 @@ str(timber)
 
 The data contain 107 auctions with two bidders and 108 with three. We analyse
 the two groups separately so that the number of bidders is known and fixed
-within each group.
+within each group. The bids are homogenised: within each group the log bids
+were regressed on the log appraised per-unit value and the log timber volume
+of the lot, and rescaled to the average lot, so that the bids of a group can
+be treated as draws from a common distribution. See `?timber`.
 
 ## 1. The quantile density of bids
 
@@ -166,11 +169,15 @@ opt[c("r_star", "revenue")]
 
 Bootstrap standard errors, pointwise intervals and a uniform band follow
 from `fpa_revenue_boot()`; the Bernstein estimator is used here because it is
-fast enough for many bootstrap replications.
+fast enough for many bootstrap replications. The bandwidth is selected once,
+by BCV on the full sample, and held fixed in every bootstrap replication. If
+the criterion is minimised at an end of `m_range`, `fpa_revenue_boot()` warns
+and records it: such an `m` was not really selected by the data.
 
 ```{r}
 rb <- fpa_revenue_boot(timber$n3, r = seq(30, 100, by = 10), B = 30, v_s = 20,
-                       method = "bernstein", bandwidth = "wbcv", m_range = c(10, 200))
+                       method = "bernstein", bandwidth = "bcv")
+rb$bandwidth[c("m", "at_boundary", "boundary")]
 rb
 plot(rb, main = "Expected revenue with 95% pointwise CI and uniform band")
 ```
@@ -198,9 +205,9 @@ aggregate(cbind(mise, loglik, ks) ~ estimator, mc, mean)
 
 Doosti, H. (2026a). A copula-quantile density approach to affiliated private value auctions. *Economics Letters*, 261, 112837.
 
-Doosti, H. (2026b). Estimating seller's expected revenue in first-price sealed-bid auctions via quantile density functions. Working paper.
+Doosti, H. (2026b). Estimating seller's expected revenue in first-price sealed-bid auctions via quantile density functions. SSRN preprint. https://doi.org/10.2139/ssrn.7071380
 
-Doosti, H., Dewan, I. and Sbaï, E. (2026). Adaptive wavelet estimation of private-value densities in first-price auctions. Working paper.
+Doosti, H., Dewan, I. and Sbaï, E. (2026). Adaptive wavelet estimation of private-value densities in first-price auctions. SSRN preprint. https://doi.org/10.2139/ssrn.7618223
 
 Doosti, H., Dewan, I. and Talebian, M. (2025). Nonparametric estimation of private value distributions in first-price auctions: Evaluating quantile density function approaches. *Economics Letters*, 257, 112670.
 

@@ -121,8 +121,9 @@ gpv_variance <- function(fs, grid, n, h_g, h_f) {
 #'
 #' @param bids pooled bids (vector) or an `L` by `n` matrix.
 #' @param n number of bidders per auction (from `ncol(bids)` for a matrix).
-#' @param grid evaluation points; default 201 points between the 10th and
-#'   90th percentiles of the trimmed pseudo-values.
+#' @param grid evaluation points; default 201 points between the 5th and
+#'   95th percentiles of the pseudo-values of the bids between the 10th and
+#'   90th bid percentiles (see Details).
 #' @param level confidence level.
 #' @section Reproducibility:
 #' Fold assignment (or bootstrap resampling) uses R's random number generator;
@@ -161,11 +162,13 @@ gpv_variance <- function(fs, grid, n, h_g, h_f) {
 #' Guerre, E., Perrigne, I. and Vuong, Q. (2000). Optimal nonparametric
 #' estimation of first-price auctions. *Econometrica*, 68, 525--574.
 #' @examples
+#' \donttest{
 #' set.seed(1)
 #' sim <- fpa_simulate(100, 5, Q = function(u) u)       # uniform values
 #' ci  <- fpa_density_ci(sim$bids, grid = seq(0.2, 0.8, by = 0.01), B = 99)
 #' ci
 #' plot(ci, true = function(v) dunif(v))
+#' }
 #' @export
 fpa_density_ci <- function(bids, n = NULL, grid = NULL, level = 0.95, B = 499,
                            pointwise = c("percentile", "normal"),

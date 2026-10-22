@@ -125,9 +125,11 @@ qdf_wavelet <- function(u, x, j0 = 5L, h = 0.15,
 #' @return a list with `j0`, `h`, and the matrix of criterion values
 #'   (`ll`, rows `j0_grid`, columns `h_grid`).
 #' @examples
+#' \donttest{
 #' set.seed(2)
 #' x <- rbeta(300, 0.5, 0.5)
 #' select_wavelet(x, j0_grid = 4:6, h_grid = c(0.05, 0.15), folds = 3)
+#' }
 #' @export
 select_wavelet <- function(x, j0_grid = 3:6, h_grid = c(0.03, 0.05, 0.08, 0.12, 0.2, 0.3),
                            folds = 5L, criterion = c("lscv", "loglik"), ...) {

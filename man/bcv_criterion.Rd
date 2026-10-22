@@ -10,7 +10,7 @@ bcv_criterion(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)"))
 
 rlcv_criterion(m, x, fun, loo = TRUE, u_scheme = c("i/n", "i/(n+1)"))
 
-wbcv_criterion(m, x, fun, loo = FALSE, u_scheme = c("i/(n+1)", "i/n"))
+wbcv_criterion(m, x, fun, loo = TRUE, u_scheme = c("i/(n+1)", "i/n"))
 }
 \arguments{
 \item{m}{inverse bandwidth, \eqn{m = 1/h}.}
@@ -22,9 +22,13 @@ Extra arguments (such as \code{H} for \code{\link[=qdf_soni]{qdf_soni()}}) shoul
 closure before calling.}
 
 \item{loo}{logical; if \code{TRUE} (default) leave-one-out fits are computed
-exactly by refitting without observation \eqn{i}. If \code{FALSE} the
-approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used, which is
-exact up to \eqn{O(n^{-2})} for linear smoothers and much faster.}
+exactly (by refitting without observation \eqn{i}, or by the index shift of
+\code{\link[=qdf_bernstein_loo]{qdf_bernstein_loo()}} for the Bernstein estimator). If \code{FALSE} the scaling
+approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used. The
+approximation is not valid for estimators built from order statistics:
+removing \eqn{X_{(i)}} shifts every higher quantile position, and with it
+least-squares criteria select the roughest fit in \code{m_range}. It is kept
+only for backward compatibility.}
 
 \item{u_scheme}{grid on which the criterion is evaluated: \code{"i/n"} (the
 published convention) or \code{"i/(n+1)"}.}
@@ -54,6 +58,15 @@ it is \emph{minimised}.
 targets \eqn{u\,q(u)} (the quantity entering the first-price auction
 inversion) rather than \eqn{q(u)}:
 \deqn{\mathrm{WBCV}(h) = \sum_i \Delta_i\{u_i \hat q(u_i)\}^2 - \frac{2}{n}\sum_i u_i / \hat q_{-i}(u_i).}
+\strong{Not recommended; kept only for backward compatibility.} The criterion
+is not scale-invariant: its two terms have different units (the first scales
+like the cube of the data units, the second like their inverse), so the
+selected bandwidth depends on the units of the data; on data of order one
+or larger the first term dominates and the criterion tends to select the
+smoothest fit in \code{m_range}. The criterion is being revised (Doosti 2026b,
+revised version); \code{wbcv_criterion()} and \code{bandwidth = "wbcv"} issue a
+warning and are kept only so that existing code runs. Use BCV, RLCV or a
+numeric bandwidth instead.
 }
 }
 \examples{

@@ -10,7 +10,7 @@ select_bandwidth(
   selector = c("bcv", "rlcv", "wbcv"),
   m_range = c(10, 50),
   loo = NULL,
-  grid = 0L,
+  grid = NULL,
   u_scheme = NULL,
   optimizer = NULL
 )
@@ -27,15 +27,23 @@ closure before calling.}
 \item{m_range}{numeric length-2 range for \eqn{m = 1/h}.}
 
 \item{loo}{logical; if \code{TRUE} (default) leave-one-out fits are computed
-exactly by refitting without observation \eqn{i}. If \code{FALSE} the
-approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used, which is
-exact up to \eqn{O(n^{-2})} for linear smoothers and much faster.}
+exactly (by refitting without observation \eqn{i}, or by the index shift of
+\code{\link[=qdf_bernstein_loo]{qdf_bernstein_loo()}} for the Bernstein estimator). If \code{FALSE} the scaling
+approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used. The
+approximation is not valid for estimators built from order statistics:
+removing \eqn{X_{(i)}} shifts every higher quantile position, and with it
+least-squares criteria select the roughest fit in \code{m_range}. It is kept
+only for backward compatibility.}
 
-\item{grid}{integer; if positive, the criterion is first evaluated on this
-many equally spaced points in \code{m_range} and \code{\link[stats:optimize]{stats::optimize()}} is then
-run in the bracket around the grid minimum. This guards against local
-minima of the (often non-convex) criteria. \code{0} runs \code{optimize()} directly
-over \code{m_range}, which reproduces the published simulations.}
+\item{grid}{search method: \code{0} (the default, as in the published
+simulations) runs \code{\link[stats:optimize]{stats::optimize()}} directly over \code{m_range}; an integer
+\code{grid > 0} first evaluates the criterion on that many equally spaced
+points and then runs \code{optimize()} in the bracket around the grid minimum;
+\code{"exhaustive"} evaluates the criterion at every integer \code{m} in \code{m_range}
+and returns the global minimiser. When a criterion is multimodal in \code{m},
+\code{optimize()} can return an interior local minimum, while the global
+minimiser can lie at an end of \code{m_range}; boundary solutions are flagged
+(see below). \code{NULL} is the same as \code{0}.}
 
 \item{u_scheme}{grid on which the criterion is evaluated: \code{"i/n"} (the
 published convention) or \code{"i/(n+1)"}.}
@@ -43,16 +51,28 @@ published convention) or \code{"i/(n+1)"}.}
 \item{optimizer}{optional function \code{optimizer(f, interval)} used instead of
 \code{\link[stats:optimize]{stats::optimize()}}; it must return a list with elements \code{minimum} and
 \code{objective}. Useful to plug in a global optimiser for criteria with several
-local minima, e.g. \code{function(f, interval) { g <- seq(interval[1], interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)], objective = min(v)) }} for an exhaustive grid search.}
+local minima, e.g. \code{function(f, interval) { g <- seq(interval[1], interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)], objective = min(v)) }} for an exhaustive grid search. When \code{optimizer}
+is supplied it is used, and \code{grid = "exhaustive"} is treated as \code{grid = 0}.}
 }
 \value{
 a list with \code{h}, \code{m}, \code{selector}, \code{criterion} (the minimised value)
-and \code{m_range}.
+and \code{m_range}; \code{at_boundary} (logical) and \code{boundary} (\code{"lower"},
+\code{"upper"} or \code{NA}), which record a minimiser at an end of \code{m_range}; with
+\code{grid = "exhaustive"} also the evaluated grid \code{grid_m} and criterion values
+\code{grid_cv}.
 }
 \description{
 Minimises one of the criteria in \code{\link[=bcv_criterion]{bcv_criterion()}} over \eqn{m = 1/h} in
 \code{m_range} with \code{\link[stats:optimize]{stats::optimize()}}, optionally after a coarse grid search.
 }
+\section{Boundary solutions}{
+
+If the minimiser lies at either end of \code{m_range}, whatever the search
+method, the criterion did not select a bandwidth in that range. A warning is
+issued and \code{at_boundary = TRUE} is returned; widen \code{m_range} or give the
+bandwidth directly.
+}
+
 \examples{
 x <- rgamma(60, 5, 1)
 select_bandwidth(x, qdf_poisson, "bcv", m_range = c(10, 50))

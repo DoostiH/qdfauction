@@ -3,11 +3,14 @@
 \name{qdf_poisson}
 \alias{qdf_poisson}
 \alias{qdf_bernstein}
+\alias{qdf_bernstein_loo}
 \title{Series estimators of the quantile density}
 \usage{
 qdf_poisson(u, x, h)
 
-qdf_bernstein(u, x, h)
+qdf_bernstein(u, x, h, zero_at_origin = TRUE)
+
+qdf_bernstein_loo(u, x, h, zero_at_origin = TRUE)
 }
 \arguments{
 \item{u}{numeric vector of evaluation points in \eqn{[0, 1]}.}
@@ -15,9 +18,15 @@ qdf_bernstein(u, x, h)
 \item{x}{numeric sample (sorted internally).}
 
 \item{h}{bandwidth on the probability scale (\eqn{0 < h < 1}).}
+
+\item{zero_at_origin}{logical; \code{TRUE} (default) takes \eqn{Q_n(0) = 0},
+\code{FALSE} takes \eqn{Q_n(0) = X_{(1)}}.}
 }
 \value{
-numeric vector of quantile density estimates at \code{u}.
+numeric vector of quantile density estimates at \code{u}; for
+\code{qdf_bernstein_loo()}, the vector
+\eqn{(\hat q_{-1}(u_1), \dots, \hat q_{-n}(u_n))}, where \code{u} has the
+length of \code{x} and is paired with the sorted sample.
 }
 \description{
 Estimators that smooth the empirical quantile function \eqn{Q_n} with
@@ -31,12 +40,25 @@ where \eqn{w_k(\mu) = p_k(\mu)/P_m(\mu)} are truncated Poisson weights.
 \deqn{\hat q(u) = m \sum_{k=0}^{m-1} \{Q_n((k+1)/m) - Q_n(k/m)\} b_k(u; m-1).}
 }
 
-Both require non-negative data because \eqn{Q_n(0)} is taken to be 0.
+Both require non-negative data because \eqn{Q_n(0)} is taken to be 0;
+\code{qdf_bernstein()} can instead use \eqn{Q_n(0) = X_{(1)}}
+(\code{zero_at_origin = FALSE}), which is preferable when the data do not start
+near zero (for example bids in dollars).
+
+\code{qdf_bernstein_loo()} returns the exact leave-one-out Bernstein estimates
+\eqn{\hat q_{-i}(u_i)}, \eqn{i = 1, \dots, n}, used by the cross-validation
+criteria: removing \eqn{X_{(i)}} shifts every higher order statistic down
+by one position, so the leave-one-out lattice values are obtained by an
+index shift in \eqn{O(nK)} operations, without refitting.
 }
 \examples{
 x <- rgamma(100, 5, 1)
 qdf_poisson(c(0.25, 0.5, 0.75), x, h = 0.05)
 qdf_bernstein(c(0.25, 0.5, 0.75), x, h = 0.05)
+# exact leave-one-out estimates at u_i = i/n agree with refitting
+xs <- sort(x); u <- seq_along(xs) / length(xs)
+loo <- qdf_bernstein_loo(u, xs, h = 0.05)
+all.equal(loo[10], qdf_bernstein(u[10], xs[-10], h = 0.05))
 }
 \references{
 Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of

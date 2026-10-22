@@ -1,8 +1,151 @@
-## USFS timber sealed-bid auctions (Lu & Perrigne 2008, JAE data archive)
-timber <- list(
-  n2 = cbind(bid1 = c(173.122314, 106.7924, 140.856115, 94.634155, 60.241599, 54.742826, 142.22777, 140.956048, 81.715321, 218.942462, 64.166433, 52.101601, 62.780936, 182.396765, 91.959966, 134.892896, 66.474024, 81.78504, 47.227996, 53.377781, 60.405818, 43.425998, 81.034738, 56.576944, 56.067142, 70.151111, 66.938993, 66.504936, 24.299153, 148.344275, 174.311033, 93.471102, 114.881455, 81.01647, 74.05484, 74.605861, 96.550583, 77.729161, 80.602568, 45.872111, 68.976262, 85.939389, 54.691786, 43.445783, 52.198801, 54.846026, 46.099115, 50.762506, 76.714574, 363.385924, 40.249126, 81.723741, 63.152147, 123.735804, 34.824139, 46.687412, 50.274376, 100.658544, 75.183187, 173.250641, 88.590764, 70.46874, 74.439991, 81.610443, 88.480552, 84.519008, 66.045588, 91.350879, 58.932442, 131.726136, 84.006311, 94.913971, 93.311319, 74.983176, 71.901082, 98.060195, 78.37028, 51.695736, 130.129948, 91.947845, 69.876878, 207.818973, 80.427886, 87.228177, 60.407961, 65.112692, 86.726176, 70.058132, 65.553746, 70.36008, 78.58034, 96.894002, 126.219539, 143.342585, 100.540992, 66.550627, 60.04276, 94.767318, 134.436766, 94.293929, 77.165064, 124.469256, 78.40942, 73.152428, 29.707067, 38.892749, 64.319467),
-             bid2 = c(93.313276, 74.138567, 116.752467, 92.166022, 57.666461, 41.844808, 90.015782, 88.86159, 64.831176, 80.769022, 57.489974, 50.558821, 62.751482, 98.576774, 55.167492, 122.309387, 61.05857, 61.254083, 44.443442, 53.117749, 51.725184, 42.206361, 73.563266, 54.23879, 45.119204, 67.43354, 63.458168, 61.133987, 19.908793, 128.387505, 150.54043, 93.206205, 31.064883, 80.753465, 70.175779, 62.980811, 79.840037, 74.958723, 78.834759, 44.926507, 68.674323, 82.354521, 54.683082, 43.272, 49.658555, 52.361671, 45.99265, 50.715892, 76.714574, 360.58202, 40.182267, 70.352438, 62.942325, 83.901695, 22.13184, 43.746878, 49.07984, 68.81033, 70.739118, 122.987599, 85.222886, 68.137797, 69.420952, 79.453055, 67.426959, 69.025414, 64.099981, 59.168346, 58.879148, 72.956014, 51.771331, 93.550923, 91.645045, 47.940388, 59.044537, 70.053688, 78.37028, 51.364719, 67.708994, 79.02965, 50.551112, 39.25308, 34.664801, 52.02101, 59.483426, 63.735764, 69.760438, 57.22738, 55.379371, 68.132453, 71.863994, 60.775314, 93.931443, 121.264669, 62.795848, 65.535209, 60.035394, 93.05259, 97.512602, 93.326812, 61.50159, 73.841219, 65.582435, 71.208676, 25.26604, 38.564578, 59.817452)),
-  n3 = cbind(bid1 = c(138.162064, 115.641794, 197.138495, 97.857698, 133.074996, 97.184583, 93.696183, 85.09331, 85.619328, 36.435405, 475.230954, 82.850318, 57.280931, 70.771123, 85.23987, 83.782121, 51.885416, 48.145427, 120.324617, 112.058701, 219.536903, 77.505187, 69.532488, 101.092808, 96.502066, 106.313785, 35.839421, 56.005715, 70.636378, 34.468799, 59.431368, 48.059361, 61.352295, 33.705408, 112.437776, 32.269761, 368.964347, 141.388506, 179.93603, 84.876463, 13.756276, 53.029366, 42.729669, 82.275481, 66.869098, 61.554624, 71.269287, 69.846684, 66.833782, 70.609488, 71.045223, 341.764374, 128.916021, 68.261987, 68.143187, 62.437372, 75.257662, 84.785136, 56.237696, 78.319825, 95.64746, 84.068419, 80.31641, 194.974865, 66.783214, 59.57284, 91.693216, 54.959224, 331.688776, 66.514592, 78.337751, 92.533631, 146.024409, 122.596313, 94.082354, 75.003525, 88.93984, 68.646025, 136.497177, 65.947955, 75.764508, 129.629725, 55.286659, 56.418564, 70.950864, 115.448074, 94.096468, 73.160372, 254.626634, 82.735174, 93.751881, 73.919116, 59.17096, 157.367288, 124.525109, 137.586861, 93.389229, 123.761265, 54.742172, 56.93773, 96.459922, 54.784431, 86.154164, 80.630398, 86.599876, 55.788016, 66.864228, 72.198865),
-             bid2 = c(61.751101, 76.844894, 115.905703, 89.336406, 59.995757, 87.596461, 66.607268, 71.222437, 80.241854, 34.755003, 69.363885, 71.567009, 48.76482, 56.313917, 67.501483, 76.083869, 45.385727, 45.956555, 81.65619, 109.505996, 180.29382, 75.161624, 39.490792, 49.808353, 85.21882, 65.22525, 13.469179, 48.489279, 64.251082, 30.849556, 54.342692, 36.113805, 52.747618, 20.26777, 99.733346, 30.735532, 326.896953, 64.008433, 170.715671, 98.589517, 10.86454, 46.241607, 34.157739, 69.345069, 65.179455, 58.588651, 68.241733, 68.383111, 60.920941, 69.476625, 70.737665, 340.881262, 127.958724, 66.655336, 58.74213, 61.660931, 73.435718, 44.411256, 31.043528, 63.904753, 61.018884, 80.248766, 68.677201, 114.283271, 60.773104, 59.526102, 79.720053, 47.679659, 305.153674, 56.987791, 70.145568, 89.600135, 130.200143, 87.36386, 70.901238, 73.106829, 76.494209, 64.233674, 67.209195, 59.010136, 62.372077, 119.803022, 46.552199, 42.812092, 68.024083, 91.416223, 82.00605, 58.070181, 20.707816, 71.159847, 73.443811, 62.89389, 53.683805, 103.024396, 108.924194, 136.024403, 87.192072, 46.811012, 52.233156, 49.873314, 50.404672, 37.248689, 79.920196, 68.842178, 83.750436, 34.721319, 51.497968, 44.752347),
-             bid3 = c(46.768197, 38.305695, 72.432341, 68.166127, 43.049475, 84.137224, 64.27397, 69.363572, 69.728415, 34.152374, 37.121782, 66.919805, 46.613605, 52.474282, 37.553286, 71.684598, 44.256837, 45.056288, 35.842179, 79.778233, 77.248207, 47.915443, 36.419259, 48.421406, 58.811215, 65.012804, 12.19045, 33.637207, 61.769838, 22.097167, 43.670765, 32.976783, 42.694708, 86.136556, 64.76853, 26.527036, 140.426663, 37.709005, 145.842607, 84.66551, 10.86454, 43.749227, 32.634919, 56.276432, 64.629548, 57.352607, 66.884554, 65.46157, 58.512067, 69.42664, 55.824508, 337.31349, 93.815124, 64.511315, 53.49167, 55.771545, 63.189307, 21.28467, 23.35751, 60.392747, 58.267662, 58.576894, 62.545946, 64.836071, 38.473741, 38.090505, 77.901344, 44.982731, 106.140408, 54.068113, 53.146788, 86.436213, 97.343212, 55.708208, 54.965433, 54.817359, 62.816758, 58.11384, 6.945611, 58.368255, 27.993238, 36.329843, 46.37361, 40.616, 64.237908, 83.11744, 79.55043, 24.372072, 11.684126, 45.460745, 57.567451, 59.056479, 45.593209, 101.748507, 93.575785, 66.026383, 79.043284, 45.943344, 42.151473, 49.401872, 50.404672, 21.385416, 76.586577, 61.36717, 63.171606, 34.240857, 45.725786, 44.200126)))
-usethis_save <- function() save(timber, file = "data/timber.rda", compress = "xz")
+## =====================================================================
+## data-raw/timber.R -- rebuild data/timber.rda
+##
+## The `timber` dataset holds the HOMOGENISED per-unit bids of the sealed-bid
+## subsample of the U.S. Forest Service timber auctions (1979, western states)
+## of Lu and Perrigne (2008): 107 auctions with two bidders and 108 with three.
+##
+## Source files (not redistributed with this package). Download the
+## replication files of Lu, J. and Perrigne, I. (2008), "Estimating risk
+## aversion from ascending and sealed-bid auctions: the case of timber auction
+## data", Journal of Applied Econometrics 23, 871-896, from the JAE Data
+## Archive (doi:10.15456/jae.2022319.0720356598), unpack lp-data.zip and put
+## these two files in this directory:
+##
+##   SealedBid_2Bidders.txt   107 rows, 5 columns
+##   SealedBid_3Bidders.txt   108 rows, 6 columns
+
+## These two files are the copyright of their authors and are NOT part of this
+## package: keep them out of the repository (data-raw/.gitignore lists them)
+## and out of any redistributed source. Cite Lu and Perrigne (2008) when you
+## use the data.
+##
+## The files have no header row and are whitespace separated. Columns, as
+## documented in the archive's readme:
+##
+##   2 bidders:  volume  bid1  bid2        appraisal  n_bidders
+##   3 bidders:  volume  bid1  bid2  bid3  appraisal  n_bidders
+##
+## Bids and the appraisal value are per unit of timber; volume is the total
+## volume of the lot. The two ascending-auction files of the archive are not
+## used here.
+##
+## Homogenisation (Lu and Perrigne 2008; Haile, Hong and Shum 2003). Within
+## each stratum n, with X = (1, log appraisal, log volume) constant within an
+## auction, ordinary least squares of the log bid on X over all bids of the
+## stratum gives beta-hat, and every bid is rescaled to the average lot:
+##
+##     b-tilde = b * exp(Xbar' beta-hat - X' beta-hat).
+##
+## The intercept cancels in the difference, so only the slopes matter.
+## Expected fit: R^2 = 0.6714 (n = 2) and 0.5540 (n = 3). The rebuilt bids
+## agree with data/timber.rda to the six decimals at which the stored values
+## are rounded (one value of the three-bidder matrix differs in the last bits
+## of its double representation).
+##
+## Usage, with the working directory set to the package root:
+##     source("data-raw/timber.R")
+##
+## The script prints the fitted slopes and R^2 of each stratum, checks that the
+## homogenised bids no longer depend on the covariates, compares the result
+## with the version currently in data/timber.rda, and then rewrites that file.
+## =====================================================================
+
+RAW_DIR   <- "data-raw"
+SPEC <- list(
+  n2 = list(file = "SealedBid_2Bidders.txt", n = 2L, auctions = 107L),
+  n3 = list(file = "SealedBid_3Bidders.txt", n = 3L, auctions = 108L)
+)
+ROUND_DP <- 6L             # the stored values are rounded to six decimals
+
+## ---- helpers --------------------------------------------------------------
+
+## bids as an `auctions` x n matrix, and the auction-level covariates
+read_stratum <- function(path, n, auctions) {
+  raw <- utils::read.table(path, header = FALSE)
+  if (ncol(raw) != n + 3L)
+    stop(basename(path), ": expected ", n + 3L, " columns (volume, ", n,
+         " bids, appraisal, number of bidders), found ", ncol(raw), ".",
+         call. = FALSE)
+  if (nrow(raw) != auctions)
+    stop(basename(path), ": expected ", auctions, " auctions, found ",
+         nrow(raw), ".", call. = FALSE)
+  if (!all(raw[[n + 3L]] == n))
+    stop(basename(path), ": the last column should be the number of bidders (",
+         n, ").", call. = FALSE)
+
+  bids <- as.matrix(raw[, 1L + seq_len(n), drop = FALSE])
+  storage.mode(bids) <- "double"
+  dimnames(bids) <- list(NULL, paste0("bid", seq_len(n)))
+  volume <- as.numeric(raw[[1L]])
+  appraisal <- as.numeric(raw[[n + 2L]])
+
+  if (anyNA(bids) || anyNA(volume) || anyNA(appraisal))
+    stop(basename(path), ": missing values.", call. = FALSE)
+  if (any(bids <= 0) || any(volume <= 0) || any(appraisal <= 0))
+    stop(basename(path), ": bids, volume and the appraisal value must be positive.",
+         call. = FALSE)
+
+  list(bids = bids,
+       X = cbind(log_appraisal = log(appraisal), log_volume = log(volume)))
+}
+
+## rescale every bid of a stratum to its average lot
+homogenise <- function(bids, X) {
+  n  <- ncol(bids)
+  y  <- log(as.vector(t(bids)))                    # stacked auction by auction
+  Xb <- X[rep(seq_len(nrow(X)), each = n), , drop = FALSE]
+  fit   <- stats::lm(y ~ Xb)
+  beta  <- stats::coef(fit)[-1L]                   # slopes; the intercept cancels
+  names(beta) <- colnames(Xb)
+  shift <- as.vector(sweep(Xb, 2L, colMeans(Xb)) %*% beta)    # (X - Xbar)' beta
+  out <- matrix(exp(y - shift), ncol = n, byrow = TRUE,
+                dimnames = list(NULL, colnames(bids)))
+  list(bids = out, r2 = summary(fit)$r.squared, beta = beta, Xb = Xb)
+}
+
+## ---- build ----------------------------------------------------------------
+
+timber <- list()
+for (nm in names(SPEC)) {
+  s    <- SPEC[[nm]]
+  path <- file.path(RAW_DIR, s$file)
+  if (!file.exists(path))
+    stop("Missing ", path, ". See the header of this script for where to get it.",
+         call. = FALSE)
+
+  raw <- read_stratum(path, s$n, s$auctions)
+  hom <- homogenise(raw$bids, raw$X)
+  message(sprintf("%s: %d auctions x %d bidders; R^2 = %.4f; slopes: %s",
+                  nm, nrow(hom$bids), ncol(hom$bids), hom$r2,
+                  paste(sprintf("%s = %.4f", names(hom$beta), hom$beta),
+                        collapse = ", ")))
+
+  ## the homogenised bids should no longer depend on the covariates
+  left <- summary(stats::lm(log(as.vector(t(hom$bids))) ~ hom$Xb))$r.squared
+  if (left > 1e-8)
+    warning(nm, ": the homogenised bids still depend on the covariates (R^2 = ",
+            signif(left, 3), ").", call. = FALSE)
+
+  timber[[nm]] <- round(hom$bids, ROUND_DP)
+}
+
+## ---- compare with the version currently shipped ---------------------------
+
+if (file.exists("data/timber.rda")) {
+  shipped <- local({ e <- new.env(); load("data/timber.rda", envir = e); e$timber })
+  for (nm in names(timber)) {
+    if (!identical(dim(timber[[nm]]), dim(shipped[[nm]]))) {
+      warning(nm, ": dimensions differ from the shipped data.", call. = FALSE)
+      next
+    }
+    worst <- max(abs(timber[[nm]] - shipped[[nm]]))
+    message(sprintf("%s: largest deviation from the shipped data: %.2e", nm, worst))
+    if (worst > 10^(-ROUND_DP))
+      warning(nm, ": the rebuilt bids differ from the shipped data by more than ",
+              "the rounding of the stored values.", call. = FALSE)
+  }
+}
+
+save(timber, file = "data/timber.rda", compress = "xz")
+message("Wrote data/timber.rda")

@@ -26,7 +26,7 @@ fpa_optimal_reserve_model(
   theta = NULL,
   v_s = 0,
   eta = 0,
-  p_lo = 0.02,
+  p_lo = 1e-04,
   p_hi = 0.98,
   U = fpa_ugrid()
 )
