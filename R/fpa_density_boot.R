@@ -22,6 +22,12 @@
 #' @inheritParams fpa_density
 #' @param B number of bootstrap replications.
 #' @param level confidence level.
+#' @details If the auctions have a time order and the same bidders recur,
+#'   resampling auctions or bids independently understates the sampling
+#'   uncertainty, in proportion to the dependence; use
+#'   `resample = "blocks"` in that case.
+#' @param L block length when `resample = "blocks"`: `"auto"` for the rule of
+#'   [block_length_auto()], or an integer. Ignored by the other schemes.
 #' @param resample `"bids"` (pooled bids with replacement) or `"auctions"`
 #'   (whole auctions; requires a bid matrix).
 #' @param ... further arguments to [fpa_density()] (e.g. `j0`, `h`, `first_stage`).
@@ -41,16 +47,26 @@
 #' }
 #' @export
 fpa_density_boot <- function(bids, n = NULL, method = "marmer_shneyerov", x = NULL, B = 199,
-                             level = 0.95, resample = c("bids", "auctions"), ...) {
+                             level = 0.95, resample = c("bids", "auctions", "blocks"),
+                             L = "auto", ...) {
   resample <- match.arg(resample)
   bm <- as_bid_matrix(bids, n); n <- bm$n
   fit <- fpa_density(bm$bids, n = n, method = method, x = x, ...)
   x <- fit$x
-  if (resample == "auctions" && !bm$is_mat)
-    stop("`resample = \"auctions\"` needs the bids as a matrix.", call. = FALSE)
+  if (resample %in% c("auctions", "blocks") && !bm$is_mat)
+    stop("`resample = \"", resample, "\"` needs the bids as a matrix ",
+         "(one row per auction, in time order for \"blocks\").", call. = FALSE)
+  if (resample == "blocks") {
+    if (identical(L, "auto")) L <- block_length_auto(bm$bids, winner = "max")
+    L <- as.integer(L)
+    if (is.na(L) || L < 1L || L > nrow(bm$bids))
+      stop("`L` must be \"auto\" or an integer between 1 and the number of auctions.",
+           call. = FALSE)
+  }
   boot <- matrix(NA_real_, B, length(x))
   for (r in seq_len(B)) {
     bs <- if (resample == "auctions") bm$bids[sample.int(nrow(bm$bids), replace = TRUE), , drop = FALSE]
+          else if (resample == "blocks") bm$bids[resample_blocks(nrow(bm$bids), L), , drop = FALSE]
           else sample(as.numeric(bm$bids), replace = TRUE)
     boot[r, ] <- tryCatch(fpa_density(bs, n = n, method = method, x = x, ...)$f,
                           error = function(e) rep(NA_real_, length(x)))
@@ -66,6 +82,7 @@ fpa_density_boot <- function(bids, n = NULL, method = "marmer_shneyerov", x = NU
                  upper = apply(boot, 2, stats::quantile, 1 - alpha / 2, na.rm = TRUE),
                  band_lower = fit$f - crit * se, band_upper = fit$f + crit * se,
                  crit = crit, level = level, method = method, B = B, resample = resample,
+                 L = if (resample == "blocks") L else 1L,
                  boot = boot, fit = fit), class = "fpa_density_boot")
 }
 

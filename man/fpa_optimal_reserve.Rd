@@ -7,11 +7,11 @@
 fpa_optimal_reserve(values, eta = NULL, v_s = 0, grid = NULL)
 }
 \arguments{
-\item{values}{an \code{\link[=fpa_values]{fpa_values()}} object fitted to a bid \emph{matrix}, or an
-\code{L} by \code{n} matrix of private values.}
+\item{values}{an [fpa_values()] object fitted to a bid *matrix*, or an
+`L` by `n` matrix of private values.}
 
-\item{eta}{CRRA parameter; taken from \code{values} when it is an
-\code{\link[=fpa_values]{fpa_values()}} object.}
+\item{eta}{CRRA parameter; taken from `values` when it is an
+[fpa_values()] object.}
 
 \item{v_s}{seller's valuation of the object (revenue when unsold).}
 
@@ -19,8 +19,8 @@ fpa_optimal_reserve(values, eta = NULL, v_s = 0, grid = NULL)
 2nd and 98th percentiles of the values.}
 }
 \value{
-a list with \code{r_star}, \code{revenue} and the evaluated \code{grid} and \code{R}.
+a list with `r_star`, `revenue` and the evaluated `grid` and `R`.
 }
 \description{
-Maximises the plug-in revenue \code{\link[=fpa_revenue]{fpa_revenue()}} over a grid of reserve prices.
+Maximises the plug-in revenue [fpa_revenue()] over a grid of reserve prices.
 }

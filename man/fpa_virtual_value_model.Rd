@@ -21,21 +21,21 @@ fpa_virtual_value(values, qdf_method = "poisson", bandwidth = "rlcv", ...)
 
 \item{n}{number of bidders.}
 
-\item{family, theta}{copula family and parameter, as in \code{\link[=copula_psi]{copula_psi()}}.}
+\item{family, theta}{copula family and parameter, as in [copula_psi()].}
 
-\item{U}{quantile grid (default \code{\link[=fpa_ugrid]{fpa_ugrid()}}).}
+\item{U}{quantile grid (default [fpa_ugrid()]).}
 
-\item{values}{an \code{\link[=fpa_values]{fpa_values()}} object fitted with a parametric copula.}
+\item{values}{an [fpa_values()] object fitted with a parametric copula.}
 
 \item{qdf_method, bandwidth}{quantile density estimator for the
-pseudo-values, passed to \code{\link[=qdf]{qdf()}}.}
+pseudo-values, passed to [qdf()].}
 
-\item{...}{further arguments to \code{\link[=qdf]{qdf()}}.}
+\item{...}{further arguments to [qdf()].}
 }
 \value{
-A list with the grid \code{U}, the virtual value \code{omega} and the factor
-\code{H}; \code{fpa_virtual_value()} also returns the estimated \code{Q} and \code{q} on \code{U}
-and the bandwidth \code{h} used for the pseudo-values.
+A list with the grid `U`, the virtual value `omega` and the factor
+  `H`; `fpa_virtual_value()` also returns the estimated `Q` and `q` on `U`
+  and the bandwidth `h` used for the pseudo-values.
 }
 \description{
 The virtual value of affiliated private values in quantile space,
@@ -48,10 +48,10 @@ so no binding reserve is optimal (a corner) when \eqn{\omega(u) \ge v_s}
 for all \eqn{u}; under independence \eqn{\omega} is the Myerson virtual
 value \eqn{v - (1 - F(v))/f(v)}.
 
-\code{fpa_virtual_value_model()} evaluates \eqn{\omega} for a known model;
-\code{fpa_virtual_value()} estimates it from an \code{\link[=fpa_values]{fpa_values()}} object, with the
+`fpa_virtual_value_model()` evaluates \eqn{\omega} for a known model;
+`fpa_virtual_value()` estimates it from an [fpa_values()] object, with the
 quantile function and quantile density of the pseudo-values estimated as in
-\code{\link[=fpa_revenue_qd]{fpa_revenue_qd()}}.
+[fpa_revenue_qd()].
 }
 \examples{
 Q <- function(u) (1 - 8 * u / 9)^(-1/2)              # truncated Pareto on [1, 3]

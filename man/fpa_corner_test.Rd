@@ -24,15 +24,15 @@ fpa_corner_test(
 \method{print}{fpa_corner_test}(x, ...)
 }
 \arguments{
-\item{bids}{an \code{L} by \code{n} matrix of bids, one row per auction.}
+\item{bids}{an `L` by `n` matrix of bids, one row per auction.}
 
 \item{v_s}{seller's valuation.}
 
-\item{family}{copula family used to recover the values (see \code{\link[=fpa_values]{fpa_values()}});
+\item{family}{copula family used to recover the values (see [fpa_values()]);
 required, because the corner result depends on it.}
 
 \item{method, bandwidth}{first-stage quantile density estimator and
-bandwidth rule for \code{\link[=fpa_values]{fpa_values()}}; \code{bandwidth} is also used for the
+bandwidth rule for [fpa_values()]; `bandwidth` is also used for the
 quantile density of the pseudo-values.}
 
 \item{qdf_method}{quantile density estimator for the pseudo-values.}
@@ -41,58 +41,58 @@ quantile density of the pseudo-values.}
 
 \item{B}{number of bootstrap replications (0: point rule only).}
 
-\item{decision}{\code{"point"} (default): the point rule on the full sample;
-\code{"bootstrap"}: a corner when the bootstrap frequency is at least \code{level}
-(requires \code{B > 0}).}
+\item{decision}{`"point"` (default): the point rule on the full sample;
+`"bootstrap"`: a corner when the bootstrap frequency is at least `level`
+(requires `B > 0`).}
 
 \item{level}{bootstrap corner frequency above which a corner is reported
-when \code{decision = "bootstrap"}.}
+when `decision = "bootstrap"`.}
 
 \item{alpha}{level for the upper bootstrap percentile of the statistic.}
 
-\item{...}{further arguments to \code{\link[=fpa_values]{fpa_values()}}.}
+\item{...}{further arguments to [fpa_values()].}
 
-\item{x}{an \code{"fpa_corner_test"} object.}
+\item{x}{an `"fpa_corner_test"` object.}
 }
 \value{
-An object of class \code{"fpa_corner_test"}: a list with the
-\code{statistic} \eqn{T}, the decision \code{corner}, the estimated virtual value
-\code{omega} on the grid \code{U}, \code{v_s}, \code{p_range}, the \code{bandwidth}s used in
-the two stages and the \code{decision} rule; with \code{B > 0} also
-\code{boot_stat}, \code{boot_corner_freq}, \code{boot_upper} and \code{corner_not_rejected}.
-The \code{print()} method is called for its side effect of printing the
-decision and returns \code{x} invisibly.
+An object of class `"fpa_corner_test"`: a list with the
+  `statistic` \eqn{T}, the decision `corner`, the estimated virtual value
+  `omega` on the grid `U`, `v_s`, `p_range`, the `bandwidth`s used in
+  the two stages and the `decision` rule; with `B > 0` also
+  `boot_stat`, `boot_corner_freq`, `boot_upper` and `corner_not_rejected`.
+  The `print()` method is called for its side effect of printing the
+  decision and returns `x` invisibly.
 }
 \description{
 Decides whether any binding reserve price is optimal. The point rule
 classifies the sample as a corner (no binding reserve optimal) when
 \deqn{T = \min_{u \in [p_{lo},\, p_{hi}]} \hat\omega(u) - v_s \ge 0,}
 with \eqn{\hat\omega} the estimated affiliated virtual value of
-\code{\link[=fpa_virtual_value]{fpa_virtual_value()}}. The window starts at \code{p_lo = 0.10} rather than at
+[fpa_virtual_value()]. The window starts at `p_lo = 0.10` rather than at
 the boundary: with \eqn{v_s} equal to the lower end of the support,
 \eqn{\omega(u) \to v_s} as \eqn{u \to 0} for every copula, so the region
 near zero carries no information about the corner, while the quantile
 density of the pseudo-values is least accurately estimated there.
 
-The decision is the point rule on the full sample (\code{decision = "point"},
+The decision is the point rule on the full sample (`decision = "point"`,
 the default and the rule used in Doosti 2026c): a corner is reported when
-\eqn{T \ge 0}. The null tested is "no reserve above the \code{p_lo} quantile
+\eqn{T \ge 0}. The null tested is "no reserve above the `p_lo` quantile
 beats no reserve". In applications the copula family should be chosen with
-\code{\link[=copula_spec_test]{copula_spec_test()}}.
+[copula_spec_test()].
 
-With \code{B > 0}, auctions are resampled with replacement, with the bandwidths
+With `B > 0`, auctions are resampled with replacement, with the bandwidths
 of both stages selected once on the full sample and held fixed in every
 replication, and the frequency with which the point rule reports a corner is
 returned. Two alternative uses of the bootstrap are available but are not
-the default: \code{decision = "bootstrap"} reports a corner when that frequency
-is at least \code{level}; and \code{corner_not_rejected} records whether the upper
+the default: `decision = "bootstrap"` reports a corner when that frequency
+is at least `level`; and `corner_not_rejected` records whether the upper
 \eqn{1 - \alpha} bootstrap percentile of \eqn{T} is non-negative (a
 conservative rule, since \eqn{T}, a minimum of a noisy curve, is biased
 downward).
 }
 \section{Reproducibility}{
 
-Call \code{set.seed()} beforehand to make the bootstrap reproducible.
+Call `set.seed()` beforehand to make the bootstrap reproducible.
 }
 
 \examples{

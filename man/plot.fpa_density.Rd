@@ -7,18 +7,18 @@
 \method{plot}{fpa_density}(x, true = NULL, rug = TRUE, ...)
 }
 \arguments{
-\item{x}{an \code{"fpa_density"} object.}
+\item{x}{an `"fpa_density"` object.}
 
 \item{true}{optional true density function for simulated data.}
 
 \item{rug}{logical; add a rug of the pseudo-values.}
 
-\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{passed to [graphics::plot()].}
 }
 \value{
 No return value, called for its side effect of drawing the
-estimated density (with an optional rug of pseudo-values and the true
-density). The object \code{x} is returned invisibly.
+  estimated density (with an optional rug of pseudo-values and the true
+  density). The object `x` is returned invisibly.
 }
 \description{
 Plot an estimated private-value density

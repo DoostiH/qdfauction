@@ -10,16 +10,16 @@ fpa_evaluate_values(values, pdf, cdf = NULL, true = NULL, trim = 0.05)
 fpa_evaluate_density(density, pdf, tail = 0.1)
 }
 \arguments{
-\item{values}{numeric vector of recovered values, or an \code{\link[=fpa_values]{fpa_values()}} object.}
+\item{values}{numeric vector of recovered values, or an [fpa_values()] object.}
 
 \item{pdf, cdf}{true density and distribution functions.}
 
-\item{true}{optional true values, aligned with \code{values} (for an
-\code{\link[=fpa_values]{fpa_values()}} object, in the layout of the original bids).}
+\item{true}{optional true values, aligned with `values` (for an
+[fpa_values()] object, in the layout of the original bids).}
 
-\item{trim}{trimming share for \code{msep_trim}.}
+\item{trim}{trimming share for `msep_trim`.}
 
-\item{density}{an \code{\link[=fpa_density]{fpa_density()}} object.}
+\item{density}{an [fpa_density()] object.}
 
 \item{tail}{share of the upper support for the tail MISE.}
 }
@@ -29,17 +29,17 @@ a named numeric vector.
 \description{
 Performance criteria used in the papers behind this package.
 
-\code{fpa_evaluate_values()} scores recovered private values (Doosti, Dewan and
-Talebian 2025): \code{mise}, the mean integrated squared error between a
+`fpa_evaluate_values()` scores recovered private values (Doosti, Dewan and
+Talebian 2025): `mise`, the mean integrated squared error between a
 Gaussian kernel density (Sheather--Jones bandwidth) of the values and the
-true density; \code{loglik}, \eqn{\sum_i \log f(\hat v_i)}; \code{ks}, the
+true density; `loglik`, \eqn{\sum_i \log f(\hat v_i)}; `ks`, the
 Kolmogorov--Smirnov distance between the empirical distribution of the
-values and \eqn{F}; and \code{msep}, the mean squared error against the true
-values when they are supplied (Doosti 2026a), with \code{msep_trim} excluding a
-share \code{trim} at each end of the true-value distribution.
+values and \eqn{F}; and `msep`, the mean squared error against the true
+values when they are supplied (Doosti 2026a), with `msep_trim` excluding a
+share `trim` at each end of the true-value distribution.
 
-\code{fpa_evaluate_density()} scores an \code{\link[=fpa_density]{fpa_density()}} object on its grid:
-\code{mise} over the whole grid and over the upper \code{tail} share of the support,
+`fpa_evaluate_density()` scores an [fpa_density()] object on its grid:
+`mise` over the whole grid and over the upper `tail` share of the support,
 and the expected log-likelihood \eqn{\int f \log \hat f} (Doosti, Dewan and
 Sbai 2026).
 }

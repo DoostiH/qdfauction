@@ -49,6 +49,12 @@
 #' @param j0 resolution level for the wavelet methods (default 5 when a
 #'   numeric `h` is given; chosen by cross-validation with `bandwidth = "cv"`).
 #' @param loo,grid,u_scheme,optimizer passed to [select_bandwidth()].
+#' @param zero_at_origin logical (default `TRUE`), for `method = "bernstein"`
+#'   only: anchor the fitted quantile function at \eqn{Q_n(0) = 0}. The default
+#'   reproduces earlier versions. `FALSE` anchors at the smallest observation
+#'   instead and is preferable when the data do not start near zero (for
+#'   example bids in dollars); it changes the fit only in the lowest few
+#'   percent of quantiles. Ignored by the other estimators.
 #' @param rescale logical (default `TRUE`): estimate on \eqn{x/s}, \eqn{s} the
 #'   sample standard deviation, and return \eqn{s\,\hat q}. This makes every
 #'   estimator scale-equivariant; it matters for the indirect Poisson, Jones and
@@ -91,6 +97,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
                               "wavelet", "wavelet_hard", "wavelet_block"),
                 bandwidth = c("bcv", "rlcv", "wbcv", "sqrt", "cv"), m_range = NULL,
                 u = NULL, H = NULL, kernel = "gaussian", j0 = NULL, loo = NULL,
+                zero_at_origin = TRUE,
                 grid = NULL, u_scheme = NULL, optimizer = NULL, rescale = TRUE, ...) {
   method <- match.arg(method)
   cl <- match.call()
@@ -110,7 +117,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
   if (method == "soni" && is.null(H)) {
     H <- stats::bw.SJ(seq_len(n) / n)
   }
-  fun <- estimator_fun(method, H, kernel)
+  fun <- estimator_fun(method, H, kernel, zero_at_origin)
 
   rule <- NULL
   if (is.numeric(bandwidth)) {
@@ -135,6 +142,7 @@ qdf <- function(x, method = c("indirect_poisson", "kernel", "kernel_corrected",
   structure(list(call = cl, x = x0, n = n, u = u, q = q, scale = s,
                  Q = stats::quantile(x0, u, type = 1, names = FALSE),
                  method = method, h = h, m = 1 / h, H = H, kernel = kernel,
+                 zero_at_origin = zero_at_origin,
                  selection = sel, rule = rule),
             class = "qdf")
 }
@@ -164,12 +172,18 @@ qdf_wavelet_fit <- function(x, method, bandwidth, u, j0, cl, ...) {
 }
 
 # build a (u, x, h) closure for a method
-estimator_fun <- function(method, H = NULL, kernel = "gaussian") {
+estimator_fun <- function(method, H = NULL, kernel = "gaussian", zero_at_origin = TRUE) {
   switch(method,
          kernel            = function(u, x, h) qdf_kernel(u, x, h, kernel = kernel),
          kernel_corrected  = function(u, x, h) qdf_kernel_corrected(u, x, h, kernel = kernel),
          poisson           = qdf_poisson,
-         bernstein         = qdf_bernstein,
+         ## With the default anchor this must stay `qdf_bernstein` itself:
+         ## cv_fits() tests `identical(fun, qdf_bernstein)` to reach the exact
+         ## O(nK) leave-one-out path. For zero_at_origin = FALSE the closure
+         ## carries an attribute that cv_fits() recognises instead.
+         bernstein         = if (isTRUE(zero_at_origin)) qdf_bernstein else
+           structure(function(u, x, h) qdf_bernstein(u, x, h, zero_at_origin = FALSE),
+                     bernstein_anchor = FALSE),
          jones             = function(u, x, h) qdf_jones(u, x, h, kernel = kernel),
          soni              = function(u, x, h) qdf_soni(u, x, h, H = H, kernel = kernel),
          indirect_poisson  = qdf_indirect_poisson)
@@ -191,7 +205,10 @@ predict.qdf <- function(object, u = NULL, ...) {
                                        threshold = object$threshold, smooth = TRUE),
                                   object$dots)))
   s <- if (is.null(object$scale)) 1 else object$scale
-  s * estimator_fun(object$method, object$H, if (is.null(object$kernel)) "gaussian" else object$kernel)(u, object$x / s, object$h)
+  zao <- if (is.null(object$zero_at_origin)) TRUE else object$zero_at_origin
+  s * estimator_fun(object$method, object$H,
+                    if (is.null(object$kernel)) "gaussian" else object$kernel,
+                    zao)(u, object$x / s, object$h)
 }
 
 #' @export

@@ -15,7 +15,7 @@ copula_delta_prime(u, family = "independence", theta = NULL, n)
 \arguments{
 \item{u}{numeric vector in \eqn{(0, 1)}.}
 
-\item{family}{\code{"independence"}, \code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"independence"`, `"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{theta}{copula parameter (ignored for independence).}
 
@@ -26,15 +26,13 @@ numeric vector.
 }
 \description{
 For an exchangeable \eqn{n}-dimensional Archimedean copula \eqn{C}:
-\itemize{
-\item \code{copula_psi()} is the copula multiplier of Doosti (2026a),
-\eqn{\psi(u) = C_2(u,\ldots,u)/c(u,\ldots,u)}, which enters the inverse bid
-function \eqn{v = b + \psi(u)\,q(u)}. Under independence
-\eqn{\psi(u) = u/(n-1)} and the GPV formula is recovered.
-\item \code{copula_delta()} is the diagonal \eqn{\delta(u) = C(u,\ldots,u)}, the
-distribution function of the maximum of the \eqn{n} uniform scores.
-\item \code{copula_delta_prime()} is its derivative.
-}
+* `copula_psi()` is the copula multiplier of Doosti (2026a),
+  \eqn{\psi(u) = C_2(u,\ldots,u)/c(u,\ldots,u)}, which enters the inverse bid
+  function \eqn{v = b + \psi(u)\,q(u)}. Under independence
+  \eqn{\psi(u) = u/(n-1)} and the GPV formula is recovered.
+* `copula_delta()` is the diagonal \eqn{\delta(u) = C(u,\ldots,u)}, the
+  distribution function of the maximum of the \eqn{n} uniform scores.
+* `copula_delta_prime()` is its derivative.
 }
 \examples{
 u <- c(0.2, 0.5, 0.8)
@@ -44,6 +42,6 @@ copula_delta(u, "gumbel", theta = 1.5, n = 3)
 }
 \references{
 Doosti, H. (2026a). A copula-quantile density approach to affiliated
-private value auctions. \emph{Economics Letters}, 261, 112837.
+private value auctions. *Economics Letters*, 261, 112837.
 \doi{10.1016/j.econlet.2026.112837}
 }

@@ -7,17 +7,17 @@
 \method{plot}{fpa_revenue_boot}(x, alpha = 0.05, ...)
 }
 \arguments{
-\item{x}{an \code{"fpa_revenue_boot"} object.}
+\item{x}{an `"fpa_revenue_boot"` object.}
 
 \item{alpha}{which level to draw.}
 
-\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{passed to [graphics::plot()].}
 }
 \value{
 No return value, called for its side effect of drawing the
-estimated expected-revenue curve with its pointwise confidence interval
-(dashed) and uniform confidence band (shaded). The object \code{x} is
-returned invisibly.
+  estimated expected-revenue curve with its pointwise confidence interval
+  (dashed) and uniform confidence band (shaded). The object `x` is
+  returned invisibly.
 }
 \description{
 Plot a revenue curve with bootstrap bands

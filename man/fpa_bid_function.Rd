@@ -16,14 +16,14 @@ fpa_bid_function(
 )
 }
 \arguments{
-\item{Q}{quantile function of private values (a function of \code{u}).}
+\item{Q}{quantile function of private values (a function of `u`).}
 
-\item{q}{quantile density of private values (a function of \code{u}); if \code{NULL}
-it is obtained by numerical differentiation of \code{Q}.}
+\item{q}{quantile density of private values (a function of `u`); if `NULL`
+it is obtained by numerical differentiation of `Q`.}
 
 \item{n}{number of bidders.}
 
-\item{family}{\code{"independence"}, \code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"independence"`, `"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{theta}{copula parameter (ignored for independence).}
 
@@ -31,11 +31,11 @@ it is obtained by numerical differentiation of \code{Q}.}
 
 \item{eta}{CRRA risk-aversion parameter in \eqn{[0, 1)} (0: risk neutral).}
 
-\item{U}{quantile grid; see \code{\link[=fpa_ugrid]{fpa_ugrid()}}.}
+\item{U}{quantile grid; see [fpa_ugrid()].}
 }
 \value{
-a list with \code{U}, \code{bid} (\eqn{\beta(U)}), \code{value} (\eqn{Q(U)}),
-\code{markup} and a function \code{beta(v)} interpolating the bid at value \code{v}.
+a list with `U`, `bid` (\eqn{\beta(U)}), `value` (\eqn{Q(U)}),
+  `markup` and a function `beta(v)` interpolating the bid at value `v`.
 }
 \description{
 Computes the symmetric equilibrium bid function in quantile space,
@@ -44,7 +44,7 @@ Computes the symmetric equilibrium bid function in quantile space,
 Doosti 2026a). Under independence \eqn{\psi(u) = u/(n-1)} and this is the
 Guerre--Perrigne--Vuong bid function
 \eqn{\beta(v) = v - \int_0^v F(t)^{n-1}dt / F(v)^{n-1}}. A reserve price at
-quantile \code{p0} sets \eqn{m(p_0) = 0}. For CRRA bidders with utility
+quantile `p0` sets \eqn{m(p_0) = 0}. For CRRA bidders with utility
 \eqn{U(t) = t^{1-\eta}} the first-order condition is
 \eqn{v = b + (1-\eta)\psi(u) q(u)} (Guerre, Perrigne and Vuong 2009), so the
 markup solves the same ODE with \eqn{\psi} replaced by \eqn{(1-\eta)\psi};

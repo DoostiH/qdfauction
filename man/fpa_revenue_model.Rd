@@ -32,18 +32,18 @@ fpa_optimal_reserve_model(
 )
 }
 \arguments{
-\item{Q}{quantile function of private values (a function of \code{u}).}
+\item{Q}{quantile function of private values (a function of `u`).}
 
 \item{n}{number of bidders.}
 
-\item{r}{reserve prices (on the value scale); alternatively give \code{p}.}
+\item{r}{reserve prices (on the value scale); alternatively give `p`.}
 
 \item{p}{reserve quantiles.}
 
-\item{q}{quantile density of private values (a function of \code{u}); if \code{NULL}
-it is obtained by numerical differentiation of \code{Q}.}
+\item{q}{quantile density of private values (a function of `u`); if `NULL`
+it is obtained by numerical differentiation of `Q`.}
 
-\item{family}{\code{"independence"}, \code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"independence"`, `"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{theta}{copula parameter (ignored for independence).}
 
@@ -51,24 +51,24 @@ it is obtained by numerical differentiation of \code{Q}.}
 
 \item{eta}{CRRA risk-aversion parameter of the bidders.}
 
-\item{U}{quantile grid; see \code{\link[=fpa_ugrid]{fpa_ugrid()}}.}
+\item{U}{quantile grid; see [fpa_ugrid()].}
 
 \item{p_lo, p_hi}{search interval for the optimal reserve quantile.}
 }
 \value{
-\code{fpa_revenue_model()}: numeric vector of expected revenues.
-\code{fpa_optimal_reserve_model()}: a list with \code{p_star}, \code{r_star},
-\code{revenue} and \code{interior}.
+`fpa_revenue_model()`: numeric vector of expected revenues.
+  `fpa_optimal_reserve_model()`: a list with `p_star`, `r_star`,
+  `revenue` and `interior`.
 }
 \description{
 Computes the seller's expected revenue \eqn{R(r) = v_s\,\delta(p) +
 \int_p^1 \beta(u; p)\,d\delta(u)} for a private-value model with marginal
-quantile function \code{Q}, copula multiplier \eqn{\psi} and diagonal
-\eqn{\delta} (\code{\link[=copula_psi]{copula_psi()}}, \code{\link[=copula_delta]{copula_delta()}}), where
+quantile function `Q`, copula multiplier \eqn{\psi} and diagonal
+\eqn{\delta} ([copula_psi()], [copula_delta()]), where
 \eqn{\beta(\cdot; p)} is the equilibrium bid with reserve price
-\eqn{r = Q(p)} (\code{\link[=fpa_bid_function]{fpa_bid_function()}}). Under independence and risk
+\eqn{r = Q(p)} ([fpa_bid_function()]). Under independence and risk
 neutrality this is the revenue used as the truth in Zincenko (2024).
-\code{fpa_optimal_reserve_model()} finds the interior maximiser \eqn{p^*} of
+`fpa_optimal_reserve_model()` finds the interior maximiser \eqn{p^*} of
 \eqn{R} from the first-order condition
 \eqn{\delta'(p)(v_s - Q(p)) + q(p)\int_p^1 e^{\Lambda(p)-\Lambda(u)}\delta'(u)\,du = 0}.
 }

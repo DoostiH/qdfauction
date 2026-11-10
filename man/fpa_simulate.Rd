@@ -21,12 +21,12 @@ fpa_simulate(
 
 \item{n}{number of bidders per auction.}
 
-\item{Q}{quantile function of private values (a function of \code{u}).}
+\item{Q}{quantile function of private values (a function of `u`).}
 
-\item{q}{quantile density of private values (a function of \code{u}); if \code{NULL}
-it is obtained by numerical differentiation of \code{Q}.}
+\item{q}{quantile density of private values (a function of `u`); if `NULL`
+it is obtained by numerical differentiation of `Q`.}
 
-\item{family}{\code{"independence"}, \code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"independence"`, `"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{theta}{copula parameter (ignored for independence).}
 
@@ -34,16 +34,16 @@ it is obtained by numerical differentiation of \code{Q}.}
 
 \item{eta}{CRRA risk-aversion parameter in \eqn{[0, 1)} (0: risk neutral).}
 
-\item{bid_function}{optional precomputed output of \code{\link[=fpa_bid_function]{fpa_bid_function()}}.}
+\item{bid_function}{optional precomputed output of [fpa_bid_function()].}
 }
 \value{
-a list with matrices \code{values} and \code{bids} (\code{L} by \code{n}) and the bid
-function used.
+a list with matrices `values` and `bids` (`L` by `n`) and the bid
+  function used.
 }
 \description{
 Draws private values with a given marginal quantile function and an
 exchangeable Archimedean copula (independent private values by default),
-and computes exact equilibrium bids with \code{\link[=fpa_bid_function]{fpa_bid_function()}}.
+and computes exact equilibrium bids with [fpa_bid_function()].
 }
 \examples{
 set.seed(1)

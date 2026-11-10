@@ -14,8 +14,8 @@ numeric filter coefficients.
 }
 \description{
 Returns the scaling (low-pass) filter of a compactly supported orthonormal
-wavelet. Available: \code{"haar"}, \code{"db2"}, \code{"db3"}, \code{"db4"} (Daubechies with 2--4
-vanishing moments), \code{"sym4"} (Symmlet 8-tap), \code{"coif1"}, \code{"coif2"}
+wavelet. Available: `"haar"`, `"db2"`, `"db3"`, `"db4"` (Daubechies with 2--4
+vanishing moments), `"sym4"` (Symmlet 8-tap), `"coif1"`, `"coif2"`
 (Coiflets). A numeric vector is returned unchanged after checking that it
 sums to \eqn{\sqrt 2}.
 }

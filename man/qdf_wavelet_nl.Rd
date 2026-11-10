@@ -22,27 +22,27 @@ qdf_wavelet_nl(
 
 \item{x}{numeric sample (sorted internally).}
 
-\item{rule}{\code{"hard_general"}, \code{"hard_lipschitz"} or \code{"block"}.}
+\item{rule}{`"hard_general"`, `"hard_lipschitz"` or `"block"`.}
 
 \item{tau}{coarsest level (default 3; must satisfy \eqn{2^\tau \ge} filter length).}
 
 \item{j1}{finest level; default from the rule as above.}
 
-\item{const}{\eqn{\kappa} for \code{"hard_lipschitz"}, or \eqn{c} for \code{"block"};
-\code{NULL} for the data-driven defaults above.}
+\item{const}{\eqn{\kappa} for `"hard_lipschitz"`, or \eqn{c} for `"block"`;
+`NULL` for the data-driven defaults above.}
 
-\item{p}{risk exponent: enters \eqn{\lambda_j} for \code{"hard_general"} and the
-block statistic for \code{"block"} (default 2).}
+\item{p}{risk exponent: enters \eqn{\lambda_j} for `"hard_general"` and the
+block statistic for `"block"` (default 2).}
 
 \item{smooth}{logical; local linear post-smoothing.}
 
 \item{h}{bandwidth of the post-smoother.}
 
-\item{filter}{scaling filter; see \code{\link[=wavelet_filter]{wavelet_filter()}}.}
+\item{filter}{scaling filter; see [wavelet_filter()].}
 }
 \value{
-numeric vector of estimates at \code{u}, with attribute \code{"kept"}, the
-number of detail coefficients retained at each level.
+numeric vector of estimates at `u`, with attribute `"kept"`, the
+  number of detail coefficients retained at each level.
 }
 \description{
 Hard-thresholding and block-thresholding estimators of the quantile density
@@ -53,38 +53,36 @@ computed exactly for the empirical distribution function, on a periodised
 orthonormal basis of \eqn{[0,1]}:
 \deqn{\hat q(u) = \sum_k \hat c_{\tau,k}\phi_{\tau,k}(u) +
   \sum_{j=\tau}^{j_1} \sum_k \hat d_{j,k}\, \mathrm{keep}_{j,k}\, \psi_{j,k}(u).}
-\itemize{
-\item \code{rule = "hard_general"}: hard thresholding with
-\eqn{\lambda_j = K 2^{3j/2}\sqrt{2 p \ln n / n}}, \eqn{K = \sup|\psi'|} and
-\eqn{2^{j_1} \approx (n/\ln n)^{1/4}} (Chesneau, Dewan and Doosti 2016,
-Theorem 3.2, no smoothness condition beyond the Besov ball);
-\item \code{rule = "hard_lipschitz"}: hard thresholding with
-\eqn{\lambda_j = \kappa\sqrt{\ln n / n}} and \eqn{2^{j_1} \approx \sqrt{n/\ln n}}
-(Theorem 3.4, under a Lipschitz-1/2 condition on \eqn{q});
-\item \code{rule = "block"}: block thresholding (Shirazi and Doosti 2022, eq. 6):
-at each level the coefficients are grouped in blocks of length
-\eqn{l = \lfloor\ln n\rfloor} and a block is kept when
-\eqn{l^{-1}\sum_{j \in B}|\hat d_{j,k}|^p > c\, n^{-p/2}}, with
-\eqn{j_1 = \lfloor\log_2(n / l^2)\rfloor}.
-}
+* `rule = "hard_general"`: hard thresholding with
+  \eqn{\lambda_j = K 2^{3j/2}\sqrt{2 p \ln n / n}}, \eqn{K = \sup|\psi'|} and
+  \eqn{2^{j_1} \approx (n/\ln n)^{1/4}} (Chesneau, Dewan and Doosti 2016,
+  Theorem 3.2, no smoothness condition beyond the Besov ball);
+* `rule = "hard_lipschitz"`: hard thresholding with
+  \eqn{\lambda_j = \kappa\sqrt{\ln n / n}} and \eqn{2^{j_1} \approx \sqrt{n/\ln n}}
+  (Theorem 3.4, under a Lipschitz-1/2 condition on \eqn{q});
+* `rule = "block"`: block thresholding (Shirazi and Doosti 2022, eq. 6):
+  at each level the coefficients are grouped in blocks of length
+  \eqn{l = \lfloor\ln n\rfloor} and a block is kept when
+  \eqn{l^{-1}\sum_{j \in B}|\hat d_{j,k}|^p > c\, n^{-p/2}}, with
+  \eqn{j_1 = \lfloor\log_2(n / l^2)\rfloor}.
 
 The constants of the theorems are not available in practice. By default
 \eqn{\kappa = \hat s\sqrt{2n}}, so that \eqn{\lambda = \hat s\sqrt{2\ln n}}
 (the universal threshold), and \eqn{c = 4.505^{p/2}\hat s^p n^{p/2}}, so that a block
 is kept when its mean \eqn{|\hat d|^p} exceeds \eqn{4.505^{p/2}\hat s^p}
 (the BlockJS level of Cai 1999), where \eqn{\hat s} is the median absolute
-coefficient at the finest level divided by 0.6745. With \code{smooth = TRUE} the
+coefficient at the finest level divided by 0.6745. With `smooth = TRUE` the
 estimate is post-smoothed by local linear regression (Ramirez and Vidakovic
 2010), the "smoothed" versions of both papers.
 
 The periodised basis replaces the boundary-corrected basis of Cohen et al.
 (1993) assumed by the theory; periodisation identifies the endpoints of
 \eqn{[0,1]}, so near \eqn{u = 0} and \eqn{u = 1} these estimators should be
-read with care. Local-linear post-smoothing (\code{smooth = TRUE}) helps when
+read with care. Local-linear post-smoothing (`smooth = TRUE`) helps when
 \eqn{q} is small at both ends of \eqn{[0,1]}, but when \eqn{q} is large at
 an endpoint it spreads the error caused by periodisation into the interior,
 and the unsmoothed estimators are then more accurate. In simulations the
-cross-validated estimators of \code{\link[=qdf]{qdf()}} were more accurate than all of these
+cross-validated estimators of [qdf()] were more accurate than all of these
 rules; the estimators here are mainly intended for studying the theory.
 }
 \examples{
@@ -97,9 +95,9 @@ cbind(q_true,
       block     = qdf_wavelet_nl(u, x, "block", smooth = TRUE))
 }
 \references{
-Chesneau, C., Dewan, I. and Doosti, H. (2016). \emph{Computational Statistics &
-Data Analysis}, 94, 161--174.
+Chesneau, C., Dewan, I. and Doosti, H. (2016). *Computational Statistics &
+Data Analysis*, 94, 161--174.
 
-Shirazi, E. and Doosti, H. (2022). \emph{Communications in Statistics --
-Simulation and Computation}, 51, 539--553.
+Shirazi, E. and Doosti, H. (2022). *Communications in Statistics --
+Simulation and Computation*, 51, 539--553.
 }

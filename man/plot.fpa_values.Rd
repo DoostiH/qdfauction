@@ -7,17 +7,17 @@
 \method{plot}{fpa_values}(x, true = NULL, ...)
 }
 \arguments{
-\item{x}{an \code{"fpa_values"} object.}
+\item{x}{an `"fpa_values"` object.}
 
-\item{true}{optional true values (vector or matrix in the layout of \code{bids})
+\item{true}{optional true values (vector or matrix in the layout of `bids`)
 for simulated data.}
 
-\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{passed to [graphics::plot()].}
 }
 \value{
 No return value, called for its side effect of plotting the
-recovered pseudo-values against the bids (with the monotone fit and the
-true values when available). The object \code{x} is returned invisibly.
+  recovered pseudo-values against the bids (with the monotone fit and the
+  true values when available). The object `x` is returned invisibly.
 }
 \description{
 Plot recovered private values against bids

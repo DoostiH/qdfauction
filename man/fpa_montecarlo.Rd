@@ -25,29 +25,29 @@ fpa_montecarlo(
 
 \item{L, n}{auctions and bidders per replication.}
 
-\item{Q, q, family, theta}{private-value model, as in \code{\link[=fpa_simulate]{fpa_simulate()}}.}
+\item{Q, q, family, theta}{private-value model, as in [fpa_simulate()].}
 
-\item{estimators}{a named list of functions \verb{function(bids, values)}
-returning an object accepted by \code{score} (typically \code{\link[=fpa_values]{fpa_values()}} or
-\code{\link[=fpa_density]{fpa_density()}} fits, or a numeric vector).}
+\item{estimators}{a named list of functions `function(bids, values)`
+returning an object accepted by `score` (typically [fpa_values()] or
+[fpa_density()] fits, or a numeric vector).}
 
-\item{score}{a function \verb{function(fit, bids, values)} returning a named
-numeric vector, e.g. a wrapper around \code{\link[=fpa_evaluate_values]{fpa_evaluate_values()}}.}
+\item{score}{a function `function(fit, bids, values)` returning a named
+numeric vector, e.g. a wrapper around [fpa_evaluate_values()].}
 
 \item{seed}{optional seed.}
 
 \item{verbose}{print progress every 10 replications.}
 
 \item{p0, eta}{screening quantile of the reserve price and CRRA parameter,
-passed to \code{\link[=fpa_bid_function]{fpa_bid_function()}} and \code{\link[=fpa_simulate]{fpa_simulate()}}.}
+passed to [fpa_bid_function()] and [fpa_simulate()].}
 }
 \value{
-a data frame with columns \code{rep}, \code{estimator} and one column per
-criterion; \code{summary()} on the result (via \code{aggregate}) gives the table.
+a data frame with columns `rep`, `estimator` and one column per
+  criterion; `summary()` on the result (via `aggregate`) gives the table.
 }
 \description{
-Repeats: simulate auctions with \code{\link[=fpa_simulate]{fpa_simulate()}}, apply each estimator in
-\code{estimators} to the bids, and score it with \code{score}. Designed to
+Repeats: simulate auctions with [fpa_simulate()], apply each estimator in
+`estimators` to the bids, and score it with `score`. Designed to
 regenerate the simulation tables of the papers behind this package.
 }
 \examples{

@@ -12,16 +12,17 @@ fpa_density_boot(
   x = NULL,
   B = 199,
   level = 0.95,
-  resample = c("bids", "auctions"),
+  resample = c("bids", "auctions", "blocks"),
+  L = "auto",
   ...
 )
 
 \method{plot}{fpa_density_boot}(x, true = NULL, ...)
 }
 \arguments{
-\item{bids}{pooled bids (vector) or an \code{L} by \code{n} matrix.}
+\item{bids}{pooled bids (vector) or an `L` by `n` matrix.}
 
-\item{n}{bidders per auction (from \code{ncol(bids)} for a matrix).}
+\item{n}{bidders per auction (from `ncol(bids)` for a matrix).}
 
 \item{method}{second-stage estimator; see Description.}
 
@@ -32,28 +33,31 @@ the pseudo-values (excluding the extreme 0.5 percent at each end).}
 
 \item{level}{confidence level.}
 
-\item{resample}{\code{"bids"} (pooled bids with replacement) or \code{"auctions"}
+\item{resample}{`"bids"` (pooled bids with replacement) or `"auctions"`
 (whole auctions; requires a bid matrix).}
 
-\item{...}{further arguments to \code{\link[=fpa_density]{fpa_density()}} (e.g. \code{j0}, \code{h}, \code{first_stage}).}
+\item{L}{block length when `resample = "blocks"`: `"auto"` for the rule of
+[block_length_auto()], or an integer. Ignored by the other schemes.}
+
+\item{...}{further arguments to [fpa_density()] (e.g. `j0`, `h`, `first_stage`).}
 
 \item{true}{optional true density function (simulated data).}
 }
 \value{
-an object of class \code{"fpa_density_boot"} with \code{x}, \code{f}, \code{se},
-\code{lower}, \code{upper} (pointwise), \code{band_lower}, \code{band_upper}, \code{crit}, \code{level},
-\code{method}, \code{B} and the matrix \code{boot} of bootstrap estimates.
+an object of class `"fpa_density_boot"` with `x`, `f`, `se`,
+  `lower`, `upper` (pointwise), `band_lower`, `band_upper`, `crit`, `level`,
+  `method`, `B` and the matrix `boot` of bootstrap estimates.
 }
 \description{
 Pointwise percentile intervals and a uniform confidence band for the
-private-value density estimated by any \code{\link[=fpa_density]{fpa_density()}} method, for example
+private-value density estimated by any [fpa_density()] method, for example
 the quantile-based estimator of Marmer and Shneyerov (2012) or the wavelet
 estimators. The whole two-step procedure (first stage, unit map, second
-stage) is repeated on \code{B} bootstrap samples. The uniform band is
+stage) is repeated on `B` bootstrap samples. The uniform band is
 \eqn{\hat f(x) \pm c^*\,\hat\sigma^*(x)}, with \eqn{\hat\sigma^*} the
 bootstrap standard deviation and \eqn{c^*} the \eqn{1-\alpha} quantile of
 \eqn{\sup_x |\hat f^*(x) - \hat f(x)|/\hat\sigma^*(x)}. For the GPV estimator,
-\code{\link[=fpa_density_ci]{fpa_density_ci()}} gives the analytic studentisation of Ma, Marmer and
+[fpa_density_ci()] gives the analytic studentisation of Ma, Marmer and
 Shneyerov (2019).
 
 The percentile bootstrap reproduces the variability of the estimator but not
@@ -63,9 +67,15 @@ in moderate samples (in a small check with the Marmer--Shneyerov estimator,
 Undersmoothing, i.e. a smaller bandwidth than is optimal for estimation,
 is the usual remedy.
 }
+\details{
+If the auctions have a time order and the same bidders recur,
+  resampling auctions or bids independently understates the sampling
+  uncertainty, in proportion to the dependence; use
+  `resample = "blocks"` in that case.
+}
 \section{Reproducibility}{
 
-Call \code{\link[=set.seed]{set.seed()}} beforehand to make the bootstrap reproducible.
+Call [set.seed()] beforehand to make the bootstrap reproducible.
 }
 
 \examples{

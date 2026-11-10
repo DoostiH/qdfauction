@@ -25,29 +25,29 @@ fpa_optimal_reserve_qd(
 )
 }
 \arguments{
-\item{values}{an \code{\link[=fpa_values]{fpa_values()}} object; its bids, pseudo-values, copula
+\item{values}{an [fpa_values()] object; its bids, pseudo-values, copula
 specification (fitted \eqn{\hat\theta}, or independence) and CRRA
 parameter are used.}
 
-\item{r}{reserve prices at which to evaluate \eqn{\hat R}; alternatively \code{p}.}
+\item{r}{reserve prices at which to evaluate \eqn{\hat R}; alternatively `p`.}
 
 \item{p}{reserve quantiles.}
 
 \item{v_s}{seller's valuation.}
 
 \item{qdf_method, bandwidth}{quantile density estimator for the
-pseudo-values, passed to \code{\link[=qdf]{qdf()}} (default: Poisson weights, robust
+pseudo-values, passed to [qdf()] (default: Poisson weights, robust
 likelihood cross-validation, as in Doosti 2026c).}
 
-\item{...}{further arguments to \code{\link[=qdf]{qdf()}}.}
+\item{...}{further arguments to [qdf()].}
 
-\item{p_max}{largest reserve quantile searched by \code{fpa_optimal_reserve_qd()}.}
+\item{p_max}{largest reserve quantile searched by `fpa_optimal_reserve_qd()`.}
 }
 \value{
-\code{fpa_revenue_qd()}: numeric vector \eqn{\hat R}.
-\code{fpa_optimal_reserve_qd()}: a list with \code{r_star}, \code{p_star}, \code{revenue},
-\code{interior} (\code{FALSE} when \eqn{\hat R} is maximised at the smallest reserve,
-i.e. no binding reserve is optimal) and the evaluated curve \code{p}, \code{R}.
+`fpa_revenue_qd()`: numeric vector \eqn{\hat R}.
+  `fpa_optimal_reserve_qd()`: a list with `r_star`, `p_star`, `revenue`,
+  `interior` (`FALSE` when \eqn{\hat R} is maximised at the smallest reserve,
+  i.e. no binding reserve is optimal) and the evaluated curve `p`, `R`.
 }
 \description{
 Estimates the seller's expected revenue \eqn{R(p)} at reserve quantile
@@ -71,7 +71,7 @@ satisfies the generalised Myerson condition
 \eqn{r^* = v_s + q_V(p^*) H(p^*; \theta)}, which reduces to
 \eqn{r^* = v_s + (1 - F(r^*))/f(r^*)} under independence.
 This is Stage 3 of the copula--quantile density estimator; Stages 1--2 are
-\code{\link[=fpa_values]{fpa_values()}} with the same \code{family}.
+[fpa_values()] with the same `family`.
 }
 \examples{
 \donttest{

@@ -7,16 +7,16 @@
 \method{plot}{fpa_density_ci}(x, true = NULL, ...)
 }
 \arguments{
-\item{x}{an \code{"fpa_density_ci"} object.}
+\item{x}{an `"fpa_density_ci"` object.}
 
 \item{true}{optional true density function for simulated data.}
 
-\item{...}{passed to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{passed to [graphics::plot()].}
 }
 \value{
 No return value, called for its side effect of drawing the
-density estimate with its pointwise confidence interval and uniform
-confidence band. The object \code{x} is returned invisibly.
+  density estimate with its pointwise confidence interval and uniform
+  confidence band. The object `x` is returned invisibly.
 }
 \description{
 Plot a GPV density estimate with confidence bands

@@ -13,27 +13,27 @@ copula_spec_test(
 )
 }
 \arguments{
-\item{bids}{an \code{L} by \code{n} matrix or data frame of bids.}
+\item{bids}{an `L` by `n` matrix or data frame of bids.}
 
-\item{family}{\code{"clayton"}, \code{"gumbel"}, \code{"frank"} or \code{"independence"}.}
+\item{family}{`"clayton"`, `"gumbel"`, `"frank"` or `"independence"`.}
 
 \item{B}{number of bootstrap replications.}
 
 \item{grid}{interior quantiles over which the supremum is taken.}
 
-\item{b}{beta-kernel bandwidth, see \code{\link[=copula_psi_np]{copula_psi_np()}}.}
+\item{b}{beta-kernel bandwidth, see [copula_psi_np()].}
 }
 \value{
-an object of class \code{"htest"} with the statistic, the bootstrap
-p-value and the fitted parameter.
+an object of class `"htest"` with the statistic, the bootstrap
+  p-value and the fitted parameter.
 }
 \description{
 Tests whether an exchangeable Archimedean copula family is compatible with
 the bids, using
 \eqn{T = \sup_u |\hat\psi_{NP}(u) - \psi(u; \hat\theta)|} over a grid of
 interior quantiles (Doosti 2026a), where \eqn{\hat\psi_{NP}} is
-\code{\link[=copula_psi_np]{copula_psi_np()}} and \eqn{\hat\theta} is the pseudo-maximum-likelihood
-estimate of \code{\link[=copula_fit]{copula_fit()}}. Critical values come from a parametric bootstrap
+[copula_psi_np()] and \eqn{\hat\theta} is the pseudo-maximum-likelihood
+estimate of [copula_fit()]. Critical values come from a parametric bootstrap
 under the null: rank matrices are simulated from the fitted copula, the
 parameter is re-estimated and the statistic recomputed. Because both
 multipliers depend on the bids only through their ranks, the test does not
@@ -41,7 +41,7 @@ involve the marginal distribution.
 }
 \section{Reproducibility}{
 
-Call \code{\link[=set.seed]{set.seed()}} beforehand to make the bootstrap reproducible.
+Call [set.seed()] beforehand to make the bootstrap reproducible.
 }
 
 \examples{

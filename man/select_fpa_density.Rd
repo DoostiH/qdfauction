@@ -24,27 +24,27 @@ select_fpa_density(
 )
 }
 \arguments{
-\item{bids}{pooled bids (vector) or an \code{L} by \code{n} matrix.}
+\item{bids}{pooled bids (vector) or an `L` by `n` matrix.}
 
-\item{n}{bidders per auction (from \code{ncol(bids)} for a matrix).}
+\item{n}{bidders per auction (from `ncol(bids)` for a matrix).}
 
 \item{method}{second-stage estimator; see Description.}
 
-\item{first_stage}{\code{"gpv_hh"} (default), \code{"gpv"}, an \code{\link[=fpa_values]{fpa_values()}} object,
-or the name of a \code{\link[=qdf]{qdf()}} method to use through \code{\link[=fpa_values]{fpa_values()}}.}
+\item{first_stage}{`"gpv_hh"` (default), `"gpv"`, an [fpa_values()] object,
+or the name of a [qdf()] method to use through [fpa_values()].}
 
 \item{j0_grid, h_grid}{candidate values.}
 
 \item{folds}{number of folds.}
 
-\item{criterion}{\code{"lscv"} or \code{"loglik"}.}
+\item{criterion}{`"lscv"` or `"loglik"`.}
 
-\item{scale}{\code{"auto"}, \code{"log"}, \code{"minmax"} or \code{"none"}.}
+\item{scale}{`"auto"`, `"log"`, `"minmax"` or `"none"`.}
 
-\item{filter, dwt_filter, levels}{wavelet settings; see \code{\link[=qdf_wavelet]{qdf_wavelet()}}.}
+\item{filter, dwt_filter, levels}{wavelet settings; see [qdf_wavelet()].}
 
-\item{kernel, side}{kernel and correction side for \code{\link[=kde_hh]{kde_hh()}} (used in the
-\code{"gpv_hh"} first stage and the \code{"kde_hh"} second stage).}
+\item{kernel, side}{kernel and correction side for [kde_hh()] (used in the
+`"gpv_hh"` first stage and the `"kde_hh"` second stage).}
 
 \item{n_int}{number of points for the numerical integral of \eqn{\hat f^2}.}
 
@@ -52,48 +52,46 @@ or the name of a \code{\link[=qdf]{qdf()}} method to use through \code{\link[=fp
 (default 0.05; 0 scores the whole interval).}
 }
 \value{
-a list with \code{j0}, \code{h}, \code{criterion} and the matrix of summed scores
-\code{ll} (rows \code{j0_grid}, columns \code{h_grid}; larger is better).
+a list with `j0`, `h`, `criterion` and the matrix of summed scores
+  `ll` (rows `j0_grid`, columns `h_grid`; larger is better).
 }
 \description{
-Chooses \code{j0} (and \code{h} for \code{"wavelet_ll"}) by \code{folds}-fold cross-validation
+Chooses `j0` (and `h` for `"wavelet_ll"`) by `folds`-fold cross-validation
 on the bids: the first stage and the unit map are fitted on the training
 bids and applied to the held-out bids, and the second-stage density
 \eqn{\hat f_{-k}} is scored on the held-out pseudo-values by one of two
 criteria:
-\itemize{
-\item \code{"lscv"} (default): least-squares cross-validation (Rudemo 1982; Bowman
-1984), \eqn{\sum_k \{ \int \hat f_{-k}^2 - 2\,\bar{\hat f}_{-k}(\text{held-out}) \}},
-an unbiased estimate of the integrated squared error up to a constant, so
-that the selected pair targets MISE;
-\item \code{"loglik"}: the held-out log-likelihood \eqn{\sum_k \sum_i \log \hat f_{-k}(\hat v_i)},
-which targets Kullback--Leibler divergence. Because the held-out points are
-pseudo-values carrying first-stage error, this criterion tends to favour
-the smallest bandwidth on the grid; it is kept for comparison.
-}
+* `"lscv"` (default): least-squares cross-validation (Rudemo 1982; Bowman
+  1984), \eqn{\sum_k \{ \int \hat f_{-k}^2 - 2\,\bar{\hat f}_{-k}(\text{held-out}) \}},
+  an unbiased estimate of the integrated squared error up to a constant, so
+  that the selected pair targets MISE;
+* `"loglik"`: the held-out log-likelihood \eqn{\sum_k \sum_i \log \hat f_{-k}(\hat v_i)},
+  which targets Kullback--Leibler divergence. Because the held-out points are
+  pseudo-values carrying first-stage error, this criterion tends to favour
+  the smallest bandwidth on the grid; it is kept for comparison.
 
 Both criteria are evaluated on the interior \eqn{[\delta, 1-\delta]} of the
-unit interval (\code{trim}): pseudo-values that fall outside \eqn{[0,1]} are
+unit interval (`trim`): pseudo-values that fall outside \eqn{[0,1]} are
 projected onto the boundary (Algorithm 1 of the paper), which creates a
 spurious point mass there that a small bandwidth reproduces; excluding a
 boundary strip from the score removes this artefact, in the spirit of the
-boundary trimming of Guerre, Perrigne and Vuong (2000). For \code{"lscv"} the
+boundary trimming of Guerre, Perrigne and Vuong (2000). For `"lscv"` the
 trimmed criterion is \eqn{\int_\delta^{1-\delta}\hat f^2 - 2 n_k^{-1}\sum_{\hat v_i \in [\delta,1-\delta]} \hat f(\hat v_i)},
 an unbiased estimate of the ISE over the interior up to a constant.
 
 The returned score is oriented so that larger is better in both cases
-(\code{-LSCV} for \code{"lscv"}).
+(`-LSCV` for `"lscv"`).
 }
 \section{Reproducibility}{
 
 Fold assignment (or bootstrap resampling) uses R's random number generator;
-call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+call [set.seed()] beforehand to make results exactly reproducible.
 }
 
 \references{
 Rudemo, M. (1982). Empirical choice of histograms and kernel density
-estimators. \emph{Scandinavian Journal of Statistics}, 9, 65--78.
+estimators. *Scandinavian Journal of Statistics*, 9, 65--78.
 
 Bowman, A. W. (1984). An alternative method of cross-validation for the
-smoothing of density estimates. \emph{Biometrika}, 71, 353--360.
+smoothing of density estimates. *Biometrika*, 71, 353--360.
 }

@@ -10,6 +10,8 @@ cv_fits <- function(x, h, fun, u, loo = TRUE) {
   q  <- fun(u, x, h)
   q_loo <- if (loo) {
     if (identical(fun, qdf_bernstein)) qdf_bernstein_loo(u, x, h)       # exact, O(n K)
+    else if (isFALSE(attr(fun, "bernstein_anchor")))
+      qdf_bernstein_loo(u, x, h, zero_at_origin = FALSE)                # exact, O(n K)
     else vapply(seq_len(n), function(i) fun(u[i], x[-i], h), numeric(1))
   } else {
     # Scaling approximation q_{-i} ~ q (n-1)/n. NOT valid for estimators built
@@ -149,9 +151,9 @@ wbcv_criterion <- function(m, x, fun, loo = TRUE, u_scheme = c("i/(n+1)", "i/n")
 #' @param optimizer optional function `optimizer(f, interval)` used instead of
 #'   [stats::optimize()]; it must return a list with elements `minimum` and
 #'   `objective`. Useful to plug in a global optimiser for criteria with several
-#'   local minima, e.g. `function(f, interval) { g <- seq(interval[1],
+#'   local minima, e.g. `function(f, interval) \{ g <- seq(interval[1],
 #'   interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)],
-#'   objective = min(v)) }` for an exhaustive grid search. When `optimizer`
+#'   objective = min(v)) \}` for an exhaustive grid search. When `optimizer`
 #'   is supplied it is used, and `grid = "exhaustive"` is treated as `grid = 0`.
 #' @return a list with `h`, `m`, `selector`, `criterion` (the minimised value)
 #'   and `m_range`; `at_boundary` (logical) and `boundary` (`"lower"`,

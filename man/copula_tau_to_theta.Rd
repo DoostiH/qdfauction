@@ -12,7 +12,7 @@ copula_theta_to_tau(theta, family = c("clayton", "gumbel", "frank"))
 \arguments{
 \item{tau, theta}{scalar values.}
 
-\item{family}{\code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"clayton"`, `"gumbel"` or `"frank"`.}
 }
 \value{
 numeric scalar.

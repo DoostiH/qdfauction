@@ -17,25 +17,25 @@ quantile_indirect_poisson(
 
 \item{x}{numeric sample (sorted internally).}
 
-\item{h}{for \code{qdf_jones()} and \code{qdf_soni()} the kernel density bandwidth on
-the data scale; for \code{qdf_indirect_poisson()} the smoothing parameter
+\item{h}{for `qdf_jones()` and `qdf_soni()` the kernel density bandwidth on
+the data scale; for `qdf_indirect_poisson()` the smoothing parameter
 \eqn{1/m} of the Poisson weights on the data scale.}
 
-\item{tol}{root-finding tolerance passed to \code{\link[stats:uniroot]{stats::uniroot()}} when
+\item{tol}{root-finding tolerance passed to [stats::uniroot()] when
 inverting the smoothed distribution function.}
 
 \item{invert}{how the smoothed distribution function is inverted:
-\code{"newton"} tabulates it on a grid and refines by Newton steps (efficient
-for many evaluation points); \code{"uniroot"} reproduces the original
-implementation with \code{\link[stats:uniroot]{stats::uniroot()}} (efficient for a few points;
-accuracy governed by \code{tol}); \code{"auto"} (default) picks by \code{length(u)}.}
+`"newton"` tabulates it on a grid and refines by Newton steps (efficient
+for many evaluation points); `"uniroot"` reproduces the original
+implementation with [stats::uniroot()] (efficient for a few points;
+accuracy governed by `tol`); `"auto"` (default) picks by `length(u)`.}
 }
 \value{
-numeric vector of smoothed quantiles at \code{u}.
+numeric vector of smoothed quantiles at `u`.
 }
 \description{
 Returns the Poisson-smoothed quantile function \eqn{\tilde Q(u)} used by
-\code{\link[=qdf_indirect_poisson]{qdf_indirect_poisson()}}; useful for plotting or for constructing
+[qdf_indirect_poisson()]; useful for plotting or for constructing
 pseudo-values.
 }
 \keyword{internal}

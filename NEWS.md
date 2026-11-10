@@ -1,3 +1,97 @@
+# qdfauction 0.3.0
+
+## New features
+
+### Procurement (lowest-bid-wins) auctions
+
+* Procurement auctions are supported by reflection: `proc_values()`,
+  `proc_cost()`, `proc_optimal_ceiling()`, `proc_cost_boot()`,
+  `proc_simulate()` and `proc_M()`. Bids are reflected, `b' = M - b`, every
+  existing estimator, selector, monotonisation, risk-aversion and copula
+  adjustment applies unchanged to the reflected sample, and results are
+  mapped back (costs `c = M - v'`, ranks `u = 1 - u'`). Expected procurement
+  cost with a price ceiling `r` and buyer outside option `v0` is
+  `M - R'(M - r; M - v0)`, evaluated with the quantile-density functionals.
+* `proc_M()` sets the reflection constant just above the largest bid, so the
+  reflected sample starts near zero where the `Q_n(0) = 0` anchor of the
+  series estimators holds.
+* Supported dependence families for procurement are `"independence"`,
+  `"frank"` (radially symmetric, so unchanged by reflection) and
+  `"nonparametric"` (rank based, hence also unaffected). `"clayton"` and
+  `"gumbel"` are refused with an explanatory error: reflection maps them to
+  their 180-degree rotated (survival) copulas, which are not yet implemented.
+* `proc_values()` defaults to `monotone = "isotonic"`, because the
+  natural-spline replacement extrapolates into the lower bid tail, which in
+  procurement is the winners' tail. The default of `fpa_values()` is
+  unchanged.
+
+### Bootstrap inference under dependence across auctions
+
+* `fpa_revenue_boot()`, `fpa_density_boot()` and `proc_cost_boot()` gain
+  `resample = "blocks"`, a circular moving-block bootstrap over consecutive
+  auctions, with block length `L = "auto"` or an integer. Whole auctions are
+  still resampled together, so any within-auction copula structure is kept,
+  while dependence across auctions is retained as well. The bandwidth is
+  selected once on the full sample and held fixed in every refit, as for the
+  existing schemes. Rows must be in time order, which the package cannot
+  check, so this is never the default.
+* `block_length_auto()` returns `ceiling(2 * L_pw)`, with `L_pw` the
+  Politis-White block length of the per-auction winning bid
+  (`winner = "max"` for sales, `"min"` for procurement), capped at half the
+  number of auctions. It warns when the number of auctions divided by `L_pw`
+  falls below 15: the sample is then short relative to its dependence range
+  and the interval is a lower bound on the sampling uncertainty. Requires the
+  suggested package `np`.
+* `resample_blocks()`, `fpa_block_boot()`, `fpa_revenue_boot_blocks()` and
+  `fpa_quantile_boot_blocks()` expose the scheme for any statistic of an
+  `fpa_values()` fit.
+
+### Other
+
+* `qdf()` gains `zero_at_origin` for the Bernstein estimator, previously
+  reachable only by calling `qdf_bernstein()` directly. The default `TRUE`
+  reproduces earlier versions; `FALSE` anchors at the smallest observation
+  instead, which is preferable when the data do not start near zero. The
+  exact O(nK) leave-one-out path is used for either setting.
+* `proc_check_winning_bid()` compares the model's expected winning bid with
+  the sample mean of the auction minima: under the correct dependence
+  specification the two agree up to sampling error, so a gap is a
+  specification check.
+* `bid_icc()` gives the between-group share of residual bid variance. Grouped
+  by auction it measures within-auction dependence; grouped by firm it
+  measures a permanent firm effect.
+* `fpa_values()` documents that `zero_at_origin`, `grid` and the other
+  arguments of `qdf()` can be passed through `...`, and records the exact
+  combination that reproduces the published revenue estimator. A new test
+  checks that reproduction on the `timber` data.
+* The package now ships `inst/CITATION`.
+
+## Bug fixes
+
+* `copula_psi()`, `copula_delta()` and `copula_delta_prime()` now use the
+  independence formulas when the fitted dependence is numerically
+  negligible (Kendall's tau at or below 0.01). Near those limits the Frank
+  and Clayton generators are ill-conditioned, and the reserve-price integrals
+  built on them lost accuracy well before the multiplier itself did: with
+  `family = "frank"` and five independent bidders the optimal reserve or
+  ceiling was biased by about +0.2 while the pseudo-values were unaffected.
+* `fpa_revenue()` accepts a vector `v_s` of the same length as `r`;
+  previously this failed.
+* `resample_blocks()` accepts a double number of auctions; previously it
+  failed unless the count was an integer.
+
+## Documentation
+
+* The help pages of `fpa_revenue_boot()` and `fpa_density_boot()` state that
+  resampling auctions or bids independently understates uncertainty when the
+  auctions have a time order and the same bidders recur, and point to
+  `resample = "blocks"`.
+* `?fpa_revenue` notes that its plug-in form rebuilds winners' bids from the
+  pseudo-value distribution and assumes values independent within an auction;
+  for procurement data, or dependent values, `fpa_revenue_qd()` is the right
+  functional. The error for a pooled vector now also points to
+  `proc_values()` and `proc_cost()`.
+
 # qdfauction 0.2.0
 
 This release combines the changes made for the revisions of Doosti (2026b,

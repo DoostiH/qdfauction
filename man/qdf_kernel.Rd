@@ -16,24 +16,23 @@ qdf_kernel_corrected(u, x, h, kernel = "gaussian")
 
 \item{h}{bandwidth on the probability scale (\eqn{0 < h < 1}).}
 
-\item{kernel}{\code{"gaussian"} (default), \code{"triangular"} or \code{"epanechnikov"}, or
-a user-defined kernel from \code{\link[=make_kernel]{make_kernel()}} (or a kernel density function).
+\item{kernel}{`"gaussian"` (default), `"triangular"` or `"epanechnikov"`, or
+a user-defined kernel from [make_kernel()] (or a kernel density function).
 Soni, Dewan and Jain (2012) used the triangular and Epanechnikov kernels.}
 }
 \value{
-numeric vector of quantile density estimates at \code{u}.
+numeric vector of quantile density estimates at `u`.
 }
 \description{
 Kernel-type estimators that smooth the empirical quantile function directly.
-\itemize{
-\item \code{qdf_kernel()} is the Jones (1992) estimator
-\deqn{\hat q(u) = \sum_{i=1}^n X_{(i)} \{ k_h((i-1)/n - u) - k_h(i/n - u) \}}
-with a Gaussian kernel \eqn{k_h(a) = k(a/h)/h}.
-\item \code{qdf_kernel_corrected()} is the boundary-corrected version (estimator 2 of
-Doosti, Dewan and Talebian 2025), which renormalises the kernel weights by
-the mass falling inside \eqn{[0,1]} and adds a correction proportional to
-the kernel quantile estimator.
-}
+
+* `qdf_kernel()` is the Jones (1992) estimator
+  \deqn{\hat q(u) = \sum_{i=1}^n X_{(i)} \{ k_h((i-1)/n - u) - k_h(i/n - u) \}}
+  with a Gaussian kernel \eqn{k_h(a) = k(a/h)/h}.
+* `qdf_kernel_corrected()` is the boundary-corrected version (estimator 2 of
+  Doosti, Dewan and Talebian 2025), which renormalises the kernel weights by
+  the mass falling inside \eqn{[0,1]} and adds a correction proportional to
+  the kernel quantile estimator.
 }
 \examples{
 x <- rgamma(100, 5, 1)
@@ -43,13 +42,13 @@ qdf_kernel_corrected(u, x, h = 0.05)
 }
 \references{
 Jones, M. C. (1992). Estimating densities, quantiles, quantile densities and
-density quantiles. \emph{Annals of the Institute of Statistical Mathematics}, 44,
+density quantiles. *Annals of the Institute of Statistical Mathematics*, 44,
 721--727.
 
 Chaubey, Y. P., Dewan, I. and Li, J. (2024). On some non parametric
 estimators of the quantile density function for a stationary associated
-process. \emph{Communications in Statistics -- Theory and Methods}, 53, 5553--5573.
+process. *Communications in Statistics -- Theory and Methods*, 53, 5553--5573.
 }
 \seealso{
-\code{\link[=qdf]{qdf()}} for automatic bandwidth selection.
+[qdf()] for automatic bandwidth selection.
 }

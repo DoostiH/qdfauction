@@ -7,17 +7,17 @@
 \method{plot}{qdf}(x, true = NULL, ...)
 }
 \arguments{
-\item{x}{a \code{"qdf"} object.}
+\item{x}{a `"qdf"` object.}
 
-\item{true}{optional function of \code{u} giving the true quantile density, drawn
+\item{true}{optional function of `u` giving the true quantile density, drawn
 for comparison.}
 
-\item{...}{further arguments passed to \code{\link[graphics:plot]{graphics::plot()}}.}
+\item{...}{further arguments passed to [graphics::plot()].}
 }
 \value{
 No return value, called for its side effect of drawing the
-estimated quantile density (and the true one, if supplied). The object
-\code{x} is returned invisibly.
+  estimated quantile density (and the true one, if supplied). The object
+  `x` is returned invisibly.
 }
 \description{
 Plot a quantile density estimate

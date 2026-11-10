@@ -65,7 +65,13 @@
 #' @param df degrees of freedom of the natural spline (default 6).
 #' @param psi_bw beta-kernel bandwidth for `family = "nonparametric"`; see
 #'   [copula_psi_np()].
-#' @param ... further arguments to [qdf()] (e.g. `kernel`, `H`, `j0`, `m_range`).
+#' @param ... further arguments to [qdf()] (e.g. `kernel`, `H`, `j0`,
+#'   `m_range`, `grid`, `zero_at_origin`). In particular
+#'   `zero_at_origin = FALSE` switches the Bernstein estimator to the
+#'   \eqn{\hat Q(0) = X_{(1)}} anchor; with `method = "bernstein"`,
+#'   `bandwidth = "sqrt"`, `u_scheme = "i/(n+1)"`, `monotone = "none"` and
+#'   `trim = 0` this reproduces the pseudo-values of the revenue estimator of
+#'   Doosti (2026b) exactly.
 #' @return An object of class `"fpa_values"`: a list with
 #' \describe{
 #'   \item{bids, u}{sorted pooled bids and their scores}

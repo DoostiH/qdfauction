@@ -17,21 +17,21 @@ wbcv_criterion(m, x, fun, loo = TRUE, u_scheme = c("i/(n+1)", "i/n"))
 
 \item{x}{numeric sample (sorted internally).}
 
-\item{fun}{an estimator with signature \code{fun(u, x, h)}, e.g. \code{\link[=qdf_kernel]{qdf_kernel()}}.
-Extra arguments (such as \code{H} for \code{\link[=qdf_soni]{qdf_soni()}}) should be bound with a
+\item{fun}{an estimator with signature `fun(u, x, h)`, e.g. [qdf_kernel()].
+Extra arguments (such as `H` for [qdf_soni()]) should be bound with a
 closure before calling.}
 
-\item{loo}{logical; if \code{TRUE} (default) leave-one-out fits are computed
+\item{loo}{logical; if `TRUE` (default) leave-one-out fits are computed
 exactly (by refitting without observation \eqn{i}, or by the index shift of
-\code{\link[=qdf_bernstein_loo]{qdf_bernstein_loo()}} for the Bernstein estimator). If \code{FALSE} the scaling
+[qdf_bernstein_loo()] for the Bernstein estimator). If `FALSE` the scaling
 approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used. The
 approximation is not valid for estimators built from order statistics:
 removing \eqn{X_{(i)}} shifts every higher quantile position, and with it
-least-squares criteria select the roughest fit in \code{m_range}. It is kept
+least-squares criteria select the roughest fit in `m_range`. It is kept
 only for backward compatibility.}
 
-\item{u_scheme}{grid on which the criterion is evaluated: \code{"i/n"} (the
-published convention) or \code{"i/(n+1)"}.}
+\item{u_scheme}{grid on which the criterion is evaluated: `"i/n"` (the
+published convention) or `"i/(n+1)"`.}
 }
 \value{
 a single numeric value; smaller is better.
@@ -39,35 +39,34 @@ a single numeric value; smaller is better.
 \description{
 Three data-driven criteria for the smoothing parameter of a quantile density
 estimator, written as functions of \eqn{m = 1/h} so that they can be passed
-to \code{\link[stats:optimize]{stats::optimize()}}. Each is evaluated on the grid \eqn{u_i = i/n} with
+to [stats::optimize()]. Each is evaluated on the grid \eqn{u_i = i/n} with
 spacings \eqn{\Delta_i = X_{(i)} - X_{(i-1)}}, \eqn{X_{(0)} = 0}, so that
 \eqn{\sum_i \Delta_i\, \phi(\hat q(u_i))} approximates \eqn{\int \phi\{1/\hat g(x)\}\,dx}.
-\itemize{
-\item \code{bcv_criterion()} is the biased (least-squares) cross-validation used by
-Chaubey, Dewan and Li (2024) and Doosti, Dewan and Talebian (2025):
-\deqn{\mathrm{BCV}(h) = \sum_i \Delta_i\, \hat q(u_i;h)^{-2} - \frac{2}{n}\sum_i \hat q_{-i}(u_i;h)^{-1},}
-i.e. the classical \eqn{\int \hat g^2 - 2\,\bar{\hat g}_{-i}} written in
-terms of \eqn{\hat q = 1/\hat g}. (Equation (11) of Doosti, Dewan and
-Talebian (2025) prints \eqn{\hat q^2} in the first term; the simulation
-code, reproduced here, uses \eqn{\hat q^{-2}}.)
-\item \code{rlcv_criterion()} is the robust likelihood cross-validation of Wu (2019),
-\eqn{-\{ \frac1n \sum_i \ln^*(\hat q_{-i}(u_i)^{-1}) - b^*(h) \}}, with
-\eqn{\ln^*} linearised below the threshold \eqn{a_n}. It is written so that
-it is \emph{minimised}.
-\item \code{wbcv_criterion()} is the weighted criterion of Doosti (2026b), which
-targets \eqn{u\,q(u)} (the quantity entering the first-price auction
-inversion) rather than \eqn{q(u)}:
-\deqn{\mathrm{WBCV}(h) = \sum_i \Delta_i\{u_i \hat q(u_i)\}^2 - \frac{2}{n}\sum_i u_i / \hat q_{-i}(u_i).}
-\strong{Not recommended; kept only for backward compatibility.} The criterion
-is not scale-invariant: its two terms have different units (the first scales
-like the cube of the data units, the second like their inverse), so the
-selected bandwidth depends on the units of the data; on data of order one
-or larger the first term dominates and the criterion tends to select the
-smoothest fit in \code{m_range}. The criterion is being revised (Doosti 2026b,
-revised version); \code{wbcv_criterion()} and \code{bandwidth = "wbcv"} issue a
-warning and are kept only so that existing code runs. Use BCV, RLCV or a
-numeric bandwidth instead.
-}
+
+* `bcv_criterion()` is the biased (least-squares) cross-validation used by
+  Chaubey, Dewan and Li (2024) and Doosti, Dewan and Talebian (2025):
+  \deqn{\mathrm{BCV}(h) = \sum_i \Delta_i\, \hat q(u_i;h)^{-2} - \frac{2}{n}\sum_i \hat q_{-i}(u_i;h)^{-1},}
+  i.e. the classical \eqn{\int \hat g^2 - 2\,\bar{\hat g}_{-i}} written in
+  terms of \eqn{\hat q = 1/\hat g}. (Equation (11) of Doosti, Dewan and
+  Talebian (2025) prints \eqn{\hat q^2} in the first term; the simulation
+  code, reproduced here, uses \eqn{\hat q^{-2}}.)
+* `rlcv_criterion()` is the robust likelihood cross-validation of Wu (2019),
+  \eqn{-\{ \frac1n \sum_i \ln^*(\hat q_{-i}(u_i)^{-1}) - b^*(h) \}}, with
+  \eqn{\ln^*} linearised below the threshold \eqn{a_n}. It is written so that
+  it is *minimised*.
+* `wbcv_criterion()` is the weighted criterion of Doosti (2026b), which
+  targets \eqn{u\,q(u)} (the quantity entering the first-price auction
+  inversion) rather than \eqn{q(u)}:
+  \deqn{\mathrm{WBCV}(h) = \sum_i \Delta_i\{u_i \hat q(u_i)\}^2 - \frac{2}{n}\sum_i u_i / \hat q_{-i}(u_i).}
+  **Not recommended; kept only for backward compatibility.** The criterion
+  is not scale-invariant: its two terms have different units (the first scales
+  like the cube of the data units, the second like their inverse), so the
+  selected bandwidth depends on the units of the data; on data of order one
+  or larger the first term dominates and the criterion tends to select the
+  smoothest fit in `m_range`. The criterion is being revised (Doosti 2026b,
+  revised version); `wbcv_criterion()` and `bandwidth = "wbcv"` issue a
+  warning and are kept only so that existing code runs. Use BCV, RLCV or a
+  numeric bandwidth instead.
 }
 \examples{
 x <- rgamma(60, 5, 1)
@@ -77,8 +76,8 @@ optimize(bcv_criterion, c(10, 50), x = x, fun = qdf_bernstein)$minimum
 }
 \references{
 Wu, X. (2019). Robust likelihood cross validation for kernel density
-estimation. \emph{Journal of Business & Economic Statistics}, 37, 761--770.
+estimation. *Journal of Business & Economic Statistics*, 37, 761--770.
 }
 \seealso{
-\code{\link[=select_bandwidth]{select_bandwidth()}}, \code{\link[=qdf]{qdf()}}
+[select_bandwidth()], [qdf()]
 }

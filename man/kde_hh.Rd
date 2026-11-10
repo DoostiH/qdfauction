@@ -18,26 +18,26 @@ kde_hh(
 
 \item{data}{observed sample (bids or pseudo-values).}
 
-\item{kernel}{\code{"triweight"} (default), \code{"gaussian"}, \code{"epanechnikov"},
-\code{"quartic"}, \code{"uniform"} or \code{"triangle"}.}
+\item{kernel}{`"triweight"` (default), `"gaussian"`, `"epanechnikov"`,
+`"quartic"`, `"uniform"` or `"triangle"`.}
 
-\item{side}{\code{"lower"} (the original implementation) or \code{"both"}.}
+\item{side}{`"lower"` (the original implementation) or `"both"`.}
 
 \item{hardle}{logical; use Haerdle's canonical bandwidth constant.}
 
 \item{h}{optional bandwidth override.}
 }
 \value{
-a numeric vector with attribute \code{"h"} (the bandwidth used).
+a numeric vector with attribute `"h"` (the bandwidth used).
 }
 \description{
 Kernel density estimator with the transformation-based boundary correction
 of Karunamuni and Zhang (2008) at the lower endpoint of the support, as
 implemented by Hickman and Hubbard (2015) for first-price auctions (their
-\code{kspdf_bc}; this function is an R translation of that code, whose
+`kspdf_bc`; this function is an R translation of that code, whose
 authors ask that Hickman and Hubbard (2015) be cited). The bandwidth is Silverman's rule scaled by Haerdle's (1991)
 canonical-kernel constant. The estimate is set to zero outside the range
-of the data. With \code{side = "both"} the same correction is applied at the
+of the data. With `side = "both"` the same correction is applied at the
 upper endpoint through the reflected sample.
 }
 \examples{
@@ -48,9 +48,9 @@ plot(g, kde_hh(g, x), type = "l"); lines(g, dbeta(g, 2, 1), lty = 2)
 \references{
 Hickman, B. R. and Hubbard, T. P. (2015). Replacing sample trimming with
 boundary correction in nonparametric estimation of first-price auctions.
-\emph{Journal of Applied Econometrics}, 30, 739--762. \doi{10.1002/jae.2385}
+*Journal of Applied Econometrics*, 30, 739--762. \doi{10.1002/jae.2385}
 
 Karunamuni, R. J. and Zhang, S. (2008). Some improvements on a boundary
-corrected kernel density estimator. \emph{Statistics & Probability Letters}, 78,
+corrected kernel density estimator. *Statistics & Probability Letters*, 78,
 499--507.
 }

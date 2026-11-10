@@ -10,66 +10,77 @@ fpa_revenue_boot(
   B = 200,
   eta = 0,
   v_s = 0,
-  resample = c("auctions", "bids"),
+  resample = c("auctions", "bids", "blocks"),
+  L = "auto",
   alpha = c(0.1, 0.05, 0.01),
   trim = Inf,
   ...
 )
 }
 \arguments{
-\item{bids}{\code{L} by \code{n} bid matrix.}
+\item{bids}{`L` by `n` bid matrix.}
 
 \item{r}{reserve prices.}
 
 \item{B}{number of bootstrap replications.}
 
-\item{eta, v_s}{as in \code{\link[=fpa_revenue]{fpa_revenue()}}.}
+\item{eta, v_s}{as in [fpa_revenue()].}
 
-\item{resample}{\code{"auctions"} (whole auctions with replacement; the
-default) or \code{"bids"} (pooled bids with replacement). The revenue
+\item{resample}{`"auctions"` (whole auctions with replacement; the
+default) or `"bids"` (pooled bids with replacement). The revenue
 estimator uses the highest pseudo-value in each auction, and pooled
 resampling breaks that structure: it shifts the bootstrap distribution
 by an amount of the same order as the estimation error, so the
 intervals under-cover (about 0.65-0.80 at nominal 0.90 for the
 Bernstein estimator with \eqn{m = \lceil\sqrt N\rceil} in the design of
-Zincenko, 2024). \code{"bids"} is kept for comparison only.}
+Zincenko, 2024). `"bids"` is kept for comparison only.}
+
+\item{L}{block length when `resample = "blocks"`: `"auto"` for the rule of
+[block_length_auto()], or an integer. `L = 1` is the i.i.d. auction
+bootstrap. Ignored by the other schemes.}
 
 \item{alpha}{significance levels for the intervals and band.}
 
 \item{trim}{discard bootstrap deviations larger than this constant
 (\eqn{c_b} in Zincenko's eq. 24; default no trimming).}
 
-\item{...}{arguments to \code{\link[=fpa_values]{fpa_values()}} (e.g. \code{method}, \code{bandwidth},
-\code{monotone}). A data-driven \code{bandwidth} is selected once, on the full
+\item{...}{arguments to [fpa_values()] (e.g. `method`, `bandwidth`,
+`monotone`). A data-driven `bandwidth` is selected once, on the full
 sample, and held fixed in every bootstrap replication, as assumed by the
 theory (Doosti 2026b, Theorems 6--7).}
 }
 \value{
-an object of class \code{"fpa_revenue_boot"}: a list with \code{r},
-\code{estimate}, \code{se}, \code{ci} (array \code{r} by \code{c(lower, upper)} by \code{alpha}),
-\code{band} (same layout), the bootstrap critical values, the \code{B} by
-\code{length(r)} matrix of bootstrap estimates and, when the bandwidth was
-selected from the data, \code{bandwidth}: a list with the selected \code{h} and \code{m},
-the \code{selector}, and \code{at_boundary}/\code{boundary} (see \code{\link[=select_bandwidth]{select_bandwidth()}}).
+an object of class `"fpa_revenue_boot"`: a list with `r`,
+  `estimate`, `se`, `ci` (array `r` by `c(lower, upper)` by `alpha`),
+  `band` (same layout), the bootstrap critical values, the `B` by
+  `length(r)` matrix of bootstrap estimates and, when the bandwidth was
+  selected from the data, `bandwidth`: a list with the selected `h` and `m`,
+  the `selector`, and `at_boundary`/`boundary` (see [select_bandwidth()]).
 }
 \description{
-Recomputes the pseudo-values and the plug-in revenue on \code{B} bootstrap
-samples of whole auctions (by default; see \code{resample}) (Zincenko 2024,
+Recomputes the pseudo-values and the plug-in revenue on `B` bootstrap
+samples of whole auctions (by default; see `resample`) (Zincenko 2024,
 Section 4.3; Doosti 2026b) and
 returns the bootstrap standard error
 \eqn{\hat\sigma^*(r) = \{B^{-1}\sum_b (\hat R^*_b(r) - \hat R(r))^2\}^{1/2}},
 symmetric percentile-\eqn{t} pointwise confidence intervals (critical value:
 the \eqn{1-\alpha} quantile of \eqn{|Z^*_b(r)|}), and a uniform confidence
-band over \code{r} based on the bootstrap distribution of
+band over `r` based on the bootstrap distribution of
 \eqn{\sup_r |Z^*_b(r)|}, \eqn{Z^*_b(r) = \{\hat R^*_b(r) - \hat R(r)\}/\hat\sigma^*(r)}.
 (The original simulation code used the \eqn{1-\alpha/2} quantile of
 \eqn{Z^*} for the pointwise intervals; the symmetric version guarantees
 that the band contains the intervals.)
 }
+\details{
+If the auctions have a time order and the same bidders recur,
+  resampling auctions or bids independently understates the sampling
+  uncertainty, in proportion to the dependence; use
+  `resample = "blocks"` in that case.
+}
 \section{Reproducibility}{
 
 Fold assignment (or bootstrap resampling) uses R's random number generator;
-call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+call [set.seed()] beforehand to make results exactly reproducible.
 }
 
 \examples{

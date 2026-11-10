@@ -20,30 +20,30 @@ select_wavelet(
 
 \item{folds}{number of folds.}
 
-\item{criterion}{\code{"lscv"} or \code{"loglik"}.}
+\item{criterion}{`"lscv"` or `"loglik"`.}
 
-\item{...}{passed to \code{\link[=qdf_wavelet]{qdf_wavelet()}} (e.g. \code{threshold}, \code{smooth}, \code{filter}).}
+\item{...}{passed to [qdf_wavelet()] (e.g. `threshold`, `smooth`, `filter`).}
 }
 \value{
-a list with \code{j0}, \code{h}, and the matrix of criterion values
-(\code{ll}, rows \code{j0_grid}, columns \code{h_grid}).
+a list with `j0`, `h`, and the matrix of criterion values
+  (`ll`, rows `j0_grid`, columns `h_grid`).
 }
 \description{
 Chooses the resolution level and the post-smoothing bandwidth of
-\code{\link[=qdf_wavelet]{qdf_wavelet()}} by \code{folds}-fold cross-validation. The implied density of the
+[qdf_wavelet()] by `folds`-fold cross-validation. The implied density of the
 data is \eqn{\hat g(x) = 1/\hat q(\hat G_{\rm train}(x))}. With
-\code{criterion = "lscv"} (default) the pair minimises the least-squares
+`criterion = "lscv"` (default) the pair minimises the least-squares
 criterion \eqn{\int \hat g^2 - 2 n_k^{-1} \sum \hat g(x_i)} over held-out
 observations, using \eqn{\int \hat g(x)^2 dx = \int_0^1 1/\hat q(u)\,du};
 this targets integrated squared error (Rudemo 1982; Bowman 1984). With
-\code{criterion = "loglik"} it maximises the held-out log-likelihood. Pairs
+`criterion = "loglik"` it maximises the held-out log-likelihood. Pairs
 with \eqn{h} below the lattice spacing \eqn{1/(2^{j_0}-1)} are not
 considered, since the local-linear smoother is then ill-conditioned.
 }
 \section{Reproducibility}{
 
 Fold assignment (or bootstrap resampling) uses R's random number generator;
-call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+call [set.seed()] beforehand to make results exactly reproducible.
 }
 
 \examples{

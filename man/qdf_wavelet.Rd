@@ -27,26 +27,26 @@ qdf_wavelet(
 scaling coefficients. Default 5.}
 
 \item{h}{bandwidth of the local-linear post-smoother on the probability
-scale (default 0.15); ignored when \code{smooth = FALSE}.}
+scale (default 0.15); ignored when `smooth = FALSE`.}
 
-\item{threshold}{\code{"none"}, \code{"hard"} or \code{"block"}.}
+\item{threshold}{`"none"`, `"hard"` or `"block"`.}
 
 \item{smooth}{logical; apply local-linear smoothing.}
 
-\item{filter}{scaling filter for the basis; see \code{\link[=wavelet_filter]{wavelet_filter()}}.
-Default \code{"db3"}.}
+\item{filter}{scaling filter for the basis; see [wavelet_filter()].
+Default `"db3"`.}
 
 \item{dwt_filter}{filter for the secondary DWT used in thresholding
-(default \code{"coif1"}).}
+(default `"coif1"`).}
 
 \item{levels}{number of DWT levels for thresholding (default 3).}
 
-\item{integration}{\code{"exact"} or \code{"simpson"}.}
+\item{integration}{`"exact"` or `"simpson"`.}
 
-\item{...}{passed to \code{\link[=threshold_coefficients]{threshold_coefficients()}} (\code{const}, \code{block_length}, \code{rule}).}
+\item{...}{passed to [threshold_coefficients()] (`const`, `block_length`, `rule`).}
 }
 \value{
-numeric vector of quantile density estimates at \code{u}.
+numeric vector of quantile density estimates at `u`.
 }
 \description{
 Projection estimators of \eqn{q(u)} on a wavelet basis of \eqn{[0,1]}
@@ -55,19 +55,17 @@ coefficients are estimated by the warped-basis formula
 \deqn{\hat c_{j_0,k} = \int \phi_{j_0,k}(\hat F(x))\,dx
       = \sum_{i=1}^{n-1} (X_{(i+1)} - X_{(i)})\,\phi_{j_0,k}(i/n),}
 which is exact for the empirical distribution function \eqn{\hat F}
-(\code{integration = "exact"}); \code{"simpson"} reproduces the composite Simpson
+(`integration = "exact"`); `"simpson"` reproduces the composite Simpson
 rule of the original MATLAB implementation.
 
-Three estimators are available through \code{threshold}:
-\itemize{
-\item \code{"none"}: the linear estimator \eqn{\hat g_L = \sum_k \hat c_{j_0,k}\phi_{j_0,k}};
-\item \code{"hard"}: term-by-term hard thresholding of a \code{levels}-level periodic DWT
-of the coefficient vector;
-\item \code{"block"}: Cai's BlockJS block thresholding (Shirazi and Doosti 2022).
-}
+Three estimators are available through `threshold`:
+* `"none"`: the linear estimator \eqn{\hat g_L = \sum_k \hat c_{j_0,k}\phi_{j_0,k}};
+* `"hard"`: term-by-term hard thresholding of a `levels`-level periodic DWT
+  of the coefficient vector;
+* `"block"`: Cai's BlockJS block thresholding (Shirazi and Doosti 2022).
 
-With \code{smooth = TRUE} the estimate is post-smoothed by the local-linear
-smoother of Ramirez and Vidakovic (2010) with bandwidth \code{h}; this
+With `smooth = TRUE` the estimate is post-smoothed by the local-linear
+smoother of Ramirez and Vidakovic (2010) with bandwidth `h`; this
 "smoothed" version was the best performer in both papers' simulations.
 }
 \examples{
@@ -81,14 +79,14 @@ plot(u, q_true, type = "l"); lines(u, q_lin, col = 2); lines(u, q_blk, col = 4)
 }
 \references{
 Chesneau, C., Dewan, I. and Doosti, H. (2016). Nonparametric estimation of a
-quantile density function by wavelet methods. \emph{Computational Statistics &
-Data Analysis}, 94, 161--174.
+quantile density function by wavelet methods. *Computational Statistics &
+Data Analysis*, 94, 161--174.
 
 Shirazi, E. and Doosti, H. (2022). Nonparametric estimation of a quantile
 density function under \eqn{L_p} risk via block thresholding method.
-\emph{Communications in Statistics -- Simulation and Computation}, 51, 539--553.
+*Communications in Statistics -- Simulation and Computation*, 51, 539--553.
 
 Ramirez, P. and Vidakovic, B. (2010). Wavelet density estimation for
-stratified size-biased sample. \emph{Journal of Statistical Planning and
-Inference}, 140, 419--432.
+stratified size-biased sample. *Journal of Statistical Planning and
+Inference*, 140, 419--432.
 }

@@ -1,0 +1,74 @@
+## Citation information for the qdfauction package.
+## The package entry is the one to cite for the software itself; the two
+## Economics Letters papers are the published methodology.
+
+ver <- if (!is.null(meta) && !is.null(meta$Version)) meta$Version else utils::packageVersion("qdfauction")
+
+citHeader("To cite qdfauction in publications, please cite the software and the methodology paper for the estimator you used:")
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "{qdfauction}: Nonparametric Quantile Density Estimation and Structural Analysis of First-Price Auctions",
+  author   = person("Hassan", "Doosti"),
+  year     = "2026",
+  note     = paste("R package version", ver),
+  doi      = "10.32614/CRAN.package.qdfauction",
+  header   = "The software:"
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "Nonparametric estimation of private value distributions in first-price auctions: Evaluating quantile density function approaches",
+  author   = c(person("Hassan", "Doosti"),
+               person("Isha", "Dewan"),
+               person("Mohammad", "Talebian")),
+  journal  = "Economics Letters",
+  year     = "2025",
+  volume   = "257",
+  pages    = "112670",
+  doi      = "10.1016/j.econlet.2025.112670",
+  header   = "Recovery of private values from bids (independent values):"
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "A copula-quantile density approach to affiliated private value auctions",
+  author   = person("Hassan", "Doosti"),
+  journal  = "Economics Letters",
+  year     = "2026",
+  volume   = "261",
+  pages    = "112837",
+  doi      = "10.1016/j.econlet.2026.112837",
+  header   = "Affiliated values and the copula-quantile density inversion:"
+)
+
+## ---------------------------------------------------------------------------
+## Two further papers are under review. Uncomment the matching entry, replacing
+## the journal details with the published reference, once each is accepted.
+##
+## Expected revenue and the optimal reserve price (Bernstein quantile density
+## estimator, m = ceiling(sqrt(N))), Journal of Nonparametric Statistics:
+##
+## bibentry(
+##   bibtype  = "Article",
+##   title    = "Estimating Seller's Expected Revenue in First-Price Sealed-Bid Auctions via Quantile Density Functions",
+##   author   = person("Hassan", "Doosti"),
+##   journal  = "Journal of Nonparametric Statistics",
+##   year     = "",
+##   note     = "Forthcoming",
+##   header   = "Expected revenue and the optimal reserve price:"
+## )
+##
+## Optimal reserve prices under affiliation and the corner condition of
+## fpa_corner_test(), Economics Letters:
+##
+## bibentry(
+##   bibtype  = "Article",
+##   title    = "Optimal reserve prices in affiliated private value auctions: a copula-quantile density approach",
+##   author   = person("Hassan", "Doosti"),
+##   journal  = "Economics Letters",
+##   year     = "",
+##   note     = "Forthcoming",
+##   header   = "Optimal reserve prices under affiliation:"
+## )
+## ---------------------------------------------------------------------------

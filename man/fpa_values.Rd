@@ -22,98 +22,104 @@ fpa_values(
 )
 }
 \arguments{
-\item{bids}{numeric vector of pooled bids, or an \code{L} by \code{n} matrix (one row
-per auction). A matrix is required for \code{family != "independence"} with
-\code{theta = NULL}, so that the copula parameter can be estimated from
+\item{bids}{numeric vector of pooled bids, or an `L` by `n` matrix (one row
+per auction). A matrix is required for `family != "independence"` with
+`theta = NULL`, so that the copula parameter can be estimated from
 within-auction pairs.}
 
-\item{n}{number of bidders per auction (taken from \code{ncol(bids)} for a matrix).}
+\item{n}{number of bidders per auction (taken from `ncol(bids)` for a matrix).}
 
-\item{method}{quantile-density estimator passed to \code{\link[=qdf]{qdf()}}, or \code{"gpv"},
-\code{"gpv_bc"}, \code{"zincenko"} for the kernel benchmarks.}
+\item{method}{quantile-density estimator passed to [qdf()], or `"gpv"`,
+`"gpv_bc"`, `"zincenko"` for the kernel benchmarks.}
 
-\item{bandwidth}{passed to \code{\link[=qdf]{qdf()}}: a selector name, the rule \code{"sqrt"}
-(\eqn{m = \lceil\sqrt{N}\rceil} for \code{method = "bernstein"}, as in Doosti
+\item{bandwidth}{passed to [qdf()]: a selector name, the rule `"sqrt"`
+(\eqn{m = \lceil\sqrt{N}\rceil} for `method = "bernstein"`, as in Doosti
 2026b), or a numeric bandwidth.}
 
-\item{eta}{CRRA risk-aversion parameter in \eqn{[0, 1)}; \code{0} is risk
+\item{eta}{CRRA risk-aversion parameter in \eqn{[0, 1)}; `0` is risk
 neutrality.}
 
-\item{family}{copula family of the private values: \code{"independence"},
-\code{"clayton"}, \code{"gumbel"}, \code{"frank"} (see \code{\link[=copula_psi]{copula_psi()}}), or
-\code{"nonparametric"} for the flexible copula multiplier of \code{\link[=copula_psi_np]{copula_psi_np()}}
-(the CopQDF-F estimator of Doosti 2026a). With \code{method = "gpv"} and a
+\item{family}{copula family of the private values: `"independence"`,
+`"clayton"`, `"gumbel"`, `"frank"` (see [copula_psi()]), or
+`"nonparametric"` for the flexible copula multiplier of [copula_psi_np()]
+(the CopQDF-F estimator of Doosti 2026a). With `method = "gpv"` and a
 parametric family the inversion is the semiparametric estimator of
 Hubbard, Li and Paarsch (2012): a kernel bid density combined with a
 parametric copula.}
 
-\item{theta}{copula parameter; \code{NULL} estimates it by \code{\link[=copula_fit]{copula_fit()}}.}
+\item{theta}{copula parameter; `NULL` estimates it by [copula_fit()].}
 
 \item{u_scheme}{scores \eqn{\hat u} attached to the sorted bids:
-\code{"i/(n+1)"} (Hazen ranks, default) or \code{"i/n"}.}
+`"i/(n+1)"` (Hazen ranks, default) or `"i/n"`.}
 
-\item{monotone}{\code{"none"}, \code{"spline"} or \code{"isotonic"}.}
+\item{monotone}{`"none"`, `"spline"` or `"isotonic"`.}
 
 \item{trim}{tail share excluded from the spline fit (default 0.1, i.e. the
 central 80 percent is used).}
 
-\item{replace}{for \code{monotone = "spline"}: \code{"all"} or \code{"boundary"}.}
+\item{replace}{for `monotone = "spline"`: `"all"` or `"boundary"`.}
 
 \item{df}{degrees of freedom of the natural spline (default 6).}
 
-\item{psi_bw}{beta-kernel bandwidth for \code{family = "nonparametric"}; see
-\code{\link[=copula_psi_np]{copula_psi_np()}}.}
+\item{psi_bw}{beta-kernel bandwidth for `family = "nonparametric"`; see
+[copula_psi_np()].}
 
-\item{...}{further arguments to \code{\link[=qdf]{qdf()}} (e.g. \code{kernel}, \code{H}, \code{j0}, \code{m_range}).}
+\item{...}{further arguments to [qdf()] (e.g. `kernel`, `H`, `j0`,
+`m_range`, `grid`, `zero_at_origin`). In particular
+`zero_at_origin = FALSE` switches the Bernstein estimator to the
+\eqn{\hat Q(0) = X_{(1)}} anchor; with `method = "bernstein"`,
+`bandwidth = "sqrt"`, `u_scheme = "i/(n+1)"`, `monotone = "none"` and
+`trim = 0` this reproduces the pseudo-values of the revenue estimator of
+Doosti (2026b) exactly.}
 }
 \value{
-An object of class \code{"fpa_values"}: a list with
+An object of class `"fpa_values"`: a list with
 \describe{
-\item{bids, u}{sorted pooled bids and their scores}
-\item{q, psi, markup}{the quantile density, the copula multiplier and
-the estimated markup \eqn{\lambda^{-1}(\psi q)} at each bid}
-\item{values_raw, values}{pseudo-values before and after the
-monotonicity step (identical when \code{monotone = "none"})}
-\item{values_mat}{when \code{bids} is a matrix, \code{values} rearranged to the
-original \code{L} by \code{n} layout}
-\item{qdf}{the fitted \code{\link[=qdf]{qdf()}} object (or \code{NULL} for the kernel benchmarks)}
-\item{copula}{the copula specification / fit}
+  \item{bids, u}{sorted pooled bids and their scores}
+  \item{q, psi, markup}{the quantile density, the copula multiplier and
+    the estimated markup \eqn{\lambda^{-1}(\psi q)} at each bid}
+  \item{values_raw, values}{pseudo-values before and after the
+    monotonicity step (identical when `monotone = "none"`)}
+  \item{values_mat}{when `bids` is a matrix, `values` rearranged to the
+    original `L` by `n` layout}
+  \item{qdf}{the fitted [qdf()] object (or `NULL` for the kernel benchmarks)}
+  \item{copula}{the copula specification / fit}
 }
 }
 \description{
 Nonparametric inversion of the equilibrium bid function of a symmetric
 first-price sealed-bid auction through the quantile density of bids:
 \deqn{\hat v = b + \lambda^{-1}\{\psi(\hat u)\,\hat q(\hat u)\},\qquad \hat u = \hat G(b),}
-where \eqn{\hat q} is a quantile density estimate (\code{\link[=qdf]{qdf()}}), \eqn{\psi} is
+where \eqn{\hat q} is a quantile density estimate ([qdf()]), \eqn{\psi} is
 the copula multiplier (equal to \eqn{u/(n-1)} under independent private
 values, so that \eqn{\psi q = G/\{(n-1)g\}} and the formula is that of
 Guerre, Perrigne and Vuong 2000), and \eqn{\lambda^{-1}} accounts for risk
 aversion (Guerre, Perrigne and Vuong 2009): the identity for risk-neutral
 bidders and \eqn{y \mapsto (1-\eta) y} for CRRA utility \eqn{U(t) = t^{1-\eta}}.
 
-\code{method = "zincenko"} gives the kernel estimator of Zincenko (2024): a
+`method = "zincenko"` gives the kernel estimator of Zincenko (2024): a
 triweight kernel for \eqn{\hat G} and \eqn{\hat g} with normal-reference
 bandwidths, and linear extrapolation of the inverse bid function within
 \eqn{h_g^{0.99}} of the boundaries instead of trimming; the implementation
 is adapted from code provided by F. Zincenko.
-\code{method = "gpv"} gives the conventional benchmark
+`method = "gpv"` gives the conventional benchmark
 \eqn{\hat v = b + \hat G(b)/\{(n-1)\hat g(b)\}} with a Gaussian kernel and
-Sheather--Jones bandwidth for \eqn{\hat g}; \code{"gpv_bc"} renormalises a
+Sheather--Jones bandwidth for \eqn{\hat g}; `"gpv_bc"` renormalises a
 triweight kernel by its mass inside the bid support (a simple boundary
 correction; the Hickman--Hubbard correction is provided by
-\code{fpa_density()}).
+`fpa_density()`).
 }
 \section{Monotonicity}{
 
 The equilibrium bid function is increasing, so \eqn{\hat v} should be
 increasing in \eqn{b}. Departures occur mostly near the boundaries.
-\code{monotone = "spline"} follows Doosti, Dewan and Talebian (2025): a natural
+`monotone = "spline"` follows Doosti, Dewan and Talebian (2025): a natural
 cubic spline of \eqn{\hat v} on \eqn{b} is fitted to the central
 \eqn{1 - 2\,\mathrm{trim}} share of the bids and its fitted values replace
-\eqn{\hat v} either everywhere (\code{replace = "all"}, the published
-implementation) or only in the trimmed tails (\code{replace = "boundary"}).
-\code{monotone = "isotonic"} applies the pool-adjacent-violators rearrangement
-(\code{\link[stats:isoreg]{stats::isoreg()}}). \code{"none"} returns the raw pseudo-values.
+\eqn{\hat v} either everywhere (`replace = "all"`, the published
+implementation) or only in the trimmed tails (`replace = "boundary"`).
+`monotone = "isotonic"` applies the pool-adjacent-violators rearrangement
+([stats::isoreg()]). `"none"` returns the raw pseudo-values.
 }
 
 \examples{
@@ -133,13 +139,13 @@ fit2$copula$theta
 }
 \references{
 Guerre, E., Perrigne, I. and Vuong, Q. (2000). Optimal nonparametric
-estimation of first-price auctions. \emph{Econometrica}, 68, 525--574.
+estimation of first-price auctions. *Econometrica*, 68, 525--574.
 
 Guerre, E., Perrigne, I. and Vuong, Q. (2009). Nonparametric identification
 of risk aversion in first-price auctions under exclusion restrictions.
-\emph{Econometrica}, 77, 1193--1227.
+*Econometrica*, 77, 1193--1227.
 
-Doosti, H., Dewan, I. and Talebian, M. (2025). \emph{Economics Letters}, 257, 112670.
+Doosti, H., Dewan, I. and Talebian, M. (2025). *Economics Letters*, 257, 112670.
 
-Doosti, H. (2026a). \emph{Economics Letters}, 261, 112837.
+Doosti, H. (2026a). *Economics Letters*, 261, 112837.
 }

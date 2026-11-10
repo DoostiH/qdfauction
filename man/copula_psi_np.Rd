@@ -7,7 +7,7 @@
 copula_psi_np(bids, u, b = NULL)
 }
 \arguments{
-\item{bids}{an \code{L} by \code{n} matrix or data frame of bids (one row per auction).}
+\item{bids}{an `L` by `n` matrix or data frame of bids (one row per auction).}
 
 \item{u}{points in \eqn{(0,1)} at which to evaluate \eqn{\hat\psi}.}
 
@@ -32,8 +32,8 @@ Li, Perrigne and Vuong 2002). Both are estimated with beta kernels on
   K_b(x; u) = \mathrm{Beta}(x;\, u/b + 1,\, (1-u)/b + 1).}
 Under independence \eqn{\psi(u) = u/(n-1)}. This is the flexible copula
 multiplier of the copula--quantile density estimator (Doosti 2026a); it is
-used by \code{fpa_values(family = "nonparametric")} and by
-\code{\link[=copula_spec_test]{copula_spec_test()}}.
+used by `fpa_values(family = "nonparametric")` and by
+[copula_spec_test()].
 }
 \examples{
 set.seed(1)
@@ -45,12 +45,12 @@ rbind(nonparametric = copula_psi_np(U, u),
 }
 \references{
 Chen, S. X. (1999). Beta kernel estimators for density functions.
-\emph{Computational Statistics & Data Analysis}, 31, 131--145.
+*Computational Statistics & Data Analysis*, 31, 131--145.
 
 Chen, X. and Fan, Y. (2006). Estimation of copula-based semiparametric time
-series models. \emph{Journal of Econometrics}, 130, 307--335.
+series models. *Journal of Econometrics*, 130, 307--335.
 
 Doosti, H. (2026a). A copula-quantile density approach to affiliated private
-value auctions. \emph{Economics Letters}, 261, 112837.
+value auctions. *Economics Letters*, 261, 112837.
 \doi{10.1016/j.econlet.2026.112837}
 }

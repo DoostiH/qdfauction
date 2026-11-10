@@ -17,24 +17,24 @@ psi_per(z, j, k, filter = "db3")
 
 \item{j}{resolution level.}
 
-\item{k}{shift(s); for more than one, a matrix \code{length(z)} by \code{length(k)}.}
+\item{k}{shift(s); for more than one, a matrix `length(z)` by `length(k)`.}
 
-\item{filter}{scaling filter; see \code{\link[=wavelet_filter]{wavelet_filter()}}.}
+\item{filter}{scaling filter; see [wavelet_filter()].}
 }
 \value{
 numeric vector or matrix.
 }
 \description{
-\code{psi_jk()} evaluates the mother wavelet
+`psi_jk()` evaluates the mother wavelet
 \eqn{\psi_{j,k}(z) = 2^{j/2}\psi(2^j z - k)}, with \eqn{\psi} obtained from
 the scaling function by the two-scale relation
 \eqn{\psi(x) = \sqrt 2 \sum_k g_k \phi(2x - k)},
-\eqn{g_k = (-1)^k h_{N-k}}. \code{phi_per()} and \code{psi_per()} evaluate the
+\eqn{g_k = (-1)^k h_{N-k}}. `phi_per()` and `psi_per()` evaluate the
 periodised functions \eqn{\sum_l \phi_{j,k}(z + l)} and
 \eqn{\sum_l \psi_{j,k}(z + l)}, which for \eqn{2^j \ge N} form an
 orthonormal basis of \eqn{L_2([0,1])} (Daubechies 1992, Section 9.3); they
-are used by the nonlinear estimators \code{\link[=qdf_wavelet_nl]{qdf_wavelet_nl()}} and
-\code{fpa_density(method = "wavelet_theory")}.
+are used by the nonlinear estimators [qdf_wavelet_nl()] and
+`fpa_density(method = "wavelet_theory")`.
 }
 \examples{
 z <- seq(0, 1, length.out = 2001)

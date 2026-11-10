@@ -15,40 +15,39 @@ threshold_coefficients(
 )
 }
 \arguments{
-\item{w}{coefficient vector from \code{\link[=dwt_periodic]{dwt_periodic()}}.}
+\item{w}{coefficient vector from [dwt_periodic()].}
 
-\item{L}{number of DWT levels used to produce \code{w}.}
+\item{L}{number of DWT levels used to produce `w`.}
 
 \item{n}{sample size (enters the threshold).}
 
-\item{type}{\code{"hard"} or \code{"block"}.}
+\item{type}{`"hard"` or `"block"`.}
 
-\item{const}{threshold constant: \code{c} for \code{"hard"}, \eqn{\lambda^*} for \code{"block"}.}
+\item{const}{threshold constant: `c` for `"hard"`, \eqn{\lambda^*} for `"block"`.}
 
-\item{block_length}{block length for \code{"block"}; default \eqn{\lfloor\log n\rfloor}.}
+\item{block_length}{block length for `"block"`; default \eqn{\lfloor\log n\rfloor}.}
 
-\item{rule}{for \code{"block"}: \code{"truncate"} (keep/kill) or \code{"james-stein"}.}
+\item{rule}{for `"block"`: `"truncate"` (keep/kill) or `"james-stein"`.}
 }
 \value{
 thresholded coefficient vector.
 }
 \description{
 Applies a thresholding rule to the detail coefficients of a periodic DWT.
-\itemize{
-\item \code{"hard"}: term-by-term hard thresholding, \eqn{\hat d\,1\{|\hat d| > \lambda\}},
-with \eqn{\lambda = c\,\hat\sigma\sqrt{\log(n)/n}} (Chesneau, Dewan and
-Doosti 2016; \eqn{c = 8} in their implementation).
-\item \code{"block"}: the BlockJS rule of Cai (1999) used by Shirazi and Doosti
-(2022): at each level the coefficients are grouped in blocks of length
-\eqn{L = \lfloor \log n \rfloor}; a block is kept if
-\eqn{\sum_{j \in B} \hat d_j^2 \ge \lambda^* L \hat\sigma^2}
-with \eqn{\lambda^* = 4.50524} (\code{rule = "truncate"}), or shrunk by
-\eqn{(1 - \lambda^* L \hat\sigma^2 / S_B^2)_+} (\code{rule = "james-stein"}).
-}
+
+* `"hard"`: term-by-term hard thresholding, \eqn{\hat d\,1\{|\hat d| > \lambda\}},
+  with \eqn{\lambda = c\,\hat\sigma\sqrt{\log(n)/n}} (Chesneau, Dewan and
+  Doosti 2016; \eqn{c = 8} in their implementation).
+* `"block"`: the BlockJS rule of Cai (1999) used by Shirazi and Doosti
+  (2022): at each level the coefficients are grouped in blocks of length
+  \eqn{L = \lfloor \log n \rfloor}; a block is kept if
+  \eqn{\sum_{j \in B} \hat d_j^2 \ge \lambda^* L \hat\sigma^2}
+  with \eqn{\lambda^* = 4.50524} (`rule = "truncate"`), or shrunk by
+  \eqn{(1 - \lambda^* L \hat\sigma^2 / S_B^2)_+} (`rule = "james-stein"`).
 
 \eqn{\hat\sigma} is the MAD of the finest-level coefficients.
 }
 \references{
 Cai, T. T. (1999). Adaptive wavelet estimation: a block thresholding and
-oracle inequality approach. \emph{Annals of Statistics}, 27, 898--924.
+oracle inequality approach. *Annals of Statistics*, 27, 898--924.
 }

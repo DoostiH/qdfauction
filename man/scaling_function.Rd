@@ -7,7 +7,7 @@
 scaling_function(filter = "db3", levels = 10L, extra = 20L)
 }
 \arguments{
-\item{filter}{see \code{\link[=wavelet_filter]{wavelet_filter()}}.}
+\item{filter}{see [wavelet_filter()].}
 
 \item{levels}{dyadic resolution of the table (default 10, i.e. 1024 points
 per unit interval).}
@@ -16,13 +16,13 @@ per unit interval).}
 Daubechies--Lagarias product (default 20).}
 }
 \value{
-a list with \code{x} and \code{phi}.
+a list with `x` and `phi`.
 }
 \description{
 Evaluates \eqn{\phi} on the dyadic grid \eqn{k/2^{L}} of its support
 \eqn{[0, N-1]} (\eqn{N} = filter length) by the Daubechies--Lagarias
 product formula (Vidakovic 1999, Section 3.4), and caches the result.
-\code{\link[=phi_jk]{phi_jk()}} interpolates from this table. Translated from the MATLAB routine
-\code{Phijk} of B. Vidakovic (Ramirez and Vidakovic 2010).
+[phi_jk()] interpolates from this table. Translated from the MATLAB routine
+`Phijk` of B. Vidakovic (Ramirez and Vidakovic 2010).
 }
 \keyword{internal}

@@ -44,3 +44,19 @@ test_that("a user-supplied optimiser is used for bandwidth selection", {
   expect_equal(fit$h, s$h)
   expect_error(select_bandwidth(x, qdf_bernstein, "bcv", optimizer = function(f, i) 1), "minimum")
 })
+
+test_that("a matrix takes n from ncol(), whether or not n is passed as NULL", {
+  # Project A, item 6: a wrapper passing n = NULL explicitly appeared to give
+  # NA pseudo-value vectors. as_bid_matrix() derives n from ncol() and ignores
+  # the argument for matrix input, so the two calls must agree exactly.
+  set.seed(11)
+  B <- matrix(exp(rnorm(200 * 3)), 200, 3)
+  f1 <- fpa_values(B,            method = "bernstein", bandwidth = "sqrt")
+  f2 <- fpa_values(B, n = NULL,  method = "bernstein", bandwidth = "sqrt")
+  f3 <- fpa_values(B, n = 3L,    method = "bernstein", bandwidth = "sqrt")
+  keep <- c("bids", "u", "q", "values", "values_raw")
+  expect_identical(f2[keep], f1[keep])
+  expect_identical(f3[keep], f1[keep])
+  expect_equal(length(f2$values), length(as.numeric(B)))
+  expect_false(anyNA(f2$values))
+})

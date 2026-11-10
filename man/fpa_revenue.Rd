@@ -7,13 +7,13 @@
 fpa_revenue(values, r, eta = NULL, v_s = 0)
 }
 \arguments{
-\item{values}{an \code{\link[=fpa_values]{fpa_values()}} object fitted to a bid \emph{matrix}, or an
-\code{L} by \code{n} matrix of private values.}
+\item{values}{an [fpa_values()] object fitted to a bid *matrix*, or an
+`L` by `n` matrix of private values.}
 
 \item{r}{reserve prices at which to evaluate the revenue.}
 
-\item{eta}{CRRA parameter; taken from \code{values} when it is an
-\code{\link[=fpa_values]{fpa_values()}} object.}
+\item{eta}{CRRA parameter; taken from `values` when it is an
+[fpa_values()] object.}
 
 \item{v_s}{seller's valuation of the object (revenue when unsold).}
 }
@@ -43,7 +43,7 @@ cbind(r, estimate = fpa_revenue(fv, r, v_s = 2),
 }
 \references{
 Zincenko, F. (2024). Estimation and inference of seller's expected revenue
-in first-price auctions. \emph{Journal of Econometrics}, 241(1), 105734.
+in first-price auctions. *Journal of Econometrics*, 241(1), 105734.
 \doi{10.1016/j.jeconom.2024.105734}
 
 Doosti, H. (2026b). Estimating seller's expected revenue in first-price

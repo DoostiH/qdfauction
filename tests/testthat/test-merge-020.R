@@ -264,7 +264,9 @@ test_that("Stage 3 stops when the published search is also at a boundary", {
     list(q = rep(1, length(u)), h = 1 / m_range[2],
          selection = list(selector = "rlcv", m = m_range[2], m_range = m_range,
                           at_boundary = TRUE, boundary = "upper"))
-  local_mocked_bindings(qdf = fake)
+  ## `.package` is required when the tests run against the installed package
+  ## (as under R CMD check) rather than a pkgload-loaded source tree.
+  local_mocked_bindings(qdf = fake, .package = "qdfauction")
   expect_error(.stage3_qdf(1:50, "poisson", "rlcv", fpa_ugrid()),
                "does not select a bandwidth")
   expect_error(.stage3_qdf(1:50, "poisson", "rlcv", fpa_ugrid(), m_range = c(10, 100)),

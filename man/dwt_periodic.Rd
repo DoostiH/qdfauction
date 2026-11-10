@@ -14,19 +14,19 @@ idwt_periodic(w, L, filter = "coif1")
 
 \item{L}{number of levels.}
 
-\item{filter}{see \code{\link[=wavelet_filter]{wavelet_filter()}}.}
+\item{filter}{see [wavelet_filter()].}
 
-\item{w}{wavelet coefficients from \code{\link[=dwt_periodic]{dwt_periodic()}}.}
+\item{w}{wavelet coefficients from [dwt_periodic()].}
 }
 \value{
-numeric vector of the same length as \code{x}.
+numeric vector of the same length as `x`.
 }
 \description{
-Forward (\code{dwt_periodic()}) and inverse (\code{idwt_periodic()}) periodised
-orthonormal DWT with \code{L} levels, as in Vidakovic (1999). \code{length(x)} must be
-divisible by \code{2^L}. Coefficients are returned as
-\code{c(smooth, detail_coarsest, ..., detail_finest)}. Translated from the
-MATLAB routines \code{dwtr} and \code{Idwtr} of B. Vidakovic.
+Forward (`dwt_periodic()`) and inverse (`idwt_periodic()`) periodised
+orthonormal DWT with `L` levels, as in Vidakovic (1999). `length(x)` must be
+divisible by `2^L`. Coefficients are returned as
+`c(smooth, detail_coarsest, ..., detail_finest)`. Translated from the
+MATLAB routines `dwtr` and `Idwtr` of B. Vidakovic.
 }
 \examples{
 x <- rnorm(32)

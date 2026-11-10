@@ -19,38 +19,38 @@ fpa_density_cv(
 )
 }
 \arguments{
-\item{bids}{pooled bids (vector) or an \code{L} by \code{n} matrix.}
+\item{bids}{pooled bids (vector) or an `L` by `n` matrix.}
 
-\item{n}{bidders per auction (from \code{ncol(bids)} for a matrix).}
+\item{n}{bidders per auction (from `ncol(bids)` for a matrix).}
 
 \item{methods}{character vector of second-stage methods.}
 
 \item{folds}{number of outer folds.}
 
-\item{j0}{resolution level, or \code{"cv"} to choose \code{j0} (and \code{h}) by
-cross-validated held-out log-likelihood (\code{\link[=select_fpa_density]{select_fpa_density()}}).}
+\item{j0}{resolution level, or `"cv"` to choose `j0` (and `h`) by
+cross-validated held-out log-likelihood ([select_fpa_density()]).}
 
-\item{h}{local-linear bandwidth for \code{"wavelet_ll"} (ignored if \code{j0 = "cv"}).}
+\item{h}{local-linear bandwidth for `"wavelet_ll"` (ignored if `j0 = "cv"`).}
 
-\item{first_stage}{\code{"gpv_hh"} (default), \code{"gpv"}, an \code{\link[=fpa_values]{fpa_values()}} object,
-or the name of a \code{\link[=qdf]{qdf()}} method to use through \code{\link[=fpa_values]{fpa_values()}}.}
+\item{first_stage}{`"gpv_hh"` (default), `"gpv"`, an [fpa_values()] object,
+or the name of a [qdf()] method to use through [fpa_values()].}
 
-\item{scale}{\code{"auto"}, \code{"log"}, \code{"minmax"} or \code{"none"}.}
+\item{scale}{`"auto"`, `"log"`, `"minmax"` or `"none"`.}
 
-\item{kernel, side}{kernel and correction side for \code{\link[=kde_hh]{kde_hh()}} (used in the
-\code{"gpv_hh"} first stage and the \code{"kde_hh"} second stage).}
+\item{kernel, side}{kernel and correction side for [kde_hh()] (used in the
+`"gpv_hh"` first stage and the `"kde_hh"` second stage).}
 
-\item{...}{for \code{first_stage} given as a \code{\link[=qdf]{qdf()}} method name, further
-arguments to \code{\link[=fpa_values]{fpa_values()}}; for \code{"wavelet_block"}, arguments to
-\code{\link[=threshold_coefficients]{threshold_coefficients()}}; for \code{j0 = "cv"}, \code{j0_grid}, \code{h_grid}, \code{folds},
-\code{criterion}.}
+\item{...}{for `first_stage` given as a [qdf()] method name, further
+arguments to [fpa_values()]; for `"wavelet_block"`, arguments to
+[threshold_coefficients()]; for `j0 = "cv"`, `j0_grid`, `h_grid`, `folds`,
+`criterion`.}
 }
 \value{
 a named numeric vector of summed held-out log-likelihoods.
 }
 \description{
-Outer \code{folds}-fold cross-validation of several second-stage estimators
+Outer `folds`-fold cross-validation of several second-stage estimators
 against a common target (the held-out pseudo-values from the first stage
 fitted on the training fold), as in Table 3 of Doosti, Dewan and Sbai
-(2026). Wavelet tuning parameters are fixed at \code{j0}, \code{h}.
+(2026). Wavelet tuning parameters are fixed at `j0`, `h`.
 }

@@ -31,57 +31,56 @@ qdf_indirect_poisson(
 
 \item{x}{numeric sample (sorted internally).}
 
-\item{h}{for \code{qdf_jones()} and \code{qdf_soni()} the kernel density bandwidth on
-the data scale; for \code{qdf_indirect_poisson()} the smoothing parameter
+\item{h}{for `qdf_jones()` and `qdf_soni()` the kernel density bandwidth on
+the data scale; for `qdf_indirect_poisson()` the smoothing parameter
 \eqn{1/m} of the Poisson weights on the data scale.}
 
-\item{kernel}{\code{"gaussian"} (default), \code{"triangular"}, \code{"epanechnikov"}, or a
-user-defined kernel from \code{\link[=make_kernel]{make_kernel()}}.}
+\item{kernel}{`"gaussian"` (default), `"triangular"`, `"epanechnikov"`, or a
+user-defined kernel from [make_kernel()].}
 
-\item{H}{for \code{qdf_soni()}, the bandwidth of the outer Gaussian smoother on
+\item{H}{for `qdf_soni()`, the bandwidth of the outer Gaussian smoother on
 the probability scale.}
 
-\item{form}{for \code{qdf_soni()}: \code{"integrated"} (default) or \code{"riemann"}.}
+\item{form}{for `qdf_soni()`: `"integrated"` (default) or `"riemann"`.}
 
-\item{status}{for \code{qdf_soni()}: optional 0/1 vector (1 = observed,
-0 = right-censored) aligned with \code{x}.}
+\item{status}{for `qdf_soni()`: optional 0/1 vector (1 = observed,
+0 = right-censored) aligned with `x`.}
 
-\item{tol}{root-finding tolerance passed to \code{\link[stats:uniroot]{stats::uniroot()}} when
+\item{tol}{root-finding tolerance passed to [stats::uniroot()] when
 inverting the smoothed distribution function.}
 
 \item{invert}{how the smoothed distribution function is inverted:
-\code{"newton"} tabulates it on a grid and refines by Newton steps (efficient
-for many evaluation points); \code{"uniroot"} reproduces the original
-implementation with \code{\link[stats:uniroot]{stats::uniroot()}} (efficient for a few points;
-accuracy governed by \code{tol}); \code{"auto"} (default) picks by \code{length(u)}.}
+`"newton"` tabulates it on a grid and refines by Newton steps (efficient
+for many evaluation points); `"uniroot"` reproduces the original
+implementation with [stats::uniroot()] (efficient for a few points;
+accuracy governed by `tol`); `"auto"` (default) picks by `length(u)`.}
 }
 \value{
-numeric vector of quantile density estimates at \code{u}.
+numeric vector of quantile density estimates at `u`.
 }
 \description{
 Estimators that exploit \eqn{q(u) = 1 / g(Q(u))} by first estimating the
 density \eqn{g}.
-\itemize{
-\item \code{qdf_jones()} (Jones 1992; estimator 5) is
-\eqn{\hat q(u) = 1/\hat g_h(Q_n(u))} with a Gaussian kernel density
-estimator \eqn{\hat g_h}.
-\item \code{qdf_soni()} (Soni, Dewan and Jain 2012; estimator 6) double-smooths
-Jones' estimator on the probability scale. With \code{form = "integrated"}
-(the form printed in Doosti, Dewan and Talebian 2025),
-\deqn{\hat q(u) = \sum_{i=1}^n \frac{K((i/n - u)/H) - K(((i-1)/n - u)/H)}{\hat g_h(X_{(i)})},}
-where \eqn{K} is the kernel's distribution function; with
-\code{form = "riemann"} (the original implementation of Soni, Dewan and Jain)
-\deqn{\hat q(u) = \frac{1}{nH}\sum_{i=1}^n \frac{k((i/n - u)/H)}{\hat g_h(X_{(i)})}.}
-Here \eqn{h} is the density bandwidth on the data scale and \eqn{H} the
-smoothing bandwidth on the probability scale. For right-censored data
-supply \code{status}; the empirical scores \eqn{i/n} are then replaced by the
-Kaplan--Meier estimate \eqn{\hat F(X_{(i)})}, as in Soni et al.
-\item \code{qdf_indirect_poisson()} (Chaubey, Dewan and Li 2024; estimator 7)
-smooths the empirical \emph{distribution} function with Poisson weights,
-inverts the result numerically to obtain a smooth quantile estimator, and
-takes the reciprocal of the implied density at that quantile. It requires
-positive data.
-}
+
+* `qdf_jones()` (Jones 1992; estimator 5) is
+  \eqn{\hat q(u) = 1/\hat g_h(Q_n(u))} with a Gaussian kernel density
+  estimator \eqn{\hat g_h}.
+* `qdf_soni()` (Soni, Dewan and Jain 2012; estimator 6) double-smooths
+  Jones' estimator on the probability scale. With `form = "integrated"`
+  (the form printed in Doosti, Dewan and Talebian 2025),
+  \deqn{\hat q(u) = \sum_{i=1}^n \frac{K((i/n - u)/H) - K(((i-1)/n - u)/H)}{\hat g_h(X_{(i)})},}
+  where \eqn{K} is the kernel's distribution function; with
+  `form = "riemann"` (the original implementation of Soni, Dewan and Jain)
+  \deqn{\hat q(u) = \frac{1}{nH}\sum_{i=1}^n \frac{k((i/n - u)/H)}{\hat g_h(X_{(i)})}.}
+  Here \eqn{h} is the density bandwidth on the data scale and \eqn{H} the
+  smoothing bandwidth on the probability scale. For right-censored data
+  supply `status`; the empirical scores \eqn{i/n} are then replaced by the
+  Kaplan--Meier estimate \eqn{\hat F(X_{(i)})}, as in Soni et al.
+* `qdf_indirect_poisson()` (Chaubey, Dewan and Li 2024; estimator 7)
+  smooths the empirical *distribution* function with Poisson weights,
+  inverts the result numerically to obtain a smooth quantile estimator, and
+  takes the reciprocal of the implied density at that quantile. It requires
+  positive data.
 }
 \examples{
 x <- rgamma(100, 5, 1)
@@ -92,6 +91,6 @@ qdf_indirect_poisson(u, x, h = 0.05)
 }
 \references{
 Soni, P., Dewan, I. and Jain, K. (2012). Nonparametric estimation of
-quantile density function. \emph{Computational Statistics & Data Analysis}, 56,
+quantile density function. *Computational Statistics & Data Analysis*, 56,
 3876--3886.
 }

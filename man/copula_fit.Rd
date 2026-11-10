@@ -9,13 +9,13 @@ copula_fit(bids, family = c("clayton", "gumbel", "frank"), bounds = NULL)
 \arguments{
 \item{bids}{numeric matrix, one row per auction and one column per bidder.}
 
-\item{family}{\code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{bounds}{optional search interval for \eqn{\theta}.}
 }
 \value{
-a list with \code{theta}, \code{tau} (implied Kendall's tau), \code{family},
-\code{loglik} and \code{n_pairs}.
+a list with `theta`, `tau` (implied Kendall's tau), `family`,
+  `loglik` and `n_pairs`.
 }
 \description{
 Transforms bids to pooled Hazen scores \eqn{\hat u = \mathrm{rank}/(N+1)},

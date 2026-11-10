@@ -20,9 +20,9 @@ fpa_density_ci(
 )
 }
 \arguments{
-\item{bids}{pooled bids (vector) or an \code{L} by \code{n} matrix.}
+\item{bids}{pooled bids (vector) or an `L` by `n` matrix.}
 
-\item{n}{number of bidders per auction (from \code{ncol(bids)} for a matrix).}
+\item{n}{number of bidders per auction (from `ncol(bids)` for a matrix).}
 
 \item{grid}{evaluation points; default 201 points between the 5th and
 95th percentiles of the pseudo-values of the bids between the 10th and
@@ -32,38 +32,38 @@ fpa_density_ci(
 
 \item{B}{number of bootstrap replications.}
 
-\item{pointwise}{\code{"normal"} or \code{"percentile"}.}
+\item{pointwise}{`"normal"` or `"percentile"`.}
 
 \item{h_g, h_f}{optional bandwidths overriding the rules above.}
 
 \item{trim_estimator}{logical. The trimming of bids within \eqn{h_g} of the
 sample extremes is always used to compute \eqn{h_f}. With the default
-\code{FALSE} all pseudo-values then enter the density estimate and its
-variance, as in the authors' Monte Carlo implementation; with \code{TRUE} the
+`FALSE` all pseudo-values then enter the density estimate and its
+variance, as in the authors' Monte Carlo implementation; with `TRUE` the
 trimmed bids are also excluded from the estimate (the trimming factor
 \eqn{T_{il}} of the paper), which with rule-of-thumb bandwidths removes a
 substantial part of the support in moderate samples.}
 
 \item{constants}{rule-of-thumb constants for \eqn{h_g} and \eqn{h_f}
-(default \code{c(3.72, 3.15)}, the Silverman constants for the fourth- and
+(default `c(3.72, 3.15)`, the Silverman constants for the fourth- and
 second-order triweight kernels, as in Section 8 of the paper).}
 
-\item{sd_v}{standard deviation used in \eqn{h_f}: of the \code{"trimmed"}
-pseudo-values with \eqn{n_T} (default, as in the paper) or of \code{"all"}
+\item{sd_v}{standard deviation used in \eqn{h_f}: of the `"trimmed"`
+pseudo-values with \eqn{n_T} (default, as in the paper) or of `"all"`
 pseudo-values with \eqn{n}.}
 
-\item{se}{\code{"augmented"} (default): the asymptotic variance (4.2) plus the
+\item{se}{`"augmented"` (default): the asymptotic variance (4.2) plus the
 second-stage kernel variance \eqn{\hat f(v)\int K^2/(n h_f)}, a term of
 smaller order that is asymptotically negligible but keeps the standard
 error positive and improves it in moderate samples, where the U-statistic
-(4.2) can be close to or below zero; \code{"asymptotic"}: the estimator (4.2)
+(4.2) can be close to or below zero; `"asymptotic"`: the estimator (4.2)
 alone, as in the paper. Both give asymptotically valid uniform bands.}
 }
 \value{
-An object of class \code{"fpa_density_ci"}: a list with \code{v} (grid),
-\code{f} (estimate), \code{se}, \code{lower}, \code{upper} (pointwise interval), \code{band_lower},
-\code{band_upper} (uniform band), \code{crit} (\eqn{\zeta^*}), \code{level}, \code{h_g}, \code{h_f},
-\code{values} (trimmed pseudo-values) and \code{B}.
+An object of class `"fpa_density_ci"`: a list with `v` (grid),
+  `f` (estimate), `se`, `lower`, `upper` (pointwise interval), `band_lower`,
+  `band_upper` (uniform band), `crit` (\eqn{\zeta^*}), `level`, `h_g`, `h_f`,
+  `values` (trimmed pseudo-values) and `B`.
 }
 \description{
 Inference for the two-step estimator of Guerre, Perrigne and Vuong (2000)
@@ -89,13 +89,13 @@ standard error contains only the leading, first-stage term of the variance;
 in moderate samples, and where \eqn{F(v)} is small, the second-stage kernel
 variance is not negligible and normal intervals can under-cover, whereas the
 percentile intervals and the uniform band, whose critical value is
-bootstrapped, are not affected. The uniform band over \code{grid} is
+bootstrapped, are not affected. The uniform band over `grid` is
 \eqn{\hat f \pm \zeta^*\,\mathrm{se}}, where \eqn{\zeta^*} is the
 \eqn{1-\alpha} quantile of \eqn{\sup_v |\hat f^*(v) - \hat f(v)|/\mathrm{se}(v)}
 over bootstrap samples of the pooled bids (Theorem 5.2 and Corollary 5.1 of
 the paper).
 
-The theory requires \code{grid} to lie in the interior of the support of the
+The theory requires `grid` to lie in the interior of the support of the
 valuations. By default it spans the 5th to 95th percentiles of the
 pseudo-values of the bids between the 10th and 90th bid percentiles, which
 keeps it away from the long right tail of pseudo-values that the first
@@ -107,7 +107,7 @@ bounded away from zero. Observations whose estimated bid density is not positive
 \section{Reproducibility}{
 
 Fold assignment (or bootstrap resampling) uses R's random number generator;
-call \code{\link[=set.seed]{set.seed()}} beforehand to make results exactly reproducible.
+call [set.seed()] beforehand to make results exactly reproducible.
 }
 
 \examples{
@@ -121,9 +121,9 @@ plot(ci, true = function(v) dunif(v))
 }
 \references{
 Ma, J., Marmer, V. and Shneyerov, A. (2019). Inference for first-price
-auctions with Guerre, Perrigne, and Vuong's estimator. \emph{Journal of
-Econometrics}, 211, 507--538. \doi{10.1016/j.jeconom.2019.02.006}
+auctions with Guerre, Perrigne, and Vuong's estimator. *Journal of
+Econometrics*, 211, 507--538. \doi{10.1016/j.jeconom.2019.02.006}
 
 Guerre, E., Perrigne, I. and Vuong, Q. (2000). Optimal nonparametric
-estimation of first-price auctions. \emph{Econometrica}, 68, 525--574.
+estimation of first-price auctions. *Econometrica*, 68, 525--574.
 }

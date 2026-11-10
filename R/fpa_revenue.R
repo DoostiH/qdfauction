@@ -42,7 +42,8 @@ fpa_revenue <- function(values, r, eta = NULL, v_s = 0) {
   if (inherits(values, "fpa_values")) {
     if (is.null(values$values_mat))
       stop("Expected revenue needs the auction structure: call fpa_values() with the bids as ",
-           "a matrix (one row per auction, one column per bidder), not a pooled vector.", call. = FALSE)
+           "a matrix (one row per auction, one column per bidder), not a pooled vector. ",
+           "For procurement data use proc_values() and proc_cost().", call. = FALSE)
     if (is.null(eta)) eta <- values$eta
     vm <- values$values_mat
   } else {
@@ -50,6 +51,9 @@ fpa_revenue <- function(values, r, eta = NULL, v_s = 0) {
     if (is.null(eta)) eta <- 0
     vm <- values
   }
+  if (length(v_s) != 1L && length(v_s) != length(r))
+    stop("`v_s` must be a scalar or have the same length as `r`.", call. = FALSE)
+  v_s <- rep_len(v_s, length(r))
   n <- ncol(vm); L <- nrow(vm); N <- length(vm)
   vs <- sort(as.numeric(vm))
   e1 <- (n - 1) / (1 - eta); e2 <- (n + eta - 2) / (1 - eta)
@@ -59,15 +63,16 @@ fpa_revenue <- function(values, r, eta = NULL, v_s = 0) {
   Vc <- apply(vm, 1, max)
   iV <- findInterval(Vc, vs)              # index of last value <= V_check
   FV <- iV / N
-  vapply(r, function(rj) {
+  vapply(seq_along(r), function(j) {
+    rj <- r[j]; vsj <- v_s[j]
     Fr <- findInterval(rj, vs) / N
     ir <- findInterval(rj, vs, left.open = TRUE) + 1L   # first value >= r
     keep <- Vc > rj
-    if (!any(keep)) return(v_s * Fr^n)
+    if (!any(keep)) return(vsj * Fr^n)
     s0 <- (cw[iV[keep] + 1L] - cw[ir]) / N              # sum over r <= v_j <= V_check
     s0[iV[keep] < ir] <- 0
     bhat <- (rj * Fr^e1 + e1 * s0) / FV[keep]^e1
-    v_s * Fr^n + sum(bhat) / L
+    vsj * Fr^n + sum(bhat) / L
   }, numeric(1))
 }
 
@@ -192,6 +197,13 @@ fpa_optimal_reserve <- function(values, eta = NULL, v_s = 0, grid = NULL) {
 #' call [set.seed()] beforehand to make results exactly reproducible.
 #' @param B number of bootstrap replications.
 #' @param eta,v_s as in [fpa_revenue()].
+#' @details If the auctions have a time order and the same bidders recur,
+#'   resampling auctions or bids independently understates the sampling
+#'   uncertainty, in proportion to the dependence; use
+#'   `resample = "blocks"` in that case.
+#' @param L block length when `resample = "blocks"`: `"auto"` for the rule of
+#'   [block_length_auto()], or an integer. `L = 1` is the i.i.d. auction
+#'   bootstrap. Ignored by the other schemes.
 #' @param resample `"auctions"` (whole auctions with replacement; the
 #'   default) or `"bids"` (pooled bids with replacement). The revenue
 #'   estimator uses the highest pseudo-value in each auction, and pooled
@@ -223,11 +235,20 @@ fpa_optimal_reserve <- function(values, eta = NULL, v_s = 0, grid = NULL) {
 #' }
 #' @export
 fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
-                             resample = c("auctions", "bids"), alpha = c(0.10, 0.05, 0.01),
+                             resample = c("auctions", "bids", "blocks"), L = "auto",
+                             alpha = c(0.10, 0.05, 0.01),
                              trim = Inf, ...) {
   resample <- match.arg(resample)
+  L_block <- L            # public argument name; `L` below is the auction count
   bids <- as_bid_matrix(bids, allow_vector = FALSE)$bids
   L <- nrow(bids); n <- ncol(bids); N <- length(bids)
+  if (resample == "blocks") {
+    if (identical(L_block, "auto")) L_block <- block_length_auto(bids, winner = "max")
+    L_block <- as.integer(L_block)
+    if (is.na(L_block) || L_block < 1L || L_block > L)
+      stop("`L` must be \"auto\" or an integer between 1 and the number of auctions.",
+           call. = FALSE)
+  } else L_block <- 1L
   # The bandwidth is selected once, on the full sample, and held fixed in every
   # bootstrap replication (Doosti 2026b, Theorems 6-7): re-selecting it in each
   # replicate would add selector noise that the theory does not cover.
@@ -248,6 +269,7 @@ fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
   boot <- matrix(NA_real_, B, length(r))
   for (b in seq_len(B)) {
     bm <- if (resample == "bids") matrix(sample(bids, N, replace = TRUE), L, n)
+          else if (resample == "blocks") bids[resample_blocks(L, L_block), , drop = FALSE]
           else bids[sample.int(L, L, replace = TRUE), , drop = FALSE]
     boot[b, ] <- tryCatch(fit(bm), error = function(e) rep(NA_real_, length(r)))
   }
@@ -268,12 +290,14 @@ fpa_revenue_boot <- function(bids, r, B = 200, eta = 0, v_s = 0,
   }
   structure(list(r = r, estimate = est, se = se, ci = ci, band = band, z_pointwise = z_pt,
                  z_band = z_band, alpha = alpha, boot = boot, B = B, resample = resample,
+                 L = L_block,
                  bandwidth = bw, call = match.call()), class = "fpa_revenue_boot")
 }
 
 #' @export
 print.fpa_revenue_boot <- function(x, digits = 4, ...) {
-  cat("Expected revenue with bootstrap inference (B =", x$B, ", resampling", x$resample, ")\n")
+  cat("Expected revenue with bootstrap inference (B =", x$B, ", resampling", x$resample,
+      if (identical(x$resample, "blocks")) paste0(", L = ", x$L) else "", ")\n")
   if (!is.null(x$bandwidth))
     cat(sprintf("  bandwidth    : m = %s selected by %s on the full sample, fixed in all replications%s\n",
                 format(signif(x$bandwidth$m, 4)), x$bandwidth$selector,

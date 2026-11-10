@@ -1,7 +1,8 @@
 Package: qdfauction
 Type: Package
-Title: Nonparametric Quantile Density Estimation and Structural Analysis of First-Price Auctions
-Version: 0.2.0
+Title: Nonparametric Quantile Density Estimation and Structural
+        Analysis of First-Price Auctions
+Version: 0.3.0
 Authors@R: c(
     person("Hassan", "Doosti", role = c("aut", "cre", "cph"),
            email = "Hassan.doosti@mq.edu.au",
@@ -55,11 +56,40 @@ License: GPL (>= 3)
 URL: https://github.com/DoostiH/qdfauction
 BugReports: https://github.com/DoostiH/qdfauction/issues
 Encoding: UTF-8
+Language: en-GB
 Depends: R (>= 4.1)
 Imports: stats, splines, utils, graphics, grDevices
-Suggests: testthat (>= 3.1.7), knitr, rmarkdown
+Suggests: testthat (>= 3.1.7), knitr, rmarkdown, np
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Roxygen: list(markdown = TRUE)
 LazyData: true
-Config/roxygen2/version: 8.1.1
+NeedsCompilation: no
+RoxygenNote: 7.3.1
+Author: Hassan Doosti [aut, cre, cph] (ORCID:
+    <https://orcid.org/0000-0002-0290-8122>, affiliation: School of
+    Mathematical and Physical Sciences, Macquarie University), Yogendra P.
+    Chaubey [ctb, cph] (original R code of the quantile density estimators
+    and cross-validation criteria, revised and vectorised in R/estimators.R
+    and R/bandwidth.R), Isha Dewan [ctb, cph] (original R code of the
+    quantile density estimators and cross-validation criteria, revised and
+    vectorised in R/estimators.R and R/bandwidth.R), Jun Li [ctb, cph]
+    (original R code of the quantile density estimators and cross-validation
+    criteria, revised and vectorised in R/estimators.R and R/bandwidth.R),
+    Brent R. Hickman [ctb, cph] (original MATLAB implementation of the
+    boundary-corrected kernel density estimator, translated to R in
+    kde_hh()), Timothy P. Hubbard [ctb, cph] (original MATLAB implementation
+    of the boundary-corrected kernel density estimator, translated to R in
+    kde_hh()), Brani Vidakovic [ctb, cph] (original MATLAB routines Phijk,
+    dwtr, Idwtr and loc_lin, translated to R in scaling_function(),
+    phi_jk(), dwt_periodic(), idwt_periodic() and loclin_smooth()), Vadim
+    Marmer [ctb, cph] (original MATLAB implementation of the quantile-based
+    estimator, translated to R in density_marmer_shneyerov(); reference
+    implementation used to validate fpa_density_ci()), Jun Ma [ctb]
+    (reference implementation of inference for the GPV estimator, used to
+    validate fpa_density_ci()), Artyom Shneyerov [ctb, cph] (original MATLAB
+    implementation of the quantile-based estimator, translated to R in
+    density_marmer_shneyerov()), Federico Zincenko [ctb, cph] (original
+    implementation of the kernel estimator of private values with boundary
+    extrapolation, adapted in fpa_values(method = 'zincenko'))
+Maintainer: Hassan Doosti <Hassan.doosti@mq.edu.au>
+Packaged: 2026-11-10 06:34:35 UTC; root

@@ -19,33 +19,32 @@ qdf_bernstein_loo(u, x, h, zero_at_origin = TRUE)
 
 \item{h}{bandwidth on the probability scale (\eqn{0 < h < 1}).}
 
-\item{zero_at_origin}{logical; \code{TRUE} (default) takes \eqn{Q_n(0) = 0},
-\code{FALSE} takes \eqn{Q_n(0) = X_{(1)}}.}
+\item{zero_at_origin}{logical; `TRUE` (default) takes \eqn{Q_n(0) = 0},
+`FALSE` takes \eqn{Q_n(0) = X_{(1)}}.}
 }
 \value{
-numeric vector of quantile density estimates at \code{u}; for
-\code{qdf_bernstein_loo()}, the vector
-\eqn{(\hat q_{-1}(u_1), \dots, \hat q_{-n}(u_n))}, where \code{u} has the
-length of \code{x} and is paired with the sorted sample.
+numeric vector of quantile density estimates at `u`; for
+  `qdf_bernstein_loo()`, the vector
+  \eqn{(\hat q_{-1}(u_1), \dots, \hat q_{-n}(u_n))}, where `u` has the
+  length of `x` and is paired with the sorted sample.
 }
 \description{
 Estimators that smooth the empirical quantile function \eqn{Q_n} with
 probability weights on a lattice \eqn{k/m}, \eqn{m = \lfloor 1/h \rfloor}.
-\itemize{
-\item \code{qdf_poisson()} uses Poisson weights (Chaubey, Dewan and Li 2021; estimator
-3 of Doosti, Dewan and Talebian 2025):
-\deqn{\hat q(u) = m \sum_{k=0}^{m} Q_n(k/m)\, w_k'(m u)}
-where \eqn{w_k(\mu) = p_k(\mu)/P_m(\mu)} are truncated Poisson weights.
-\item \code{qdf_bernstein()} uses Bernstein polynomials (estimator 4):
-\deqn{\hat q(u) = m \sum_{k=0}^{m-1} \{Q_n((k+1)/m) - Q_n(k/m)\} b_k(u; m-1).}
-}
+
+* `qdf_poisson()` uses Poisson weights (Chaubey, Dewan and Li 2021; estimator
+  3 of Doosti, Dewan and Talebian 2025):
+  \deqn{\hat q(u) = m \sum_{k=0}^{m} Q_n(k/m)\, w_k'(m u)}
+  where \eqn{w_k(\mu) = p_k(\mu)/P_m(\mu)} are truncated Poisson weights.
+* `qdf_bernstein()` uses Bernstein polynomials (estimator 4):
+  \deqn{\hat q(u) = m \sum_{k=0}^{m-1} \{Q_n((k+1)/m) - Q_n(k/m)\} b_k(u; m-1).}
 
 Both require non-negative data because \eqn{Q_n(0)} is taken to be 0;
-\code{qdf_bernstein()} can instead use \eqn{Q_n(0) = X_{(1)}}
-(\code{zero_at_origin = FALSE}), which is preferable when the data do not start
+`qdf_bernstein()` can instead use \eqn{Q_n(0) = X_{(1)}}
+(`zero_at_origin = FALSE`), which is preferable when the data do not start
 near zero (for example bids in dollars).
 
-\code{qdf_bernstein_loo()} returns the exact leave-one-out Bernstein estimates
+`qdf_bernstein_loo()` returns the exact leave-one-out Bernstein estimates
 \eqn{\hat q_{-i}(u_i)}, \eqn{i = 1, \dots, n}, used by the cross-validation
 criteria: removing \eqn{X_{(i)}} shifts every higher order statistic down
 by one position, so the leave-one-out lattice values are obtained by an
@@ -62,6 +61,6 @@ all.equal(loo[10], qdf_bernstein(u[10], xs[-10], h = 0.05))
 }
 \references{
 Chaubey, Y. P., Dewan, I. and Li, J. (2021). On some smooth estimators of
-the quantile function for a stationary associated process. \emph{Sankhya B},
+the quantile function for a stationary associated process. *Sankhya B*,
 83 (Suppl 1), 114--139. \doi{10.1007/s13571-020-00242-x}
 }

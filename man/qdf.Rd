@@ -15,6 +15,7 @@ qdf(
   kernel = "gaussian",
   j0 = NULL,
   loo = NULL,
+  zero_at_origin = TRUE,
   grid = NULL,
   u_scheme = NULL,
   optimizer = NULL,
@@ -23,70 +24,77 @@ qdf(
 )
 }
 \arguments{
-\item{x}{numeric sample. The series estimators (\code{"poisson"},
-\code{"bernstein"}, \code{"indirect_poisson"}) require strictly positive data.}
+\item{x}{numeric sample. The series estimators (`"poisson"`,
+`"bernstein"`, `"indirect_poisson"`) require strictly positive data.}
 
-\item{method}{one of \code{"indirect_poisson"} (default), \code{"kernel"},
-\code{"kernel_corrected"}, \code{"poisson"}, \code{"bernstein"}, \code{"jones"}, \code{"soni"}, or
-the wavelet estimators \code{"wavelet"} (linear), \code{"wavelet_hard"},
-\code{"wavelet_block"} of \code{\link[=qdf_wavelet]{qdf_wavelet()}}, all with local-linear smoothing.}
+\item{method}{one of `"indirect_poisson"` (default), `"kernel"`,
+`"kernel_corrected"`, `"poisson"`, `"bernstein"`, `"jones"`, `"soni"`, or
+the wavelet estimators `"wavelet"` (linear), `"wavelet_hard"`,
+`"wavelet_block"` of [qdf_wavelet()], all with local-linear smoothing.}
 
-\item{bandwidth}{either a selector name (\code{"bcv"}, the default, or \code{"rlcv"};
-\code{"wbcv"} is kept only for backward compatibility: it is not scale-invariant,
-is not recommended and warns, see \code{\link[=bcv_criterion]{bcv_criterion()}}; for the wavelet
-methods \code{"cv"}, the default for them, see \code{\link[=select_wavelet]{select_wavelet()}}), the rule
-\code{"sqrt"}, or a numeric bandwidth \eqn{h} to use directly. \code{"sqrt"}, for
-\code{method = "bernstein"} only, sets \eqn{m = \lceil\sqrt{n}\rceil}, the rule
+\item{bandwidth}{either a selector name (`"bcv"`, the default, or `"rlcv"`;
+`"wbcv"` is kept only for backward compatibility: it is not scale-invariant,
+is not recommended and warns, see [bcv_criterion()]; for the wavelet
+methods `"cv"`, the default for them, see [select_wavelet()]), the rule
+`"sqrt"`, or a numeric bandwidth \eqn{h} to use directly. `"sqrt"`, for
+`method = "bernstein"` only, sets \eqn{m = \lceil\sqrt{n}\rceil}, the rule
 used in Doosti (2026b): it lies inside the range
 \eqn{n^{2/5} \ll m \ll n^{2/3}} covered by that paper's asymptotic theory
 and was calibrated there over the designs of Zincenko (2024).}
 
 \item{m_range}{search range for \eqn{m = 1/h} when a selector is used.
-Defaults to \code{c(10, 50)} (\code{c(1, 50)} for \code{"jones"} and \code{"soni"}), the
+Defaults to `c(10, 50)` (`c(1, 50)` for `"jones"` and `"soni"`), the
 ranges used in the published simulations.}
 
 \item{u}{evaluation grid in \eqn{[0, 1]}. Defaults to \eqn{i/(n+1)}.}
 
-\item{H}{second bandwidth for \code{method = "soni"} (the outer smoother on the
+\item{H}{second bandwidth for `method = "soni"` (the outer smoother on the
 probability scale). Defaults to the Sheather--Jones bandwidth of the
-uniform scores, \code{bw.SJ(rank(x)/n)}.}
+uniform scores, `bw.SJ(rank(x)/n)`.}
 
-\item{kernel}{kernel for the kernel-type estimators (\code{"gaussian"},
-\code{"triangular"}, \code{"epanechnikov"}); see \code{\link[=qdf_kernel]{qdf_kernel()}}.}
+\item{kernel}{kernel for the kernel-type estimators (`"gaussian"`,
+`"triangular"`, `"epanechnikov"`); see [qdf_kernel()].}
 
 \item{j0}{resolution level for the wavelet methods (default 5 when a
-numeric \code{h} is given; chosen by cross-validation with \code{bandwidth = "cv"}).}
+numeric `h` is given; chosen by cross-validation with `bandwidth = "cv"`).}
 
-\item{loo, grid, u_scheme, optimizer}{passed to \code{\link[=select_bandwidth]{select_bandwidth()}}.}
+\item{loo, grid, u_scheme, optimizer}{passed to [select_bandwidth()].}
 
-\item{rescale}{logical (default \code{TRUE}): estimate on \eqn{x/s}, \eqn{s} the
+\item{zero_at_origin}{logical (default `TRUE`), for `method = "bernstein"`
+only: anchor the fitted quantile function at \eqn{Q_n(0) = 0}. The default
+reproduces earlier versions. `FALSE` anchors at the smallest observation
+instead and is preferable when the data do not start near zero (for
+example bids in dollars); it changes the fit only in the lowest few
+percent of quantiles. Ignored by the other estimators.}
+
+\item{rescale}{logical (default `TRUE`): estimate on \eqn{x/s}, \eqn{s} the
 sample standard deviation, and return \eqn{s\,\hat q}. This makes every
 estimator scale-equivariant; it matters for the indirect Poisson, Jones and
 Soni estimators, whose smoothing parameter lives on the data scale (for
-them the reported \code{h} refers to the standardised data). The kernel,
+them the reported `h` refers to the standardised data). The kernel,
 corrected kernel, Poisson and Bernstein estimators are equivariant anyway.
-\code{FALSE} reproduces the original implementations.}
+`FALSE` reproduces the original implementations.}
 
 \item{...}{currently unused.}
 }
 \value{
-An object of class \code{"qdf"}: a list with components
+An object of class `"qdf"`: a list with components
 \describe{
-\item{x}{the sorted sample}
-\item{u, q}{the evaluation grid and the estimated quantile density on it}
-\item{Q}{the empirical quantile function on \code{u} (for convenience)}
-\item{method, h, m, H}{the estimator and its smoothing parameters}
-\item{selection}{the output of \code{\link[=select_bandwidth]{select_bandwidth()}}, or \code{NULL} when a
-numeric bandwidth was supplied}
+  \item{x}{the sorted sample}
+  \item{u, q}{the evaluation grid and the estimated quantile density on it}
+  \item{Q}{the empirical quantile function on `u` (for convenience)}
+  \item{method, h, m, H}{the estimator and its smoothing parameters}
+  \item{selection}{the output of [select_bandwidth()], or `NULL` when a
+    numeric bandwidth was supplied}
 }
-with methods \code{\link[=predict.qdf]{predict.qdf()}}, \code{print()} and \code{\link[=plot.qdf]{plot.qdf()}}.
+with methods [predict.qdf()], `print()` and [plot.qdf()].
 }
 \description{
 Estimates the quantile density function \eqn{q(u) = Q'(u) = 1/g(Q(u))}
 (Parzen 1979; also called the sparsity function, Tukey 1965) from an i.i.d.
 sample, with the smoothing parameter chosen by cross-validation. Ten
-estimators are available; see \code{\link[=qdf_kernel]{qdf_kernel()}}, \code{\link[=qdf_poisson]{qdf_poisson()}},
-\code{\link[=qdf_jones]{qdf_jones()}} and \code{\link[=qdf_wavelet]{qdf_wavelet()}} for their definitions and the simulation evidence in Doosti,
+estimators are available; see [qdf_kernel()], [qdf_poisson()],
+[qdf_jones()] and [qdf_wavelet()] for their definitions and the simulation evidence in Doosti,
 Dewan and Talebian (2025), where the indirect Poisson estimator with BCV
 bandwidth performed best for first-price auction inversion.
 }
@@ -102,9 +110,9 @@ plot(fit, true = function(u) 1 / dgamma(qgamma(u, 5, 1), 5, 1))
 \references{
 Doosti, H., Dewan, I. and Talebian, M. (2025). Nonparametric estimation of
 private value distributions in first-price auctions: Evaluating quantile
-density function approaches. \emph{Economics Letters}, 257, 112670.
+density function approaches. *Economics Letters*, 257, 112670.
 \doi{10.1016/j.econlet.2025.112670}
 
-Parzen, E. (1979). Nonparametric statistical data modeling. \emph{Journal of the
-American Statistical Association}, 74, 105--121.
+Parzen, E. (1979). Nonparametric statistical data modeling. *Journal of the
+American Statistical Association*, 74, 105--121.
 }

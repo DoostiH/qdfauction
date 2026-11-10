@@ -7,10 +7,10 @@
 \method{predict}{qdf}(object, u = NULL, ...)
 }
 \arguments{
-\item{object}{a \code{"qdf"} object.}
+\item{object}{a `"qdf"` object.}
 
 \item{u}{evaluation points in \eqn{[0, 1]}; defaults to the grid stored in
-\code{object}.}
+`object`.}
 
 \item{...}{unused.}
 }

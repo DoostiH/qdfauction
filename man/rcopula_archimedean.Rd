@@ -11,12 +11,12 @@ rcopula_archimedean(L, n, family = "independence", theta = NULL)
 
 \item{n}{number of bidders (columns).}
 
-\item{family}{\code{"independence"}, \code{"clayton"}, \code{"gumbel"} or \code{"frank"}.}
+\item{family}{`"independence"`, `"clayton"`, `"gumbel"` or `"frank"`.}
 
 \item{theta}{copula parameter (ignored for independence).}
 }
 \value{
-an \code{L} by \code{n} matrix with uniform margins.
+an `L` by `n` matrix with uniform margins.
 }
 \description{
 Marshall--Olkin frailty samplers in base R.

@@ -18,58 +18,60 @@ select_bandwidth(
 \arguments{
 \item{x}{numeric sample (sorted internally).}
 
-\item{fun}{an estimator with signature \code{fun(u, x, h)}, e.g. \code{\link[=qdf_kernel]{qdf_kernel()}}.
-Extra arguments (such as \code{H} for \code{\link[=qdf_soni]{qdf_soni()}}) should be bound with a
+\item{fun}{an estimator with signature `fun(u, x, h)`, e.g. [qdf_kernel()].
+Extra arguments (such as `H` for [qdf_soni()]) should be bound with a
 closure before calling.}
 
-\item{selector}{\code{"bcv"}, \code{"rlcv"} or \code{"wbcv"}.}
+\item{selector}{`"bcv"`, `"rlcv"` or `"wbcv"`.}
 
 \item{m_range}{numeric length-2 range for \eqn{m = 1/h}.}
 
-\item{loo}{logical; if \code{TRUE} (default) leave-one-out fits are computed
+\item{loo}{logical; if `TRUE` (default) leave-one-out fits are computed
 exactly (by refitting without observation \eqn{i}, or by the index shift of
-\code{\link[=qdf_bernstein_loo]{qdf_bernstein_loo()}} for the Bernstein estimator). If \code{FALSE} the scaling
+[qdf_bernstein_loo()] for the Bernstein estimator). If `FALSE` the scaling
 approximation \eqn{\hat q_{-i} \approx \hat q\,(n-1)/n} is used. The
 approximation is not valid for estimators built from order statistics:
 removing \eqn{X_{(i)}} shifts every higher quantile position, and with it
-least-squares criteria select the roughest fit in \code{m_range}. It is kept
+least-squares criteria select the roughest fit in `m_range`. It is kept
 only for backward compatibility.}
 
-\item{grid}{search method: \code{0} (the default, as in the published
-simulations) runs \code{\link[stats:optimize]{stats::optimize()}} directly over \code{m_range}; an integer
-\code{grid > 0} first evaluates the criterion on that many equally spaced
-points and then runs \code{optimize()} in the bracket around the grid minimum;
-\code{"exhaustive"} evaluates the criterion at every integer \code{m} in \code{m_range}
-and returns the global minimiser. When a criterion is multimodal in \code{m},
-\code{optimize()} can return an interior local minimum, while the global
-minimiser can lie at an end of \code{m_range}; boundary solutions are flagged
-(see below). \code{NULL} is the same as \code{0}.}
+\item{grid}{search method: `0` (the default, as in the published
+simulations) runs [stats::optimize()] directly over `m_range`; an integer
+`grid > 0` first evaluates the criterion on that many equally spaced
+points and then runs `optimize()` in the bracket around the grid minimum;
+`"exhaustive"` evaluates the criterion at every integer `m` in `m_range`
+and returns the global minimiser. When a criterion is multimodal in `m`,
+`optimize()` can return an interior local minimum, while the global
+minimiser can lie at an end of `m_range`; boundary solutions are flagged
+(see below). `NULL` is the same as `0`.}
 
-\item{u_scheme}{grid on which the criterion is evaluated: \code{"i/n"} (the
-published convention) or \code{"i/(n+1)"}.}
+\item{u_scheme}{grid on which the criterion is evaluated: `"i/n"` (the
+published convention) or `"i/(n+1)"`.}
 
-\item{optimizer}{optional function \code{optimizer(f, interval)} used instead of
-\code{\link[stats:optimize]{stats::optimize()}}; it must return a list with elements \code{minimum} and
-\code{objective}. Useful to plug in a global optimiser for criteria with several
-local minima, e.g. \code{function(f, interval) { g <- seq(interval[1], interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)], objective = min(v)) }} for an exhaustive grid search. When \code{optimizer}
-is supplied it is used, and \code{grid = "exhaustive"} is treated as \code{grid = 0}.}
+\item{optimizer}{optional function `optimizer(f, interval)` used instead of
+[stats::optimize()]; it must return a list with elements `minimum` and
+`objective`. Useful to plug in a global optimiser for criteria with several
+local minima, e.g. `function(f, interval) \{ g <- seq(interval[1],
+interval[2], length.out = 200); v <- sapply(g, f); list(minimum = g[which.min(v)],
+objective = min(v)) \}` for an exhaustive grid search. When `optimizer`
+is supplied it is used, and `grid = "exhaustive"` is treated as `grid = 0`.}
 }
 \value{
-a list with \code{h}, \code{m}, \code{selector}, \code{criterion} (the minimised value)
-and \code{m_range}; \code{at_boundary} (logical) and \code{boundary} (\code{"lower"},
-\code{"upper"} or \code{NA}), which record a minimiser at an end of \code{m_range}; with
-\code{grid = "exhaustive"} also the evaluated grid \code{grid_m} and criterion values
-\code{grid_cv}.
+a list with `h`, `m`, `selector`, `criterion` (the minimised value)
+  and `m_range`; `at_boundary` (logical) and `boundary` (`"lower"`,
+  `"upper"` or `NA`), which record a minimiser at an end of `m_range`; with
+  `grid = "exhaustive"` also the evaluated grid `grid_m` and criterion values
+  `grid_cv`.
 }
 \description{
-Minimises one of the criteria in \code{\link[=bcv_criterion]{bcv_criterion()}} over \eqn{m = 1/h} in
-\code{m_range} with \code{\link[stats:optimize]{stats::optimize()}}, optionally after a coarse grid search.
+Minimises one of the criteria in [bcv_criterion()] over \eqn{m = 1/h} in
+`m_range` with [stats::optimize()], optionally after a coarse grid search.
 }
 \section{Boundary solutions}{
 
-If the minimiser lies at either end of \code{m_range}, whatever the search
+If the minimiser lies at either end of `m_range`, whatever the search
 method, the criterion did not select a bandwidth in that range. A warning is
-issued and \code{at_boundary = TRUE} is returned; widen \code{m_range} or give the
+issued and `at_boundary = TRUE` is returned; widen `m_range` or give the
 bandwidth directly.
 }
 

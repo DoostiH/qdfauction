@@ -23,76 +23,74 @@ fpa_density(
 )
 }
 \arguments{
-\item{bids}{pooled bids (vector) or an \code{L} by \code{n} matrix.}
+\item{bids}{pooled bids (vector) or an `L` by `n` matrix.}
 
-\item{n}{bidders per auction (from \code{ncol(bids)} for a matrix).}
+\item{n}{bidders per auction (from `ncol(bids)` for a matrix).}
 
 \item{method}{second-stage estimator; see Description.}
 
-\item{first_stage}{\code{"gpv_hh"} (default), \code{"gpv"}, an \code{\link[=fpa_values]{fpa_values()}} object,
-or the name of a \code{\link[=qdf]{qdf()}} method to use through \code{\link[=fpa_values]{fpa_values()}}.}
+\item{first_stage}{`"gpv_hh"` (default), `"gpv"`, an [fpa_values()] object,
+or the name of a [qdf()] method to use through [fpa_values()].}
 
 \item{x}{evaluation grid on the value scale. Defaults to 200 points spanning
 the pseudo-values (excluding the extreme 0.5 percent at each end).}
 
-\item{j0}{resolution level, or \code{"cv"} to choose \code{j0} (and \code{h}) by
-cross-validated held-out log-likelihood (\code{\link[=select_fpa_density]{select_fpa_density()}}).}
+\item{j0}{resolution level, or `"cv"` to choose `j0` (and `h`) by
+cross-validated held-out log-likelihood ([select_fpa_density()]).}
 
-\item{h}{local-linear bandwidth for \code{"wavelet_ll"} (ignored if \code{j0 = "cv"}).}
+\item{h}{local-linear bandwidth for `"wavelet_ll"` (ignored if `j0 = "cv"`).}
 
-\item{scale}{\code{"auto"}, \code{"log"}, \code{"minmax"} or \code{"none"}.}
+\item{scale}{`"auto"`, `"log"`, `"minmax"` or `"none"`.}
 
-\item{filter, dwt_filter, levels}{wavelet settings; see \code{\link[=qdf_wavelet]{qdf_wavelet()}}.}
+\item{filter, dwt_filter, levels}{wavelet settings; see [qdf_wavelet()].}
 
-\item{kernel, side}{kernel and correction side for \code{\link[=kde_hh]{kde_hh()}} (used in the
-\code{"gpv_hh"} first stage and the \code{"kde_hh"} second stage).}
+\item{kernel, side}{kernel and correction side for [kde_hh()] (used in the
+`"gpv_hh"` first stage and the `"kde_hh"` second stage).}
 
-\item{...}{for \code{first_stage} given as a \code{\link[=qdf]{qdf()}} method name, further
-arguments to \code{\link[=fpa_values]{fpa_values()}}; for \code{"wavelet_block"}, arguments to
-\code{\link[=threshold_coefficients]{threshold_coefficients()}}; for \code{j0 = "cv"}, \code{j0_grid}, \code{h_grid}, \code{folds},
-\code{criterion}.}
+\item{...}{for `first_stage` given as a [qdf()] method name, further
+arguments to [fpa_values()]; for `"wavelet_block"`, arguments to
+[threshold_coefficients()]; for `j0 = "cv"`, `j0_grid`, `h_grid`, `folds`,
+`criterion`.}
 }
 \value{
-An object of class \code{"fpa_density"}: a list with \code{x}, \code{f} (density
-on the value scale), \code{values} (pseudo-values), \code{values_u} (on the unit
-scale), \code{map}, \code{method}, \code{j0}, \code{h}, \code{first_stage}, \code{n}, and \code{fun}, a
-function returning the density at arbitrary values.
+An object of class `"fpa_density"`: a list with `x`, `f` (density
+  on the value scale), `values` (pseudo-values), `values_u` (on the unit
+  scale), `map`, `method`, `j0`, `h`, `first_stage`, `n`, and `fun`, a
+  function returning the density at arbitrary values.
 }
 \description{
 Two-step estimation of the density \eqn{f} of independent private values.
 The first step recovers pseudo-values \eqn{\hat v_i} from the bids (by
 default with the Hickman--Hubbard boundary-corrected GPV inversion, or
-with any \code{\link[=fpa_values]{fpa_values()}} fit); the second step estimates the density of
+with any [fpa_values()] fit); the second step estimates the density of
 the pseudo-values by
-\itemize{
-\item \code{"wavelet_ll"}: linear wavelet estimator followed by local-linear
-smoothing (the best performer in Doosti, Dewan and Sbai 2026);
-\item \code{"wavelet_linear"}, \code{"wavelet_hard"}, \code{"wavelet_block"}: linear,
-hard-thresholded and block-thresholded wavelet estimators;
-\item \code{"wavelet_theory"}: the hard-thresholding estimator of Theorem 2 of
-Doosti, Dewan and Sbai (2026) on a periodised basis, with coefficients
-\eqn{\hat\beta_{j,k} = N^{-1}\sum_i \psi_{j,k}(\Pi\hat v_i)}, coarsest level
-\eqn{\tau = 3}, finest level \eqn{2^{j_1} \approx \sigma_N^{-1}} and
-level-dependent thresholds \eqn{\eta_j = \kappa\,2^{j/2}\sigma_N},
-\eqn{\sigma_N = N^{-2/5}(\log N)^{1/2}}; by default \eqn{\kappa} is set so that
-the threshold at the finest level is the universal threshold
-\eqn{\hat s\sqrt{2\log N}} (\eqn{\hat s}: median absolute finest-level
-coefficient / 0.6745); pass \code{kappa} to override;
-\item \code{"kde_hh"}: the boundary-corrected kernel estimator of Hickman and
-Hubbard (2015), i.e. GPV with boundary correction at both stages;
-\item \code{"kde"}: Gaussian kernel with Sheather--Jones bandwidth;
-\item \code{"empirical_quantile"}: finite-difference density from the empirical
-quantile function of the pseudo-values;
-\item \code{"marmer_shneyerov"}: the quantile-based estimator of Marmer and
-Shneyerov (2012), computed directly from the bids (no first stage).
-}
+* `"wavelet_ll"`: linear wavelet estimator followed by local-linear
+  smoothing (the best performer in Doosti, Dewan and Sbai 2026);
+* `"wavelet_linear"`, `"wavelet_hard"`, `"wavelet_block"`: linear,
+  hard-thresholded and block-thresholded wavelet estimators;
+* `"wavelet_theory"`: the hard-thresholding estimator of Theorem 2 of
+  Doosti, Dewan and Sbai (2026) on a periodised basis, with coefficients
+  \eqn{\hat\beta_{j,k} = N^{-1}\sum_i \psi_{j,k}(\Pi\hat v_i)}, coarsest level
+  \eqn{\tau = 3}, finest level \eqn{2^{j_1} \approx \sigma_N^{-1}} and
+  level-dependent thresholds \eqn{\eta_j = \kappa\,2^{j/2}\sigma_N},
+  \eqn{\sigma_N = N^{-2/5}(\log N)^{1/2}}; by default \eqn{\kappa} is set so that
+  the threshold at the finest level is the universal threshold
+  \eqn{\hat s\sqrt{2\log N}} (\eqn{\hat s}: median absolute finest-level
+  coefficient / 0.6745); pass `kappa` to override;
+* `"kde_hh"`: the boundary-corrected kernel estimator of Hickman and
+  Hubbard (2015), i.e. GPV with boundary correction at both stages;
+* `"kde"`: Gaussian kernel with Sheather--Jones bandwidth;
+* `"empirical_quantile"`: finite-difference density from the empirical
+  quantile function of the pseudo-values;
+* `"marmer_shneyerov"`: the quantile-based estimator of Marmer and
+  Shneyerov (2012), computed directly from the bids (no first stage).
 
 Because the wavelet basis lives on \eqn{[0,1]}, bids and pseudo-values are
-mapped to the unit interval by a monotone map (\code{scale}): with \code{"auto"} the
+mapped to the unit interval by a monotone map (`scale`): with `"auto"` the
 identity when the bids lie in \eqn{[0,1]} (pseudo-values outside are
 projected onto \eqn{[0,1]} for the wavelet coefficients), otherwise \eqn{x \mapsto (\log x - a)/(b-a)}
-(\code{"log"}, which handles the heavy right tail of the GPV ratio) or a linear
-map (\code{"minmax"}). Densities are reported on the original scale through the
+(`"log"`, which handles the heavy right tail of the GPV ratio) or a linear
+map (`"minmax"`). Densities are reported on the original scale through the
 Jacobian.
 }
 \examples{
@@ -110,9 +108,9 @@ Doosti, H., Dewan, I. and Sbai, E. (2026). Adaptive wavelet estimation of
 private-value densities in first-price auctions. SSRN preprint.
 \doi{10.2139/ssrn.7618223}
 
-Hickman, B. R. and Hubbard, T. P. (2015). \emph{Journal of Applied
-Econometrics}, 30, 739--762.
+Hickman, B. R. and Hubbard, T. P. (2015). *Journal of Applied
+Econometrics*, 30, 739--762.
 
-Marmer, V. and Shneyerov, A. (2012). \emph{Journal of Econometrics}, 167,
+Marmer, V. and Shneyerov, A. (2012). *Journal of Econometrics*, 167,
 345--357.
 }

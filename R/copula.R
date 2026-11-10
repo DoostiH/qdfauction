@@ -36,6 +36,7 @@
 copula_psi <- function(u, family = "independence", theta = NULL, n) {
   family <- match.arg(family, .copula_families)
   check_theta(family, theta)
+  if (.copula_degenerate(family, theta)) return(u / (n - 1))
   switch(family,
          independence = u / (n - 1),
          clayton = (n * u - (n - 1) * u^(theta + 1)) / ((n - 1) * (theta + 1)),
@@ -68,6 +69,7 @@ copula_psi <- function(u, family = "independence", theta = NULL, n) {
 copula_delta <- function(u, family = "independence", theta = NULL, n) {
   family <- match.arg(family, .copula_families)
   check_theta(family, theta)
+  if (.copula_degenerate(family, theta)) return(u^n)
   switch(family,
          independence = u^n,
          clayton = (n * u^(-theta) - (n - 1))^(-1 / theta),
@@ -80,6 +82,7 @@ copula_delta <- function(u, family = "independence", theta = NULL, n) {
 copula_delta_prime <- function(u, family = "independence", theta = NULL, n) {
   family <- match.arg(family, .copula_families)
   check_theta(family, theta)
+  if (.copula_degenerate(family, theta)) return(n * u^(n - 1))
   switch(family,
          independence = n * u^(n - 1),
          clayton = {
@@ -91,6 +94,37 @@ copula_delta_prime <- function(u, family = "independence", theta = NULL, n) {
            a <- expm1(-theta * u); D <- expm1(-theta)
            n * a^(n - 1) * exp(-theta * u) / (D^(n - 1) * .frank_y(u, theta, n))
          })
+}
+
+# Numerically degenerate dependence: as theta -> 0 the Frank and Clayton
+# generators tend to independence, and as theta -> 1 so does Gumbel. Close to
+# those limits `.frank_y()` and the Clayton powers are ill-conditioned, and the
+# reserve-price integrals built on them lose accuracy well before the
+# multiplier itself does (Project A measured an optimal-ceiling bias of +0.23
+# at n = 5 with theta-hat at the lower fitting bound, while the pseudo-values
+# were unaffected). `copula_fit()` bounds Frank and Clayton below at 1e-3, so a
+# fitted theta can sit exactly on this edge. In that regime we use the
+# independence formulas, which are the correct limit.
+# The threshold is set on Kendall's tau, not on theta: tau is scale free and
+# comparable across families, whereas the same theta means very different
+# dependence in each. At tau = 0.01 the dependence is far below anything these
+# data can identify. The theta bounds below are that tau inverted, precomputed
+# so that no integrate() call enters the hot path:
+#   clayton  tau = theta/(theta+2)        -> theta <= 2 tau/(1-tau) = 0.0202
+#   gumbel   tau = 1 - 1/theta            -> theta <= 1/(1-tau)     = 1.0101
+#   frank    tau ~ theta/9 for small theta-> theta <= 9 tau         = 0.09
+# (checked against copula_theta_to_tau(): theta = 0.09 gives tau = 0.01000.)
+.copula_tau_tol <- 0.01
+.copula_tol <- c(clayton = 0.0202, frank = 0.09, gumbel = 1.0101)
+
+.copula_degenerate <- function(family, theta) {
+  if (family == "independence") return(FALSE)
+  if (is.null(theta) || !is.finite(theta)) return(FALSE)
+  switch(family,
+         clayton = theta <= .copula_tol[["clayton"]],
+         frank   = abs(theta) <= .copula_tol[["frank"]],
+         gumbel  = theta <= .copula_tol[["gumbel"]],
+         FALSE)
 }
 
 check_theta <- function(family, theta) {

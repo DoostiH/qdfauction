@@ -18,7 +18,7 @@ numeric vector.
 }
 \description{
 Post-smoothing of a wavelet estimate on a grid (Ramirez and Vidakovic 2010;
-Fan 1992): for each \code{x} solves the weighted least-squares line through
-\verb{(grid, y)} with weights \eqn{K((grid - x)/h)} and returns its value at \code{x}.
-Translated from the MATLAB routine \code{loc_lin} of B. Vidakovic.
+Fan 1992): for each `x` solves the weighted least-squares line through
+`(grid, y)` with weights \eqn{K((grid - x)/h)} and returns its value at `x`.
+Translated from the MATLAB routine `loc_lin` of B. Vidakovic.
 }

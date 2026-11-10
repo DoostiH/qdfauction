@@ -20,21 +20,21 @@ mass).}
 
 \item{n_grid}{number of grid points for the numerical integration.}
 
-\item{kernel}{a kernel name, a function, or an object from \code{make_kernel()}.}
+\item{kernel}{a kernel name, a function, or an object from `make_kernel()`.}
 
 \item{verbose}{print the report.}
 }
 \value{
-\code{make_kernel()}: an object of class \code{"qdf_kernel"} (a list with the
-density \code{d}, the distribution function \code{p}, \code{name} and the \code{check}
-results). \code{check_kernel()}: a list of properties, printed invisibly.
+`make_kernel()`: an object of class `"qdf_kernel"` (a list with the
+  density `d`, the distribution function `p`, `name` and the `check`
+  results). `check_kernel()`: a list of properties, printed invisibly.
 }
 \description{
-\code{make_kernel()} turns a kernel density function into the object used by
-\code{\link[=qdf_kernel]{qdf_kernel()}}, \code{\link[=qdf_kernel_corrected]{qdf_kernel_corrected()}}, \code{\link[=qdf_jones]{qdf_jones()}}, \code{\link[=qdf_soni]{qdf_soni()}} and
-\code{\link[=qdf]{qdf()}} (argument \code{kernel}). The distribution function needed by the
+`make_kernel()` turns a kernel density function into the object used by
+[qdf_kernel()], [qdf_kernel_corrected()], [qdf_jones()], [qdf_soni()] and
+[qdf()] (argument `kernel`). The distribution function needed by the
 boundary-corrected and Soni estimators is computed numerically.
-\code{check_kernel()} reports the properties that matter for these estimators:
+`check_kernel()` reports the properties that matter for these estimators:
 total mass, symmetry, support, order (the first non-vanishing moment),
 \eqn{\int k^2} and whether the kernel takes negative values; it warns when a
 property required by the theory fails.

@@ -11,10 +11,10 @@ phi_jk(z, j, k, filter = "db3", levels = 10L)
 
 \item{j}{resolution level.}
 
-\item{k}{integer vector of shifts. For a single \code{k} a vector is returned;
-otherwise a matrix \code{length(z)} by \code{length(k)}.}
+\item{k}{integer vector of shifts. For a single `k` a vector is returned;
+otherwise a matrix `length(z)` by `length(k)`.}
 
-\item{filter}{see \code{\link[=wavelet_filter]{wavelet_filter()}}.}
+\item{filter}{see [wavelet_filter()].}
 
 \item{levels}{dyadic resolution of the table (default 10, i.e. 1024 points
 per unit interval).}
